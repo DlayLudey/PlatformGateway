@@ -33,7 +33,7 @@ namespace CarrotHood.PlatformDeps
                 }
             }
 
-			Advertisement = builder.Advertisement ?? new DefaultAdvertisement(); 
+			Advertisement = builder.Advertisement ?? new DefaultAdvertisement(0); 
 
 			Payments = builder.Purchases ?? new DefaultPayments();
 
