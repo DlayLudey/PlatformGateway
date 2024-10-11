@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using InstantGamesBridge;
+using CarrotHood.PlatformDeps;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,9 +14,10 @@ namespace Examples
         [SerializeField] private Button _consumePurchaseButton;
         [SerializeField] private GameObject _overlay;
 
+        private IPayments Payments => PlatformDepsBase.Payments;
         private void Start()
         {
-            _isSupported.text = $"Is Supported: { Bridge.payments.isSupported }";
+            _isSupported.text = $"Is Supported: {Payments.isSupported }";
             _getCatalogButton.onClick.AddListener(OnGetCatalogButtonClicked);
             _getPurchasesButton.onClick.AddListener(OnGetPurchasesButtonClicked);
             _purchaseButton.onClick.AddListener(OnPurchaseButtonClicked);
@@ -27,7 +28,7 @@ namespace Examples
         {
             _overlay.SetActive(true);
 
-            Bridge.payments.GetCatalog((success, list) =>
+			Payments.GetCatalog((success, list) =>
             {
                 Debug.Log($"OnGetCatalogCompleted, success: {success}, items:");
                 
@@ -59,7 +60,7 @@ namespace Examples
         {
             _overlay.SetActive(true);
 
-            Bridge.payments.GetPurchases((success, list) =>
+			Payments.GetPurchases((success, list) =>
             {
                 Debug.Log($"OnGetPurchasesCompleted, success: {success}, items:");
                 
@@ -92,8 +93,8 @@ namespace Examples
                     options.Add("id", "YOUR_PRODUCT_ID");
                     break;
             }
-            
-            Bridge.payments.Purchase(options, _ => { _overlay.SetActive(false); });
+
+			Payments.Purchase(options, _ => { _overlay.SetActive(false); });
         }
 
         private void OnConsumePurchaseButtonClicked()
@@ -107,8 +108,8 @@ namespace Examples
                     options.Add("purchaseToken", "YOUR_PURCHASE_TOKEN");
                     break;
             }
-            
-            Bridge.payments.ConsumePurchase(options, _ => { _overlay.SetActive(false); });
+
+			Payments.ConsumePurchase(options, _ => { _overlay.SetActive(false); });
         }
     }
 }
