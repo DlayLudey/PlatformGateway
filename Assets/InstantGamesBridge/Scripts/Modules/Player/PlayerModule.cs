@@ -10,36 +10,36 @@ using System.Runtime.InteropServices;
 
 namespace InstantGamesBridge.Modules.Player
 {
-    public class PlayerModule : MonoBehaviour
-    {
-        public bool isAuthorizationSupported
-        {
-            get
-            {
+	public class PlayerModule : MonoBehaviour
+	{
+		public bool isAuthorizationSupported
+		{
+			get
+			{
 #if !UNITY_EDITOR
                 return InstantGamesBridgeIsPlayerAuthorizationSupported() == "true";
 #else
-                return false;
+				return false;
 #endif
-            }
-        }
+			}
+		}
 
-        public bool isAuthorized
-        {
-            get
-            {
+		public bool isAuthorized
+		{
+			get
+			{
 #if !UNITY_EDITOR
                 return InstantGamesBridgeIsPlayerAuthorized() == "true";
 #else
-                return false;
+				return false;
 #endif
-            }
-        }
+			}
+		}
 
-        public string id
-        {
-            get
-            {
+		public string id
+		{
+			get
+			{
 #if !UNITY_EDITOR
                 var value = InstantGamesBridgePlayerId();
                 if (string.IsNullOrEmpty(value)) {
@@ -48,15 +48,15 @@ namespace InstantGamesBridge.Modules.Player
 
                 return value;
 #else
-                return null;
+				return null;
 #endif
-            }
-        }
+			}
+		}
 
-        public new string name
-        {
-            get
-            {
+		public new string name
+		{
+			get
+			{
 #if !UNITY_EDITOR
                 var value = InstantGamesBridgePlayerName();
                 if (string.IsNullOrEmpty(value)) {
@@ -65,15 +65,15 @@ namespace InstantGamesBridge.Modules.Player
 
                 return value;
 #else
-                return null;
+				return null;
 #endif
-            }
-        }
+			}
+		}
 
-        public List<string> photos
-        {
-            get
-            {
+		public List<string> photos
+		{
+			get
+			{
 #if !UNITY_EDITOR
                 var json = InstantGamesBridgePlayerPhotos();
                 if (string.IsNullOrEmpty(json)) {
@@ -90,10 +90,10 @@ namespace InstantGamesBridge.Modules.Player
                     return new List<string>();
                 }
 #else
-                return new List<string>();
+				return new List<string>();
 #endif
-            }
-        }
+			}
+		}
 
 #if !UNITY_EDITOR
         [DllImport("__Internal")]
@@ -115,28 +115,28 @@ namespace InstantGamesBridge.Modules.Player
         private static extern void InstantGamesBridgeAuthorizePlayer(string options);
 #endif
 
-        private Action<bool> _authorizationCallback;
+		private Action<bool> _authorizationCallback;
 
 
-        public void Authorize(Dictionary<string, object> options = null, Action<bool> onComplete = null)
-        {
-            _authorizationCallback = onComplete;
+		public void Authorize(Dictionary<string, object> options = null, Action<bool> onComplete = null)
+		{
+			_authorizationCallback = onComplete;
 
 #if !UNITY_EDITOR
             InstantGamesBridgeAuthorizePlayer(options.ToJson());
 #else
-            OnAuthorizeCompleted("false");
+			OnAuthorizeCompleted("false");
 #endif
-        }
+		}
 
 
-        // Called from JS
-        private void OnAuthorizeCompleted(string result)
-        {
-            var isSuccess = result == "true";
-            _authorizationCallback?.Invoke(isSuccess);
-            _authorizationCallback = null;
-        }
-    }
+		// Called from JS
+		private void OnAuthorizeCompleted(string result)
+		{
+			var isSuccess = result == "true";
+			_authorizationCallback?.Invoke(isSuccess);
+			_authorizationCallback = null;
+		}
+	}
 }
 #endif

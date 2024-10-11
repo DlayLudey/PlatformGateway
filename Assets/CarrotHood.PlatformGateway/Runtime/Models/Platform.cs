@@ -24,7 +24,12 @@ namespace CarrotHood.PlatformGateway
         VK,
         Playgama,
         CrazyGames,
-    }
+		Playdeck,
+		Wortal,
+		GameDistribution,
+		AbsoluteGames,
+		VKPlay,
+	}
 
     [Serializable]
 	public partial class PlatformSettings

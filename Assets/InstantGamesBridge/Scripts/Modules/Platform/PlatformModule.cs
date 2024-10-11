@@ -8,8 +8,8 @@ using System.Runtime.InteropServices;
 
 namespace InstantGamesBridge.Modules.Platform
 {
-    public class PlatformModule : MonoBehaviour
-    {
+	public class PlatformModule : MonoBehaviour
+	{
 #if !UNITY_EDITOR
         public string id { get; } = InstantGamesBridgeGetPlatformId();
         public string language { get; } = InstantGamesBridgeGetPlatformLanguage();
@@ -34,16 +34,16 @@ namespace InstantGamesBridge.Modules.Platform
         [DllImport("__Internal")]
         private static extern string InstantGamesBridgeGetServerTime();
 #else
-        public string id => "mock";
-        public string language => "en";
-        public string payload => null;
-        public string tld => null;
+		public string id => "mock";
+		public string language => "en";
+		public string payload => null;
+		public string tld => null;
 #endif
-        private Action<DateTime?> _getServerTimeCallback;
+		private Action<DateTime?> _getServerTimeCallback;
 
-        
-        public void SendMessage(PlatformMessage message)
-        {
+
+		public void SendMessage(PlatformMessage message)
+		{
 #if !UNITY_EDITOR
             var messageString = "";
 
@@ -79,33 +79,33 @@ namespace InstantGamesBridge.Modules.Platform
 
             InstantGamesBridgeSendMessageToPlatform(messageString);
 #endif
-        }
+		}
 
-        public void GetServerTime(Action<DateTime?> callback)
-        {
-            _getServerTimeCallback = callback;
+		public void GetServerTime(Action<DateTime?> callback)
+		{
+			_getServerTimeCallback = callback;
 #if !UNITY_EDITOR
             InstantGamesBridgeGetServerTime();
 #else
-            OnGetServerTimeCompleted(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString());
+			OnGetServerTimeCompleted(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds().ToString());
 #endif
-        }
+		}
 
 
-        // Called from JS
-        private void OnGetServerTimeCompleted(string result)
-        {
-            DateTime? date = null;
+		// Called from JS
+		private void OnGetServerTimeCompleted(string result)
+		{
+			DateTime? date = null;
 
-            if (double.TryParse(result, out var ticks))
-            {
-                var time = TimeSpan.FromMilliseconds(ticks);
-                date = new DateTime(1970, 1, 1) + time;
-            }
-            
-            _getServerTimeCallback?.Invoke(date);
-            _getServerTimeCallback = null;
-        }
-    }
+			if (double.TryParse(result, out var ticks))
+			{
+				var time = TimeSpan.FromMilliseconds(ticks);
+				date = new DateTime(1970, 1, 1) + time;
+			}
+
+			_getServerTimeCallback?.Invoke(date);
+			_getServerTimeCallback = null;
+		}
+	}
 }
 #endif

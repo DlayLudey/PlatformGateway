@@ -16,4 +16,10 @@ MonoBehaviour:
     StartLevelInter: 0
     RewardClicker: 0
     InterClicker: 0
+    interstitialCooldown: 60
     test: 1
+  products:
+  - productId: bar
+    name: Test product
+    description: 'Desc product '
+    price: 5

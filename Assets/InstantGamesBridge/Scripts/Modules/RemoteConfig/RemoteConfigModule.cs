@@ -10,20 +10,20 @@ using System.Runtime.InteropServices;
 
 namespace InstantGamesBridge.Modules.RemoteConfig
 {
-    public class RemoteConfigModule : MonoBehaviour
-    {
-        public bool isSupported
-        {
-            get
-            {
+	public class RemoteConfigModule : MonoBehaviour
+	{
+		public bool isSupported
+		{
+			get
+			{
 #if !UNITY_EDITOR
                 return InstantGamesBridgeIsRemoteConfigSupported() == "true";
 #else
-                return false;
+				return false;
 #endif
-            }
-        }
-        
+			}
+		}
+
 #if !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string InstantGamesBridgeIsRemoteConfigSupported();
@@ -31,42 +31,42 @@ namespace InstantGamesBridge.Modules.RemoteConfig
         [DllImport("__Internal")]
         private static extern void InstantGamesBridgeRemoteConfigGet(string options);
 #endif
-        private Action<bool, Dictionary<string, string>> _getCallback;
+		private Action<bool, Dictionary<string, string>> _getCallback;
 
-        
-        public void Get(Dictionary<string, object> options, Action<bool, Dictionary<string, string>> onComplete)
-        {
-            _getCallback = onComplete;
+
+		public void Get(Dictionary<string, object> options, Action<bool, Dictionary<string, string>> onComplete)
+		{
+			_getCallback = onComplete;
 
 #if !UNITY_EDITOR
             InstantGamesBridgeRemoteConfigGet(options.ToJson());
 #else
-            OnRemoteConfigGetFailed();
+			OnRemoteConfigGetFailed();
 #endif
-        }
+		}
 
 
-        // Called from JS
-        private void OnRemoteConfigGetSuccess(string result)
-        {
-            var values = new Dictionary<string, string>();
-            
-            try
-            {
-                values = JsonConvert.DeserializeObject<Dictionary<string, string>>(result);
-            }
-            catch (Exception e)
-            {
-                Debug.Log(e);
-            }
-            
-            _getCallback?.Invoke(true, values);
-        }
+		// Called from JS
+		private void OnRemoteConfigGetSuccess(string result)
+		{
+			var values = new Dictionary<string, string>();
 
-        private void OnRemoteConfigGetFailed()
-        {
-            _getCallback?.Invoke(false, null);
-        }
-    }
+			try
+			{
+				values = JsonConvert.DeserializeObject<Dictionary<string, string>>(result);
+			}
+			catch (Exception e)
+			{
+				Debug.Log(e);
+			}
+
+			_getCallback?.Invoke(true, values);
+		}
+
+		private void OnRemoteConfigGetFailed()
+		{
+			_getCallback?.Invoke(false, null);
+		}
+	}
 }
 #endif

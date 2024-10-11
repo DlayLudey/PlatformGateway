@@ -10,67 +10,67 @@ using System.Runtime.InteropServices;
 
 namespace InstantGamesBridge.Modules.Leaderboard
 {
-    public class LeaderboardModule : MonoBehaviour
-    {
-        public bool isSupported
-        {
-            get
-            {
+	public class LeaderboardModule : MonoBehaviour
+	{
+		public bool isSupported
+		{
+			get
+			{
 #if !UNITY_EDITOR
                 return InstantGamesBridgeIsLeaderboardSupported() == "true";
 #else
-                return false;
+				return false;
 #endif
-            }
-        }
+			}
+		}
 
-        public bool isNativePopupSupported
-        {
-            get
-            {
+		public bool isNativePopupSupported
+		{
+			get
+			{
 #if !UNITY_EDITOR
                 return InstantGamesBridgeIsLeaderboardNativePopupSupported() == "true";
 #else
-                return false;
+				return false;
 #endif
-            }
-        }
+			}
+		}
 
-        public bool isSetScoreSupported
-        {
-            get
-            {
+		public bool isSetScoreSupported
+		{
+			get
+			{
 #if !UNITY_EDITOR
                 return InstantGamesBridgeIsLeaderboardSetScoreSupported() == "true";
 #else
-                return false;
+				return false;
 #endif
-            }
-        }
+			}
+		}
 
-        public bool isGetScoreSupported
-        {
-            get
-            {
+		public bool isGetScoreSupported
+		{
+			get
+			{
 #if !UNITY_EDITOR
                 return InstantGamesBridgeIsLeaderboardGetScoreSupported() == "true";
 #else
-                return false;
+				return false;
 #endif
-            }
-        }
+			}
+		}
 
-        public bool isGetEntriesSupported
-        {
-            get
-            {
+		public bool isGetEntriesSupported
+		{
+			get
+			{
 #if !UNITY_EDITOR
                 return InstantGamesBridgeIsLeaderboardGetEntriesSupported() == "true";
 #else
-                return false;
+				return false;
 #endif
-            }
-        }
+			}
+		}
 
 #if !UNITY_EDITOR
         [DllImport("__Internal")]
@@ -101,106 +101,106 @@ namespace InstantGamesBridge.Modules.Leaderboard
         private static extern void InstantGamesBridgeLeaderboardShowNativePopup(string options);
 #endif
 
-        private Action<bool> _setScoreCallback;
-        private Action<bool, int> _getScoreCallback;
-        private Action<bool, List<Dictionary<string, string>>> _getEntriesCallback;
-        private Action<bool> _showNativePopupCallback;
+		private Action<bool> _setScoreCallback;
+		private Action<bool, int> _getScoreCallback;
+		private Action<bool, List<Dictionary<string, string>>> _getEntriesCallback;
+		private Action<bool> _showNativePopupCallback;
 
-        
-        public void SetScore(Dictionary<string, object> options, Action<bool> onComplete)
-        {
+
+		public void SetScore(Dictionary<string, object> options, Action<bool> onComplete)
+		{
 #if !UNITY_EDITOR
             InstantGamesBridgeLeaderboardSetScore(options.ToJson());
 #else
-            OnLeaderboardSetScoreCompleted("false");
+			OnLeaderboardSetScoreCompleted("false");
 #endif
-        }
+		}
 
-        public void GetScore(Dictionary<string, object> options, Action<bool, int> onComplete)
-        {
-            _getScoreCallback = onComplete;
+		public void GetScore(Dictionary<string, object> options, Action<bool, int> onComplete)
+		{
+			_getScoreCallback = onComplete;
 #if !UNITY_EDITOR
             InstantGamesBridgeLeaderboardGetScore(options.ToJson());
 #else
-            OnLeaderboardGetScoreCompleted("false");
+			OnLeaderboardGetScoreCompleted("false");
 #endif
-        }
+		}
 
-        public void GetEntries(Dictionary<string, object> options, Action<bool, List<Dictionary<string, string>>> onComplete)
-        {
-            _getEntriesCallback = onComplete;
+		public void GetEntries(Dictionary<string, object> options, Action<bool, List<Dictionary<string, string>>> onComplete)
+		{
+			_getEntriesCallback = onComplete;
 #if !UNITY_EDITOR
             InstantGamesBridgeLeaderboardGetEntries(options.ToJson());
 #else
-            OnLeaderboardGetEntriesCompletedFailed();
+			OnLeaderboardGetEntriesCompletedFailed();
 #endif
-        }
+		}
 
-        public void ShowNativePopup(Dictionary<string, object> options, Action<bool> onComplete = null)
-        {
-            _showNativePopupCallback = onComplete;
+		public void ShowNativePopup(Dictionary<string, object> options, Action<bool> onComplete = null)
+		{
+			_showNativePopupCallback = onComplete;
 #if !UNITY_EDITOR
             InstantGamesBridgeLeaderboardShowNativePopup(options.ToJson());
 #else
-            OnLeaderboardShowNativePopupCompleted("false");
+			OnLeaderboardShowNativePopupCompleted("false");
 #endif
-        }
+		}
 
 
-        // Called from JS
-        private void OnLeaderboardSetScoreCompleted(string result)
-        {
-            var isSuccess = result == "true";
-            _setScoreCallback?.Invoke(isSuccess);
-            _setScoreCallback = null;
-        }
+		// Called from JS
+		private void OnLeaderboardSetScoreCompleted(string result)
+		{
+			var isSuccess = result == "true";
+			_setScoreCallback?.Invoke(isSuccess);
+			_setScoreCallback = null;
+		}
 
-        private void OnLeaderboardGetScoreCompleted(string result)
-        {
-            var isSuccess = result != "false";
-            var score = 0;
+		private void OnLeaderboardGetScoreCompleted(string result)
+		{
+			var isSuccess = result != "false";
+			var score = 0;
 
-            if (isSuccess)
-            {
-                int.TryParse(result, out score);
-            }
+			if (isSuccess)
+			{
+				int.TryParse(result, out score);
+			}
 
-            _getScoreCallback?.Invoke(isSuccess, score);
-            _getScoreCallback = null;
-        }
+			_getScoreCallback?.Invoke(isSuccess, score);
+			_getScoreCallback = null;
+		}
 
-        private void OnLeaderboardGetEntriesCompletedSuccess(string result)
-        {
-            var entries = new List<Dictionary<string, string>>();
+		private void OnLeaderboardGetEntriesCompletedSuccess(string result)
+		{
+			var entries = new List<Dictionary<string, string>>();
 
-            if (!string.IsNullOrEmpty(result))
-            {
-                try
-                {
-                    entries = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(result);
-                }
-                catch (Exception e)
-                {
-                    Debug.Log(e);
-                }
-            }
+			if (!string.IsNullOrEmpty(result))
+			{
+				try
+				{
+					entries = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(result);
+				}
+				catch (Exception e)
+				{
+					Debug.Log(e);
+				}
+			}
 
-            _getEntriesCallback?.Invoke(true, entries);
-            _getEntriesCallback = null;
-        }
+			_getEntriesCallback?.Invoke(true, entries);
+			_getEntriesCallback = null;
+		}
 
-        private void OnLeaderboardGetEntriesCompletedFailed()
-        {
-            _getEntriesCallback?.Invoke(false, null);
-            _getEntriesCallback = null;
-        }
+		private void OnLeaderboardGetEntriesCompletedFailed()
+		{
+			_getEntriesCallback?.Invoke(false, null);
+			_getEntriesCallback = null;
+		}
 
-        private void OnLeaderboardShowNativePopupCompleted(string result)
-        {
-            var isSuccess = result == "true";
-            _showNativePopupCallback?.Invoke(isSuccess);
-            _showNativePopupCallback = null;
-        }
-    }
+		private void OnLeaderboardShowNativePopupCompleted(string result)
+		{
+			var isSuccess = result == "true";
+			_showNativePopupCallback?.Invoke(isSuccess);
+			_showNativePopupCallback = null;
+		}
+	}
 }
 #endif

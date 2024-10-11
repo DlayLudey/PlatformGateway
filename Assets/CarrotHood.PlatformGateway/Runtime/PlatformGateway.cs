@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using InstantGamesBridge.Modules.Player;
+using InstantGamesBridge.Modules.Platform;
+using InstantGamesBridge.Modules.Leaderboard;
 
 namespace CarrotHood.PlatformGateway
 {
@@ -12,6 +15,9 @@ namespace CarrotHood.PlatformGateway
 		public static IPayments Payments;
 		public static IStorage Storage;
 		public static ISocial Social;
+		public static IPlayer Player;
+		public static IPlatform Platform;
+		public static ILeaderboard Leaderboard;
 		public static PlatformType PlatformType { get; } = PlatformType.Default;
 		
 		[SerializeField] public PlatformType editorPlatformType;
@@ -19,6 +25,7 @@ namespace CarrotHood.PlatformGateway
 		protected virtual void Awake()
 		{
 			instance = this;
+			DontDestroyOnLoad(gameObject);
 		}
 
 		public IEnumerator Init()
@@ -29,7 +36,7 @@ namespace CarrotHood.PlatformGateway
 			var platformType = PlatformGatewayInternal.PlatformType;
 
 #endif
-			var platform = platforms.FirstOrDefault();
+			var platform = platforms.FirstOrDefault(platform => platform.Type == platformType);
 			var builder = new PlatformBuilder();
 
 			if (platform != default)

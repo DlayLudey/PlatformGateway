@@ -114,53 +114,53 @@ namespace Examples
             _overlay.SetActive(true);
             
             var options = new Dictionary<string, object>();
-            //switch (Bridge.platform.id)
-            //{
-            //    case "vk":
-            //        options.Add("message", "Hello World!");
-            //        options.Add("attachments", "photo-199747461_457239629");
-            //        break;
-                
-            //    case "ok":
-            //        var media = new object[]
-            //        {
-            //            new Dictionary<string, object>
-            //            {
-            //                { "type", "text" },
-            //                { "text", "Hello World!" },
-            //            },
-            //            new Dictionary<string, object>
-            //            {
-            //                { "type", "link" },
-            //                { "url", "https://apiok.ru" },
-            //            },
-            //            new Dictionary<string, object>
-            //            {
-            //                { "type", "poll" },
-            //                { "question", "Do you like our API?" },
-            //                { 
-            //                    "answers", 
-            //                    new object[]
-            //                    {
-            //                        new Dictionary<string, object>
-            //                        {
-            //                            { "text", "Yes" },
-            //                        },
-            //                        new Dictionary<string, object>
-            //                        {
-            //                            { "text", "No" },
-            //                        }
-            //                    }
-            //                },
-            //                { "options", "SingleChoice,AnonymousVoting" },
-            //            },
-            //        };
-                    
-            //        options.Add("media", media);
-            //        break;
-            //}
+            switch (PlatformGateway.PlatformType)
+            {
+                case PlatformType.VK:
+                    options.Add("message", "Hello World!");
+                    options.Add("attachments", "photo-199747461_457239629");
+                    break;
 
-			Social.CreatePost(options, _ => { _overlay.SetActive(false); });
+                case PlatformType.OK:
+                    var media = new object[]
+                    {
+                        new Dictionary<string, object>
+                        {
+                            { "type", "text" },
+                            { "text", "Hello World!" },
+                        },
+                        new Dictionary<string, object>
+                        {
+                            { "type", "link" },
+                            { "url", "https://apiok.ru" },
+                        },
+                        new Dictionary<string, object>
+                        {
+                            { "type", "poll" },
+                            { "question", "Do you like our API?" },
+                            {
+                                "answers",
+                                new object[]
+                                {
+                                    new Dictionary<string, object>
+                                    {
+                                        { "text", "Yes" },
+                                    },
+                                    new Dictionary<string, object>
+                                    {
+                                        { "text", "No" },
+                                    }
+                                }
+                            },
+                            { "options", "SingleChoice,AnonymousVoting" },
+                        },
+                    };
+
+                    options.Add("media", media);
+                    break;
+            }
+
+            Social.CreatePost(options, _ => { _overlay.SetActive(false); });
         }
 
         private void OnRateButtonClicked()
