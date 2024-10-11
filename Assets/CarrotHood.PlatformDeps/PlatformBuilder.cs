@@ -9,17 +9,17 @@ namespace CarrotHood.PlatformDeps
 		public IStorage Saves { get; private set; }
 		public ISocial Social { get; private set; }
 
-		public void AddAdvirst(IAdvertisement avirst)
+		public void AddAdvertisement(IAdvertisement avirst)
 		{
 			Advertisement = avirst;
 		}
 
-		public void AddPurchize(IPayments purchases)
+		public void AddPayments(IPayments purchases)
 		{
 			Purchases = purchases;
 		}
 
-		public void AddSaves(IStorage saves)
+		public void AddStorage(IStorage saves)
 		{
 			Saves = saves;
 		}

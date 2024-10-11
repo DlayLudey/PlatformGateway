@@ -32,5 +32,6 @@ namespace CarrotHood.PlatformDeps
 		public int StartLevelInter = 0;
 		public bool RewardClicker = false;
 		public bool InterClicker = false;
+		public int interstitialCooldown = 60;
 	}
 }
