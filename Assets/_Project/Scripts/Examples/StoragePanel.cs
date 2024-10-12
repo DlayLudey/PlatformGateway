@@ -47,7 +47,11 @@ namespace Examples
 				_levelKey = _levelInput.text
 
 			};
-			Storage.SetValue("save", JsonUtility.ToJson(test), () => _overlay.SetActive(false), (x) => _overlay.SetActive(false));
+			Storage.SetValue("save", JsonUtility.ToJson(test), () => _overlay.SetActive(false), (x) =>
+			{
+				Debug.Log($"Error: {x}");
+				_overlay.SetActive(false);
+			});
 		}
 		[Serializable]
 		public struct Test
@@ -63,13 +67,14 @@ namespace Examples
 
 			Storage.GetValue("save", (x) =>
 			{
+				Debug.Log(x);
 				var test = JsonUtility.FromJson<Test>(x);
 				_coinsInput.text = test._coinsKey;
 				_levelInput.text = test._levelKey;
 				_overlay.SetActive(false);
 			}, (x) =>
 			{
-				Debug.Log("App" + x);
+				Debug.Log($"Error: {x}");
 				_overlay.SetActive(false);
 			});
 		}

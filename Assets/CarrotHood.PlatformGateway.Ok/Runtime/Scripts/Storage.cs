@@ -62,6 +62,7 @@ namespace Qt.OkSdk
             SetStorage(key, value, OnSetStorageSuccess, OnSetStorageError);
             #else
             PlayerPrefs.SetString(key, value);
+            OnSetStorageSuccess();
             #endif
         }
 

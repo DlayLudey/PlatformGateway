@@ -6,7 +6,7 @@ namespace CarrotHood.PlatformGateway
 	{
 		public IAdvertisement Advertisement { get; private set; }
 		public IPayments Purchases { get; private set; }
-		public IStorage Saves { get; private set; }
+		public IStorage Storage { get; private set; }
 		public ISocial Social { get; private set; }
 
 		public void AddAdvertisement(IAdvertisement avirst)
@@ -19,9 +19,9 @@ namespace CarrotHood.PlatformGateway
 			Purchases = purchases;
 		}
 
-		public void AddStorage(IStorage saves)
+		public void AddStorage(IStorage storage)
 		{
-			Saves = saves;
+			Storage = storage;
 		}
 
 		public void AddSocial(ISocial social)

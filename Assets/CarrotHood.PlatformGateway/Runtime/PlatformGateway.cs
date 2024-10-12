@@ -48,7 +48,7 @@ namespace CarrotHood.PlatformGateway
 
 			Payments = builder.Purchases ?? new DefaultPayments();
 
-			Storage = builder.Saves ?? new DefaultStorage();
+			Storage = builder.Storage ?? new DefaultStorage();
 
 			Social = builder.Social ?? new DefaultSocial();
 

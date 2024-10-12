@@ -155,14 +155,16 @@ const library = {
 
         getStorageSuccessCallbackPtr: undefined,
         getStorageErrorCallbackPtr: undefined,
+        getStorageKey: undefined,
         getStorage: function(keyPtr, scopePtr, successCallbackPtr, errorCallbackPtr){
             okSdk.getStorageSuccessCallbackPtr = successCallbackPtr;
             okSdk.getStorageErrorCallbackPtr = errorCallbackPtr;
+            okSdk.getStorageKey = UTF8ToString(keyPtr);
             
             okSdk.FAPI.Client.call(
                 {
                     "method": "storage.get",
-                    "keys":[UTF8ToString(keyPtr)],
+                    "keys":[okSdk.getStorageKey],
                     "scope":UTF8ToString(scopePtr)
                 }, okSdk.getStorageCallback);
         },
@@ -174,7 +176,9 @@ const library = {
                 return;
             }
             
-            const successDataUnmanagedStringPtr = okSdk.allocateUnmanagedString(JSON.stringify(data));
+            console.log(data);
+            
+            const successDataUnmanagedStringPtr = okSdk.allocateUnmanagedString(data["data"][okSdk.getStorageKey]);
             dynCall('vi', okSdk.getStorageSuccessCallbackPtr, [successDataUnmanagedStringPtr]);
         },
         
