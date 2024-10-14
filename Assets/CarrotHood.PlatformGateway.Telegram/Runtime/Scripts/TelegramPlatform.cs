@@ -6,6 +6,7 @@ namespace CarrotHood.PlatformGateway.Telegram
 	public class TelegramPlatform : Platform
 	{
 		public override PlatformType Type => PlatformType.Telegram;
+		public override string Language { get; }
 
 		public override bool CheckRelevant()
 		{

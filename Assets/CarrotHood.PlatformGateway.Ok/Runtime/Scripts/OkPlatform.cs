@@ -14,6 +14,7 @@ namespace CarrotHood.PlatformGateway.Ok
 		[SerializeField] private PaymentsOk.Product[] products;
 
 		public override PlatformType Type => PlatformType.OK;
+		public override string Language => "ru";
 
 		public override bool CheckRelevant()
 		{

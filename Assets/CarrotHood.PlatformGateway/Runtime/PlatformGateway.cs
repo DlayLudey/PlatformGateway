@@ -16,7 +16,6 @@ namespace CarrotHood.PlatformGateway
 		public static IStorage Storage;
 		public static ISocial Social;
 		public static IPlayer Player;
-		public static IPlatform Platform;
 		public static ILeaderboard Leaderboard;
 		public static PlatformType PlatformType { get; } = PlatformType.Default;
 		

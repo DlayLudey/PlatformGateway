@@ -8,7 +8,8 @@ namespace CarrotHood.PlatformGateway
     {
         public PlatformSettings Settings;
         public abstract PlatformType Type { get; }
-		public abstract bool CheckRelevant();
+        public abstract string Language { get; }
+        public abstract bool CheckRelevant();
         public virtual IEnumerator Init(PlatformBuilder baseDeps)
         {
             yield return null;
