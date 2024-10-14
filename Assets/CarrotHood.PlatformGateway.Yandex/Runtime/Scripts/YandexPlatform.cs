@@ -74,12 +74,12 @@ namespace CarrotHood.PlatformGateway.Yandex
 
 	public class StorageYandex : IStorage
 	{
-		public void GetValue(string key, Action<string> onSuccess, Action<string> onError)
+		public void GetValue(string key, Action<string> onSuccess, Action<string> onError = null)
 		{
 			onSuccess?.Invoke(Cloud.GetValue(key, ""));
 		}
 
-		public void SetValue(string key, string value, Action onSuccess, Action<string> onError)
+		public void SetValue(string key, string value, Action onSuccess = null, Action<string> onError = null)
 		{
 			Cloud.SetValue(key, value, true);
 			onSuccess?.Invoke();

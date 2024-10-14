@@ -135,12 +135,12 @@ namespace CarrotHood.PlatformGateway.Ok
 
 	public class StorageOk : IStorage
 	{
-		public void GetValue(string key, Action<string> onSuccess, Action<string> onError)
+		public void GetValue(string key, Action<string> onSuccess, Action<string> onError = null)
 		{
 			Storage.GetStorageValue(key, onSuccess, onError);
 		}
 
-		public void SetValue(string key, string value, Action onSuccess, Action<string> onError)
+		public void SetValue(string key, string value, Action onSuccess = null, Action<string> onError = null)
 		{
 			Storage.SetStorageValue(key, value, onSuccess, onError);
 		}
