@@ -176,7 +176,11 @@ const library = {
                 return;
             }
             
-            console.log(data);
+            if(data === undefined || data["data"] === undefined)
+            {
+                dynCall('vi', okSdk.getStorageSuccessCallbackPtr, [okSdk.allocateUnmanagedString("")]);
+                return;
+            }
             
             const successDataUnmanagedStringPtr = okSdk.allocateUnmanagedString(data["data"][okSdk.getStorageKey]);
             dynCall('vi', okSdk.getStorageSuccessCallbackPtr, [successDataUnmanagedStringPtr]);
