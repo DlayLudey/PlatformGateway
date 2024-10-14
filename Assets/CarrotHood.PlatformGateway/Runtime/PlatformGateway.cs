@@ -34,7 +34,6 @@ namespace CarrotHood.PlatformGateway
 			var platformType = editorPlatformType;
 #else
 			var platformType = PlatformGatewayInternal.PlatformType;
-
 #endif
 			currentPlatform = platforms.FirstOrDefault(platform => platform.Type == platformType);
 			var builder = new PlatformBuilder();
@@ -43,6 +42,8 @@ namespace CarrotHood.PlatformGateway
 				currentPlatform = editorPlatform;
 			
 			yield return currentPlatform.Init(builder);
+			
+			Debug.Log($"Initializing platform: {platformType}");
 			
 			Advertisement = builder.Advertisement ?? new DefaultAdvertisement(0);
 
