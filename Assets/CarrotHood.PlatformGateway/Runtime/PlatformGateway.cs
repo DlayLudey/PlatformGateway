@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using InstantGamesBridge.Modules.Player;
-using InstantGamesBridge.Modules.Platform;
 using InstantGamesBridge.Modules.Leaderboard;
 
 namespace CarrotHood.PlatformGateway

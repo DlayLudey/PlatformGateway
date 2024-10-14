@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using St = InstantGamesBridge.Modules.Storage.StorageType;
 
 namespace CarrotHood.PlatformGateway
 {
