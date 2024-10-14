@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using CarrotHood.PlatformGateway;
 using UnityEngine;
 
-public abstract class AdvertisementBase : IAdvertisement
+public abstract class AdvertisementBase
 {
 	public int interstitialCooldown { get; protected set; }
 	
@@ -39,5 +39,5 @@ public abstract class AdvertisementBase : IAdvertisement
 
 	protected abstract void ShowInterstitialInternal(Action onOpen, Action onClose, Action<string> onError);
 
-	public abstract void ShowRewarded(Action onRewarded, Action<string> onError);
+	public abstract void ShowRewarded(Action onRewarded, Action<string> onError = null);
 }

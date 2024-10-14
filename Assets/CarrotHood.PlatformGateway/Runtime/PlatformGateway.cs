@@ -10,7 +10,7 @@ namespace CarrotHood.PlatformGateway
 	public class PlatformGateway : MonoBehaviour
 	{
 		public static PlatformGateway instance;
-		public static IAdvertisement Advertisement;
+		public static AdvertisementBase Advertisement;
 		public static IPayments Payments;
 		public static IStorage Storage;
 		public static ISocial Social;

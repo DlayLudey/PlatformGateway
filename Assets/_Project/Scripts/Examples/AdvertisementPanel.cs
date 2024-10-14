@@ -22,7 +22,7 @@ namespace Examples
         [SerializeField] private Button _checkAdBlockButton;
         [SerializeField] private GameObject _overlay;
 
-        public IAdvertisement Ads => PlatformGateway.Advertisement;
+        public AdvertisementBase Ads => PlatformGateway.Advertisement;
 
         private void Start()
         {
