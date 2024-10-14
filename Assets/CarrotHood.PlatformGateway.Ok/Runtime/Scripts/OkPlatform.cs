@@ -43,6 +43,8 @@ namespace CarrotHood.PlatformGateway.Ok
 		}
 
 		public bool isSupported => true;
+		
+		public string CurrencyName => "OK";
 
 		public void ConsumePurchase(string productToken, Action onSuccessCallback = null,
 			Action<string> onErrorCallback = null)

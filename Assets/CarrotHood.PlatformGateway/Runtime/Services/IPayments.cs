@@ -14,6 +14,8 @@ namespace CarrotHood.PlatformGateway
 		}
 
 		Product[] Products { get; }
+		
+		string CurrencyName { get; }
 
 		bool isSupported { get; }
 

@@ -36,6 +36,9 @@ namespace CarrotHood.PlatformGateway.Yandex
 	{
 		public IPayments.Product[] Products { get; }
 		public bool isSupported { get; } = true;
+
+		public string CurrencyName => Billing.CatalogProducts[0].priceCurrencyCode;
+
 		public void ConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null)
 		{
 			Billing.ConsumeProduct(productToken, onSuccessCallback, onErrorCallback);
