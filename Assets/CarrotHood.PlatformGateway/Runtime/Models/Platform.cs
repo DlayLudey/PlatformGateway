@@ -35,9 +35,13 @@ namespace CarrotHood.PlatformGateway
     [Serializable]
 	public partial class PlatformSettings
 	{
-		public int StartLevelInter = 0;
-		public bool RewardClicker = false;
-		public bool InterClicker = false;
+		[Header("Advertisement")]
+		public int startLevelInter = 0;
+		public bool rewardClicker = false;
+		public bool interClicker = false;
 		public int interstitialCooldown = 60;
+		[Header("Payments")]
+
+		public IPayments.Product[] products;
 	}
 }

@@ -4,6 +4,17 @@ namespace CarrotHood.PlatformGateway
 {
 	public interface IPayments
 	{
+		[Serializable]
+		public struct Product
+		{
+			public string productId;
+			public string name;
+			public string description;
+			public int price;
+		}
+
+		Product[] Products { get; }
+
 		bool isSupported { get; }
 
 		void ConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null);

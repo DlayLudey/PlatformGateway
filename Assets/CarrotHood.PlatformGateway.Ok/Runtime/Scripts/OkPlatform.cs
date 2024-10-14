@@ -11,8 +11,6 @@ namespace CarrotHood.PlatformGateway.Ok
 	[CreateAssetMenu(fileName = "OkPlatform", menuName = "Platforms/Ok")]
 	public partial class OkPlatform : Platform
 	{
-		[SerializeField] private PaymentsOk.Product[] products;
-
 		public override PlatformType Type => PlatformType.OK;
 		public override string Language => "ru";
 
@@ -25,7 +23,7 @@ namespace CarrotHood.PlatformGateway.Ok
 		{
 			yield return OkSdk.Initialize();
 
-			builder.AddPayments(new PaymentsOk(products));
+			builder.AddPayments(new PaymentsOk(Settings.products));
 			
 			builder.AddAdvertisement(new AdvertisementOk(Settings.interstitialCooldown));
 			
@@ -38,22 +36,12 @@ namespace CarrotHood.PlatformGateway.Ok
 	//Здесь используем кастомный пакет
 	public class PaymentsOk : IPayments
 	{
-		[Serializable]
-		public struct Product
+		public IPayments.Product[] Products { get; }
+		public PaymentsOk(IPayments.Product[] products)
 		{
-			public string productId;
-			public string name;
-			public string description;
-			public int price;
+			Products = products;
 		}
 
-		private readonly Product[] _products;
-		
-		public PaymentsOk(Product[] products)
-		{
-			_products = products;
-		}
-		
 		public bool isSupported => true;
 
 		public void ConsumePurchase(string productToken, Action onSuccessCallback = null,
@@ -69,10 +57,10 @@ namespace CarrotHood.PlatformGateway.Ok
 
 		public void Purchase(string productId, Action<object> onSuccessCallback = null, Action<string> onErrorCallback = null)
 		{
-			if (_products.All(x => x.productId != productId))
+			if (Products.All(x => x.productId != productId))
 				throw new KeyNotFoundException($"There is no product with id: {productId}");
 			
-			Product product = _products.FirstOrDefault(x => x.productId == productId);
+			IPayments.Product product = Products.FirstOrDefault(x => x.productId == productId);
 			
 			Billing.Purchase(
 				product.name, 
