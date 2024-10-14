@@ -17,6 +17,7 @@ namespace CarrotHood.PlatformGateway
 		public static IPlayer Player;
 		public static ILeaderboard Leaderboard;
 		public static PlatformType PlatformType { get; } = PlatformType.Default;
+		public static Platform currentPlatform;
 		
 		[SerializeField] public PlatformType editorPlatformType;
 		[SerializeField] private List<Platform> platforms;
@@ -34,11 +35,11 @@ namespace CarrotHood.PlatformGateway
 			var platformType = PlatformGatewayInternal.PlatformType;
 
 #endif
-			var platform = platforms.FirstOrDefault(platform => platform.Type == platformType);
+			currentPlatform = platforms.FirstOrDefault(platform => platform.Type == platformType);
 			var builder = new PlatformBuilder();
 
-			if (platform != default)
-				yield return platform.Init(builder);
+			if (currentPlatform != default)
+				yield return currentPlatform.Init(builder);
 			else
 				Debug.LogWarning("The platform was not found, the default platform is used!");
 
