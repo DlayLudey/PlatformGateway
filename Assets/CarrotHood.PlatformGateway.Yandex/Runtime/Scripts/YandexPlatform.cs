@@ -34,6 +34,7 @@ namespace CarrotHood.PlatformGateway.Yandex
 
 	public class PaymentsYandex : IPayments
 	{
+		public IPayments.Product[] Products { get; }
 		public bool isSupported { get; } = true;
 		public void ConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null)
 		{

@@ -20,6 +20,7 @@ namespace CarrotHood.PlatformGateway
 		public static Platform currentPlatform;
 		
 		[SerializeField] public PlatformType editorPlatformType;
+		[SerializeField] private EditorPlatform editorPlatform;
 		[SerializeField] private List<Platform> platforms;
 		protected virtual void Awake()
 		{
@@ -38,11 +39,11 @@ namespace CarrotHood.PlatformGateway
 			currentPlatform = platforms.FirstOrDefault(platform => platform.Type == platformType);
 			var builder = new PlatformBuilder();
 
-			if (currentPlatform != default)
-				yield return currentPlatform.Init(builder);
-			else
-				Debug.LogWarning("The platform was not found, the default platform is used!");
-
+			if (currentPlatform == default)
+				currentPlatform = editorPlatform;
+			
+			yield return currentPlatform.Init(builder);
+			
 			Advertisement = builder.Advertisement ?? new DefaultAdvertisement(0);
 
 			Payments = builder.Purchases ?? new DefaultPayments();
