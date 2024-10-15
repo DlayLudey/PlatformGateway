@@ -16,7 +16,7 @@ namespace CarrotHood.PlatformGateway
 		public static ISocial Social;
 		public static IPlayer Player;
 		public static ILeaderboard Leaderboard;
-		public static PlatformType PlatformType { get; } = PlatformType.Default;
+		public static PlatformType PlatformType { get; private set; } = PlatformType.Default;
 		public static Platform currentPlatform;
 		
 		[SerializeField] public PlatformType editorPlatformType;
@@ -31,11 +31,11 @@ namespace CarrotHood.PlatformGateway
 		public IEnumerator Init()
 		{
 #if UNITY_EDITOR
-			var platformType = editorPlatformType;
+			PlatformType = editorPlatformType;
 #else
-			var platformType = PlatformGatewayInternal.PlatformType;
+			PlatformType = PlatformGatewayInternal.PlatformType;
 #endif
-			currentPlatform = platforms.FirstOrDefault(platform => platform.Type == platformType);
+			currentPlatform = platforms.FirstOrDefault(platform => platform.Type == PlatformType);
 			var builder = new PlatformBuilder();
 
 			if (currentPlatform == default)
@@ -43,7 +43,7 @@ namespace CarrotHood.PlatformGateway
 			
 			yield return currentPlatform.Init(builder);
 			
-			Debug.Log($"Initializing platform: {platformType}");
+			Debug.Log($"Initializing platform: {PlatformType}");
 			
 			Advertisement = builder.Advertisement ?? new DefaultAdvertisement(0);
 
