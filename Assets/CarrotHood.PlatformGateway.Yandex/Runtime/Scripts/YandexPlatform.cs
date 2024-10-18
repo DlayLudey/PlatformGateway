@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Agava.YandexGames;
 using Kimicu.YandexGames;
 using UnityEngine;
+using Billing = Kimicu.YandexGames.Billing;
+using YandexGamesSdk = Kimicu.YandexGames.YandexGamesSdk;
 
 namespace CarrotHood.PlatformGateway.Yandex
 {
@@ -21,8 +24,12 @@ namespace CarrotHood.PlatformGateway.Yandex
 		{
 			yield return YandexGamesSdk.Initialize();
 			yield return Billing.Initialize();
+
+			var payments = new PaymentsYandex();
+
+			yield return payments.Init();
 			
-			builder.AddPayments(new PaymentsYandex());
+			builder.AddPayments(payments);
 
 			yield return Cloud.Initialize();
 			builder.AddStorage(new StorageYandex());
@@ -37,7 +44,20 @@ namespace CarrotHood.PlatformGateway.Yandex
 		public IPayments.Product[] Products { get; }
 		public bool isSupported { get; } = true;
 
-		public string CurrencyName => Billing.CatalogProducts[0].priceCurrencyCode;
+		public IEnumerator Init()
+		{
+			if(Billing.CatalogProducts == null || Billing.CatalogProducts.Length == 0)
+				yield break;
+
+			CurrencyName = Billing.CatalogProducts[0].priceCurrencyCode;
+			yield return Utils.DownloadSprite(Billing.CatalogProducts[0].priceCurrencyPicture, tex =>
+			{
+				CurrencySprite = Utils.TextureToSprite(tex);
+			});
+		}
+
+		public string CurrencyName { get; private set; }
+		public Sprite CurrencySprite { get; private set; }
 
 		public void ConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null)
 		{

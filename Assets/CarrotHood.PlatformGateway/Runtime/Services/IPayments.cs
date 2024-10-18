@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace CarrotHood.PlatformGateway
 {
@@ -16,6 +17,7 @@ namespace CarrotHood.PlatformGateway
 		Product[] Products { get; }
 		
 		string CurrencyName { get; }
+		Sprite CurrencySprite { get; }
 
 		bool isSupported { get; }
 
