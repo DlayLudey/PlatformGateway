@@ -14,11 +14,6 @@ namespace CarrotHood.PlatformGateway.Ok
 		public override PlatformType Type => PlatformType.OK;
 		public override string Language => "ru";
 
-		public override bool CheckRelevant()
-		{
-			return true;
-		}
-
 		public override IEnumerator Init(PlatformBuilder builder)
 		{
 			yield return OkSdk.Initialize();

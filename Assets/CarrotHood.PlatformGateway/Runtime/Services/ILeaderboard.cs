@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace InstantGamesBridge.Modules.Leaderboard
+namespace CarrotHood.PlatformGateway
 {
 	public interface ILeaderboard
 	{

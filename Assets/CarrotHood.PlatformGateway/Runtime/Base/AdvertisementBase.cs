@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using CarrotHood.PlatformGateway;
 using UnityEngine;
 
 public abstract class AdvertisementBase

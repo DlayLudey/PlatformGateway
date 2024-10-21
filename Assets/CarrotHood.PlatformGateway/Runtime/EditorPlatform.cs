@@ -10,6 +10,5 @@ namespace CarrotHood.PlatformGateway
 
 		public override PlatformType Type => default;
 		public override string Language => editorLang;
-		public override bool CheckRelevant() => true;
 	}	
 }

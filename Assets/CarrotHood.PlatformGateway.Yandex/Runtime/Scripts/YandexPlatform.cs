@@ -10,12 +10,7 @@ namespace CarrotHood.PlatformGateway.Yandex
 	public partial class YandexPlatform : Platform
 	{
 		public override PlatformType Type => PlatformType.Yandex;
-		public override string Language => Kimicu.YandexGames.YandexGamesSdk.Environment.i18n.lang;
-
-		public override bool CheckRelevant()
-		{
-			return true;
-		}
+		public override string Language => YandexGamesSdk.Environment.i18n.lang;
 
 		public override IEnumerator Init(PlatformBuilder builder)
 		{

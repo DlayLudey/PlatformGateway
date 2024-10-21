@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace InstantGamesBridge.Modules.Player
+namespace CarrotHood.PlatformGateway
 {
 	public interface IPlayer
 	{

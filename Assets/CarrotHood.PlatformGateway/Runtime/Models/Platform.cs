@@ -4,13 +4,14 @@ using UnityEngine;
 
 namespace CarrotHood.PlatformGateway
 {
-	public abstract class Platform : ScriptableObject
-    {
-        public PlatformSettings Settings;
+	public abstract class Platform : ScriptableObject, IPlatform
+	{
+        [SerializeField] private PlatformSettings settings;
+		public PlatformSettings Settings => settings;
         public abstract PlatformType Type { get; }
         public abstract string Language { get; }
-        public abstract bool CheckRelevant();
-        public virtual IEnumerator Init(PlatformBuilder baseDeps)
+
+		public virtual IEnumerator Init(PlatformBuilder baseDeps)
         {
             yield return null;
         }
@@ -40,8 +41,8 @@ namespace CarrotHood.PlatformGateway
 		public bool rewardClicker = false;
 		public bool interClicker = false;
 		public int interstitialCooldown = 60;
-		[Header("Payments")]
-
+		
+        [Header("Payments")]
 		public IPayments.Product[] products;
 	}
 }

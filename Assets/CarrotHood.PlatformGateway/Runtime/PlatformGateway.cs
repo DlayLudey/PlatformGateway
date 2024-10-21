@@ -2,26 +2,42 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using InstantGamesBridge.Modules.Player;
-using InstantGamesBridge.Modules.Leaderboard;
 
 namespace CarrotHood.PlatformGateway
 {
 	public class PlatformGateway : MonoBehaviour
 	{
 		public static PlatformGateway instance;
-		public static AdvertisementBase Advertisement;
-		public static IPayments Payments;
-		public static IStorage Storage;
-		public static ISocial Social;
-		public static IPlayer Player;
-		public static ILeaderboard Leaderboard;
+
+		private static PlatformBuilder _platformBuilder;
+		private static PlatformBuilder PlatformBuilder
+		{
+			get
+			{
+				if (_platformBuilder == null)
+				{ 
+					_platformBuilder = new PlatformBuilder();
+					Debug.LogWarning("Т.к. небыло инициализации установлена платформа по умолчанию!");
+					_platformBuilder.Build();
+				}
+				if (!PlatformBuilder.IsBuilding)
+					throw new System.Exception("Вызов функций платформы до её инициализации!");
+				return _platformBuilder;
+			}
+		}
+
+		public static AdvertisementBase Advertisement => PlatformBuilder.Advertisement;
+		public static IPayments Payments => PlatformBuilder.Payments;
+		public static IStorage Storage => PlatformBuilder.Storage;
+		public static ISocial Social => PlatformBuilder.Social;
+		public static IPlayer Player => PlatformBuilder.Player;
+		public static ILeaderboard Leaderboard => PlatformBuilder.Leaderboard;
+		public static IPlatform currentPlatform => PlatformBuilder.Platform;
 		public static PlatformType PlatformType { get; private set; } = PlatformType.Default;
-		public static Platform currentPlatform;
-		
+
 		[SerializeField] public PlatformType editorPlatformType;
-		[SerializeField] private EditorPlatform editorPlatform;
 		[SerializeField] private List<Platform> platforms;
+
 		protected virtual void Awake()
 		{
 			instance = this;
@@ -35,23 +51,28 @@ namespace CarrotHood.PlatformGateway
 #else
 			PlatformType = PlatformGatewayInternal.PlatformType;
 #endif
-			currentPlatform = platforms.FirstOrDefault(platform => platform.Type == PlatformType);
-			var builder = new PlatformBuilder();
+			var platform = platforms.FirstOrDefault(platform => platform.Type == PlatformType);
 
-			if (currentPlatform == default)
-				currentPlatform = editorPlatform;
-			
-			yield return currentPlatform.Init(builder);
-			
+
+			if (platform.Type == PlatformType.Default && currentPlatform == default)
+			{
+				_platformBuilder = new PlatformBuilder();
+				Debug.LogError($"Платформа не определена использованы настройки по умолчанию!");
+			}
+			else if (currentPlatform == default)
+			{
+				Debug.LogError($"Найстройки для платформы не найдены. Платформа:{PlatformType}");
+				_platformBuilder = new PlatformBuilder();
+			}
+			else
+			{
+				Debug.Log($"Платформа успешна определена. Платформа:{PlatformType}");
+				_platformBuilder = new PlatformBuilder(platform);
+			}
+
 			Debug.Log($"Initializing platform: {PlatformType}");
 			
-			Advertisement = builder.Advertisement ?? new DefaultAdvertisement(0);
-
-			Payments = builder.Purchases ?? new DefaultPayments();
-
-			Storage = builder.Storage ?? new DefaultStorage();
-
-			Social = builder.Social ?? new DefaultSocial();
+			yield return _platformBuilder.Build();
 
 			Debug.Log("Initialize complete!");
 
