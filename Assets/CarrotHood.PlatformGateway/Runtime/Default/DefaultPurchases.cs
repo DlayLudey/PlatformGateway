@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 
 namespace CarrotHood.PlatformGateway
@@ -8,7 +9,8 @@ namespace CarrotHood.PlatformGateway
 		public IPayments.Product[] Products { get; }
 		public bool isSupported => false;
 		
-		public string CurrencyName => "Doubloons";
+		public string CurrencyName => "Dabloons";
+		public Sprite CurrencySprite => Resources.Load<Sprite>("PlatformGateway/CurrencyIcons/Dabloon");
 
 		public void ConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null) { }
 
