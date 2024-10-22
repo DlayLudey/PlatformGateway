@@ -5,15 +5,6 @@ namespace CarrotHood.PlatformGateway
 {
 	public interface IPayments
 	{
-		[Serializable]
-		public struct Product
-		{
-			public string productId;
-			public string name;
-			public string description;
-			public int price;
-		}
-
 		Product[] Products { get; }
 		
 		string CurrencyName { get; }
@@ -24,5 +15,14 @@ namespace CarrotHood.PlatformGateway
 		void ConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null);
 		void GetPurchases(Action<object> onSuccessCallback, Action<string> onErrorCallback = null);
 		void Purchase(string productId, Action<object> onSuccessCallback = null, Action<string> onErrorCallback = null);
+	}
+
+	[Serializable]
+	public struct Product
+	{
+		public string productId;
+		public string name;
+		public string description;
+		public int price;
 	}
 }

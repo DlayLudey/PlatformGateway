@@ -31,8 +31,8 @@ namespace CarrotHood.PlatformGateway.Ok
 	//Здесь используем кастомный пакет
 	public class PaymentsOk : IPayments
 	{
-		public IPayments.Product[] Products { get; }
-		public PaymentsOk(IPayments.Product[] products)
+		public Product[] Products { get; }
+		public PaymentsOk(Product[] products)
 		{
 			Products = products;
 		}
@@ -58,7 +58,7 @@ namespace CarrotHood.PlatformGateway.Ok
 			if (Products.All(x => x.productId != productId))
 				throw new KeyNotFoundException($"There is no product with id: {productId}");
 			
-			IPayments.Product product = Products.FirstOrDefault(x => x.productId == productId);
+			Product product = Products.FirstOrDefault(x => x.productId == productId);
 			
 			Billing.Purchase(
 				product.name, 

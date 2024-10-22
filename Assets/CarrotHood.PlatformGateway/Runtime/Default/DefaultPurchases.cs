@@ -6,7 +6,7 @@ namespace CarrotHood.PlatformGateway
 {
 	public class DefaultPayments : IPayments
 	{
-		public IPayments.Product[] Products { get; }
+		public Product[] Products { get; }
 		public bool isSupported => false;
 		
 		public string CurrencyName => "Dabloons";

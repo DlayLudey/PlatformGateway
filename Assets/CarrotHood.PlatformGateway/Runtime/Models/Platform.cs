@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
-
-
 #if UNITY_EDITOR
 using UnityEditor;
 using System.IO;
@@ -27,19 +25,29 @@ namespace CarrotHood.PlatformGateway
 		[ContextMenu("ImportProduct")]
 		public void ImportProgucts()
 		{
-			var productJson = JsonUtility.ToJson(settings.products);
 			if (!settings.products.Any())
 			{
 				Debug.Log("Сначала необходимо заполнить объект продуктами");
 				return;
 			}
+			var productJson = JsonUtility.ToJson(new ImportProduct(settings.products));
 
 			var path = EditorUtility.SaveFilePanel("Products", "", "product", "json");
-			
+
 			if (string.IsNullOrEmpty(path))
 				return;
 
 			File.WriteAllText(path, productJson);
+		}
+
+		[Serializable]
+		private struct ImportProduct
+		{
+			public Product[] products;
+			public ImportProduct(Product[] products)
+			{
+				this.products = products;
+			}
 		}
 #endif
 	}
@@ -70,6 +78,6 @@ namespace CarrotHood.PlatformGateway
 		public int interstitialCooldown = 60;
 
 		[Header("Payments")]
-		public IPayments.Product[] products;
+		public Product[] products;
 	}
 }
