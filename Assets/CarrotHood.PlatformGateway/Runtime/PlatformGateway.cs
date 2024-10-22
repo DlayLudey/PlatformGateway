@@ -20,7 +20,7 @@ namespace CarrotHood.PlatformGateway
 					Debug.LogWarning("Т.к. небыло инициализации установлена платформа по умолчанию!");
 					_platformBuilder.Build();
 				}
-				if (!PlatformBuilder.IsBuilding)
+				if (!_platformBuilder.IsBuilding)
 					throw new System.Exception("Вызов функций платформы до её инициализации!");
 				return _platformBuilder;
 			}
@@ -54,15 +54,10 @@ namespace CarrotHood.PlatformGateway
 			var platform = platforms.FirstOrDefault(platform => platform.Type == PlatformType);
 
 
-			if (platform.Type == PlatformType.Default && currentPlatform == default)
+			if (platform == default)
 			{
 				_platformBuilder = new PlatformBuilder();
 				Debug.LogError($"Платформа не определена использованы настройки по умолчанию!");
-			}
-			else if (currentPlatform == default)
-			{
-				Debug.LogError($"Найстройки для платформы не найдены. Платформа:{PlatformType}");
-				_platformBuilder = new PlatformBuilder();
 			}
 			else
 			{

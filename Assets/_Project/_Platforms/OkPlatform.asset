@@ -12,14 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c05b8b3fe85ad04b8a724e76a4ccf47, type: 3}
   m_Name: OkPlatform
   m_EditorClassIdentifier: 
-  Settings:
-    StartLevelInter: 0
-    RewardClicker: 0
-    InterClicker: 0
+  settings:
+    startLevelInter: 0
+    rewardClicker: 0
+    interClicker: 0
     interstitialCooldown: 60
-    test: 1
-  products:
-  - productId: bar
-    name: Test product
-    description: 'Desc product '
-    price: 5
+    products:
+    - productId: 0
+      name: Test1
+      description: Desc any
+      price: 3
+    - productId: 1
+      name: Test2
+      description: Desc any
+      price: 4
+    - productId: 2
+      name: Test3
+      description: Desc any
+      price: 5

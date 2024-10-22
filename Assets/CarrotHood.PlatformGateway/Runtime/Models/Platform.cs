@@ -2,30 +2,57 @@
 using System.Collections;
 using UnityEngine;
 
+
+#if UNITY_EDITOR
+using UnityEditor;
+using System.IO;
+using System.Linq;
+#endif
+
 namespace CarrotHood.PlatformGateway
 {
 	public abstract class Platform : ScriptableObject, IPlatform
 	{
-        [SerializeField] private PlatformSettings settings;
+		[SerializeField] private PlatformSettings settings;
 		public PlatformSettings Settings => settings;
-        public abstract PlatformType Type { get; }
-        public abstract string Language { get; }
+		public abstract PlatformType Type { get; }
+		public abstract string Language { get; }
 
 		public virtual IEnumerator Init(PlatformBuilder baseDeps)
-        {
-            yield return null;
-        }
-    }
+		{
+			yield return null;
+		}
 
-    public enum PlatformType
-    {
-        Default,
-        Yandex,
-        Telegram,
-        OK,
-        VK,
-        Playgama,
-        CrazyGames,
+#if UNITY_EDITOR
+		[ContextMenu("ImportProduct")]
+		public void ImportProgucts()
+		{
+			var productJson = JsonUtility.ToJson(settings.products);
+			if (!settings.products.Any())
+			{
+				Debug.Log("Сначала необходимо заполнить объект продуктами");
+				return;
+			}
+
+			var path = EditorUtility.SaveFilePanel("Products", "", "product", "json");
+			
+			if (string.IsNullOrEmpty(path))
+				return;
+
+			File.WriteAllText(path, productJson);
+		}
+#endif
+	}
+
+	public enum PlatformType
+	{
+		Default,
+		Yandex,
+		Telegram,
+		OK,
+		VK,
+		Playgama,
+		CrazyGames,
 		Playdeck,
 		Wortal,
 		GameDistribution,
@@ -33,7 +60,7 @@ namespace CarrotHood.PlatformGateway
 		VKPlay,
 	}
 
-    [Serializable]
+	[Serializable]
 	public partial class PlatformSettings
 	{
 		[Header("Advertisement")]
@@ -41,8 +68,8 @@ namespace CarrotHood.PlatformGateway
 		public bool rewardClicker = false;
 		public bool interClicker = false;
 		public int interstitialCooldown = 60;
-		
-        [Header("Payments")]
+
+		[Header("Payments")]
 		public IPayments.Product[] products;
 	}
 }
