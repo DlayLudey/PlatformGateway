@@ -4,7 +4,7 @@
     "displayName": "Platfrom Gateway Yandex",
     "description": "",
     "dependencies": {
-        "com.blackbox.kimicuyandexgames": "https://github.com/Kitgun1/KimicuYandexGames.git",
-        "com.unity.nuget.newtonsoft-json": "*"
+        "com.unity.nuget.newtonsoft-json": "3.2.1",
+        "com.blackbox.kimicuyandexgames": "https://github.com/DasDaOne/KimicuYandexGames.git#main"
     }
 }
