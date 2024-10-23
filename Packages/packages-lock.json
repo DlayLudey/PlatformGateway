@@ -1,11 +1,11 @@
 {
   "dependencies": {
     "com.blackbox.kimicuyandexgames": {
-      "version": "https://github.com/Kitgun1/KimicuYandexGames.git",
+      "version": "https://github.com/DasDaOne/KimicuYandexGames.git",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "dad587c23b16e3047a0360b89a9a58dbfc8e665f"
+      "hash": "c723985751d663f68509866c2cc129be6ecc39e6"
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
