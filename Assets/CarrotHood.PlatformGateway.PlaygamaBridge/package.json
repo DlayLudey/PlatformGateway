@@ -2,5 +2,12 @@
     "name": "com.carrothood.platformgateway.playgamabridge",
     "version": "0.0.1",
     "displayName": "Platfrom Gateway PlaygamaBridge",
-    "description": ""
+    "description": "",
+    "samples": [
+        {
+            "displayName": "WebGLTemplate",
+            "description": "Contains WebGLTemplate necessary for PlaygamaBridge to work",
+            "path": "Samples~"
+        }
+    ]
 }
