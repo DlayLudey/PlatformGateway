@@ -1,6 +1,6 @@
 {
-    "name": "com.carrothood.platformgateway.InstantGameBridge",
+    "name": "com.carrothood.platformgateway.playgamabridge",
     "version": "0.0.1",
-    "displayName": "Platfrom Gateway InstantGameBridge",
+    "displayName": "Platfrom Gateway PlaygamaBridge",
     "description": ""
 }
