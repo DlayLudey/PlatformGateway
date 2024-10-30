@@ -38,5 +38,5 @@ public abstract class AdvertisementBase
 
 	protected abstract void ShowInterstitialInternal(Action onOpen, Action onClose, Action<string> onError);
 
-	public abstract void ShowRewarded(Action onRewarded, Action<string> onError = null);
+	public abstract void ShowRewarded(Action onRewarded, Action onOpened = null, Action<string> onError = null);
 }

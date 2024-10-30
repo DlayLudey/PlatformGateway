@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Agava.YandexGames;
 using Kimicu.YandexGames;
 using UnityEngine;
 using Billing = Kimicu.YandexGames.Billing;
@@ -85,9 +84,9 @@ namespace CarrotHood.PlatformGateway.Yandex
 			Advertisement.ShowInterstitialAd(onOpen, onClose, onError);
 		}
 
-		public override void ShowRewarded(Action onRewarded, Action<string> onError)
+		public override void ShowRewarded(Action onRewarded, Action onOpened = null, Action<string> onError = null)
 		{
-			Advertisement.ShowVideoAd(onRewardedCallback: onRewarded, onErrorCallback: onError);
+			Advertisement.ShowVideoAd(onOpened, onRewarded, onErrorCallback: onError);
 		}
 	}
 

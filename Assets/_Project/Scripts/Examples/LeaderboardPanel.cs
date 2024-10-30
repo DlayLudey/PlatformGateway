@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using InstantGamesBridge;
 using UnityEngine;
 using UnityEngine.UI;
 
