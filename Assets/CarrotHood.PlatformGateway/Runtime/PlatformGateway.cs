@@ -9,30 +9,15 @@ namespace CarrotHood.PlatformGateway
 	{
 		public static PlatformGateway instance;
 
-		private static PlatformBuilder _platformBuilder;
-		private static PlatformBuilder PlatformBuilder
-		{
-			get
-			{
-				if (_platformBuilder == null)
-				{ 
-					_platformBuilder = new PlatformBuilder();
-					Debug.LogWarning("Т.к. небыло инициализации установлена платформа по умолчанию!");
-					_platformBuilder.Build();
-				}
-				if (!_platformBuilder.IsBuilding)
-					throw new System.Exception("Вызов функций платформы до её инициализации!");
-				return _platformBuilder;
-			}
-		}
+		public static PlatformBuilder PlatformBuilder { get; private set; }
 
-		public static AdvertisementBase Advertisement => PlatformBuilder.Advertisement;
-		public static IPayments Payments => PlatformBuilder.Payments;
-		public static IStorage Storage => PlatformBuilder.Storage;
-		public static ISocial Social => PlatformBuilder.Social;
-		public static IPlayer Player => PlatformBuilder.Player;
-		public static ILeaderboard Leaderboard => PlatformBuilder.Leaderboard;
-		public static IPlatform currentPlatform => PlatformBuilder.Platform;
+		public static AdvertisementBase Advertisement => PlatformBuilder?.Advertisement;
+		public static IPayments Payments => PlatformBuilder?.Payments;
+		public static IStorage Storage => PlatformBuilder?.Storage;
+		public static ISocial Social => PlatformBuilder?.Social;
+		public static IPlayer Player => PlatformBuilder?.Player;
+		public static ILeaderboard Leaderboard => PlatformBuilder?.Leaderboard;
+		public static IPlatform currentPlatform => PlatformBuilder?.Platform;
 		public static PlatformType PlatformType { get; private set; } = PlatformType.Default;
 
 		[SerializeField] public PlatformType editorPlatformType;
@@ -56,18 +41,18 @@ namespace CarrotHood.PlatformGateway
 
 			if (platform == default)
 			{
-				_platformBuilder = new PlatformBuilder();
+				PlatformBuilder = new PlatformBuilder();
 				Debug.LogError($"Платформа не определена использованы настройки по умолчанию!");
 			}
 			else
 			{
 				Debug.Log($"Платформа успешна определена. Платформа:{PlatformType}");
-				_platformBuilder = new PlatformBuilder(platform);
+				PlatformBuilder = new PlatformBuilder(platform);
 			}
 
 			Debug.Log($"Initializing platform: {PlatformType}");
 			
-			yield return _platformBuilder.Build();
+			yield return PlatformBuilder.Build();
 
 			Debug.Log("Initialize complete!");
 
