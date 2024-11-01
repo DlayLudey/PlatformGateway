@@ -1,5 +1,5 @@
 {
-    "name": "CarrotHood.PlatformGateway.PlaygamaBridge ",
+    "name": "CarrotHood.PlatformGateway.PlaygamaBridge",
     "rootNamespace": "",
     "references": [
         "GUID:6846cd7a62b50324eaa5962aa09034b0",

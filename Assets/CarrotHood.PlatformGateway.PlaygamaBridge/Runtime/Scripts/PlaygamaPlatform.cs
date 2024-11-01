@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace CarrotHood.PlatformGateway.PlaygamaBridge
 {
+	[CreateAssetMenu(fileName = "PlaygamaPlatform", menuName = "Platforms/Playgama")]
 	public class PlaygamaPlatform : Platform
 	{
 		public override PlatformType Type => PlatformType.Playgama;
