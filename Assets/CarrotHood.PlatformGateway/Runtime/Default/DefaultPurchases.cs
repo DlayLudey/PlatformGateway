@@ -15,9 +15,9 @@ namespace CarrotHood.PlatformGateway
 
 		public void ConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null) { }
 
-		public void GetPurchases(Action<object> onSuccessCallback, Action<string> onErrorCallback = null) { }
+		public void GetPurchases(Action<PurchasedProduct[]> onSuccessCallback, Action<string> onErrorCallback = null) { }
 
-		public void Purchase(string productId, Action<object> onSuccessCallback = null,
+		public void Purchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null,
 			Action<string> onErrorCallback = null)
 		{
 			onSuccessCallback?.Invoke(null);
