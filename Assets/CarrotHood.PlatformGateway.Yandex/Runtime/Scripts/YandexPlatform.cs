@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Kimicu.YandexGames;
 using UnityEngine;
 using Billing = Kimicu.YandexGames.Billing;
@@ -59,14 +60,28 @@ namespace CarrotHood.PlatformGateway.Yandex
 			Billing.ConsumeProduct(productToken, onSuccessCallback, onErrorCallback);
 		}
 
-		public void GetPurchases(Action<object> onSuccessCallback, Action<string> onErrorCallback = null)
+		public void GetPurchases(Action<PurchasedProduct[]> onSuccessCallback, Action<string> onErrorCallback = null)
 		{
-			Billing.GetPurchasedProducts(onSuccessCallback, onErrorCallback);
+			Billing.GetPurchasedProducts(response =>
+			{
+				onSuccessCallback?.Invoke(response.purchasedProducts.Select(x => new PurchasedProduct
+				{
+					productId = x.productID,
+					consummationToken = x.purchaseToken
+				}).ToArray());
+			}, onErrorCallback);
 		}
 
-		public void Purchase(string productId, Action<object> onSuccessCallback = null, Action<string> onErrorCallback = null)
+		public void Purchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null)
 		{
-			Billing.PurchaseProduct(productId, onSuccessCallback, onErrorCallback);
+			Billing.PurchaseProduct(productId, response =>
+			{
+				onSuccessCallback?.Invoke(new PurchasedProduct
+				{
+					productId = response.purchaseData.productID,
+					consummationToken = response.purchaseData.purchaseToken
+				});
+			}, onErrorCallback);
 		}
 	}
 

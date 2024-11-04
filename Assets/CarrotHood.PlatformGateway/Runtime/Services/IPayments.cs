@@ -14,8 +14,8 @@ namespace CarrotHood.PlatformGateway
 		bool consummationSupported { get; }
 
 		void ConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null);
-		void GetPurchases(Action<object> onSuccessCallback, Action<string> onErrorCallback = null);
-		void Purchase(string productId, Action<object> onSuccessCallback = null, Action<string> onErrorCallback = null);
+		void GetPurchases(Action<PurchasedProduct[]> onSuccessCallback, Action<string> onErrorCallback = null);
+		void Purchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null);
 	}
 
 	[Serializable]
@@ -25,5 +25,12 @@ namespace CarrotHood.PlatformGateway
 		public string name;
 		public string description;
 		public int price;
+	}
+
+	[Serializable]
+	public struct PurchasedProduct
+	{
+		public string productId;
+		public string consummationToken;
 	}
 }

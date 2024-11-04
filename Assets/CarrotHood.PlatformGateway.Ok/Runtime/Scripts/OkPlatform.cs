@@ -43,18 +43,17 @@ namespace CarrotHood.PlatformGateway.Ok
 		public string CurrencyName => "OK";
 		public Sprite CurrencySprite => Resources.Load<Sprite>("PlatformGateway/CurrencyIcons/Ok");
 		
-		public void ConsumePurchase(string productToken, Action onSuccessCallback = null,
-			Action<string> onErrorCallback = null)
+		public void ConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null)
 		{
-			onSuccessCallback?.Invoke();
+			throw new NotSupportedException();
 		}
 
-		public void GetPurchases(Action<object> onSuccessCallback, Action<string> onErrorCallback = null)
+		public void GetPurchases(Action<PurchasedProduct[]> onSuccessCallback, Action<string> onErrorCallback = null)
 		{
-			onSuccessCallback?.Invoke(null);
+			throw new NotSupportedException();
 		}
 
-		public void Purchase(string productId, Action<object> onSuccessCallback = null, Action<string> onErrorCallback = null)
+		public void Purchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null)
 		{
 			if (Products.All(x => x.productId != productId))
 				throw new KeyNotFoundException($"There is no product with id: {productId}");

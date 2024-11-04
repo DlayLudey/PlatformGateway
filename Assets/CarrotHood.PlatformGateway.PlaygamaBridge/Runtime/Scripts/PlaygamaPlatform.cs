@@ -57,7 +57,7 @@ namespace CarrotHood.PlatformGateway.PlaygamaBridge
 			});
 		}
 
-		public void GetPurchases(Action<object> onSuccessCallback, Action<string> onErrorCallback = null)
+		public void GetPurchases(Action<PurchasedProduct[]> onSuccessCallback, Action<string> onErrorCallback = null)
 		{
 			Bridge.payments.GetPurchases((success, data) =>
 			{
@@ -67,26 +67,15 @@ namespace CarrotHood.PlatformGateway.PlaygamaBridge
 					return;
 				}
 
-				onSuccessCallback.Invoke(data.Select(purchase =>
+				onSuccessCallback.Invoke(data.Select(purchase => new PurchasedProduct
 				{
-					GetPurchasesCallback parsedPurchase = new GetPurchasesCallback
-					{
-						ProductId = purchase["productID"],
-						PurchaseToken = purchase["purchaseToken"],
-					};
-
-					return parsedPurchase;
+					productId = purchase["productID"],
+					consummationToken = purchase["purchaseToken"],
 				}).ToArray());
 			});
 		}
 
-		public struct GetPurchasesCallback
-		{
-			public string ProductId;
-			public string PurchaseToken;
-		}
-
-		public void Purchase(string productId, Action<object> onSuccessCallback = null, Action<string> onErrorCallback = null)
+		public void Purchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null)
 		{
 			Bridge.payments.Purchase(new Dictionary<string, object>{{"id", productId}}, (success) =>
 			{
@@ -96,7 +85,13 @@ namespace CarrotHood.PlatformGateway.PlaygamaBridge
 					return;
 				}
 
-				onSuccessCallback?.Invoke(null);
+				GetPurchases(purchasedProducts =>
+				{
+					if(purchasedProducts.Any(x => x.productId == productId))
+						onSuccessCallback?.Invoke(purchasedProducts.First(x => x.productId == productId));
+					else
+						onSuccessCallback?.Invoke(null);
+				});
 			});
 		}
 	}
