@@ -36,7 +36,8 @@ namespace CarrotHood.PlatformGateway.Yandex
 	public class PaymentsYandex : IPayments
 	{
 		public Product[] Products { get; }
-		public bool isSupported { get; } = true;
+		public bool paymentsSupported => true;
+		public bool consummationSupported => true;
 
 		public IEnumerator Init()
 		{

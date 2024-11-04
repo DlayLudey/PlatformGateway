@@ -37,7 +37,8 @@ namespace CarrotHood.PlatformGateway.Ok
 			Products = products;
 		}
 
-		public bool isSupported => true;
+		public bool paymentsSupported => true;
+		public bool consummationSupported => false;
 		
 		public string CurrencyName => "OK";
 		public Sprite CurrencySprite => Resources.Load<Sprite>("PlatformGateway/CurrencyIcons/Ok");

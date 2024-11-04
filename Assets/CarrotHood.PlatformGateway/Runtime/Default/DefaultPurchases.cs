@@ -7,8 +7,9 @@ namespace CarrotHood.PlatformGateway
 	public class DefaultPayments : IPayments
 	{
 		public Product[] Products { get; }
-		public bool isSupported => false;
-		
+		public bool paymentsSupported => false;
+		public bool consummationSupported => false;
+
 		public string CurrencyName => "Dabloons";
 		public Sprite CurrencySprite => Resources.Load<Sprite>("PlatformGateway/CurrencyIcons/Dabloon");
 

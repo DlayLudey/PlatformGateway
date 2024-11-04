@@ -39,7 +39,8 @@ namespace CarrotHood.PlatformGateway.PlaygamaBridge
 
 		public string CurrencyName { get; private set; }
 		public Sprite CurrencySprite { get; private set; }
-		public bool isSupported => Bridge.payments.isSupported;
+		public bool paymentsSupported => Bridge.payments.isSupported;
+		public bool consummationSupported => true;
 		
 		
 		public void ConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null)

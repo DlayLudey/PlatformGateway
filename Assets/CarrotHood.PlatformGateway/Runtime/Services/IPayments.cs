@@ -10,7 +10,8 @@ namespace CarrotHood.PlatformGateway
 		string CurrencyName { get; }
 		Sprite CurrencySprite { get; }
 
-		bool isSupported { get; }
+		bool paymentsSupported { get; }
+		bool consummationSupported { get; }
 
 		void ConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null);
 		void GetPurchases(Action<object> onSuccessCallback, Action<string> onErrorCallback = null);

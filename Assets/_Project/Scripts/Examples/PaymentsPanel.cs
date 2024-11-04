@@ -18,7 +18,7 @@ namespace Examples
 		private IPayments Payments => PlatformGateway.Payments;
 		private void Start()
 		{
-			_isSupported.text = $"Is Supported: {Payments.isSupported}";
+			_isSupported.text = $"Is Supported: {Payments.paymentsSupported}";
 			_getCatalogButton.onClick.AddListener(OnGetCatalogButtonClicked);
 			_getPurchasesButton.onClick.AddListener(OnGetPurchasesButtonClicked);
 			_purchaseButton.onClick.AddListener(OnPurchaseButtonClicked);
