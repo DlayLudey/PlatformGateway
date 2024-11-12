@@ -39,7 +39,7 @@ namespace CarrotHood.PlatformGateway
 			}
 
 			Advertisement ??= new DefaultAdvertisement(0);
-			Payments ??= new DefaultPayments();
+			Payments ??= new DefaultPayments(Platform?.Settings);
 			Storage ??= new DefaultStorage();
 			Social ??= new DefaultSocial();
 			Leaderboard ??= new DefaultLeaderboard();

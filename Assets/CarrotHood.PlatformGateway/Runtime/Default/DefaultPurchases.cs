@@ -6,6 +6,11 @@ namespace CarrotHood.PlatformGateway
 {
 	public class DefaultPayments : IPayments
 	{
+		public DefaultPayments(PlatformSettings settings)
+		{
+			Products = settings?.products;
+		}
+		
 		public Product[] Products { get; }
 		public bool paymentsSupported => false;
 		public bool consummationSupported => false;
