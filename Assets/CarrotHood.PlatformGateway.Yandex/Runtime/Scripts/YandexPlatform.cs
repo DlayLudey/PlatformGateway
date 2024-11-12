@@ -22,7 +22,7 @@ namespace CarrotHood.PlatformGateway.Yandex
 
 			var payments = new PaymentsYandex();
 
-			yield return payments.Init();
+			yield return payments.Init(Settings);
 			
 			builder.AddPayments(payments);
 
@@ -36,16 +36,32 @@ namespace CarrotHood.PlatformGateway.Yandex
 
 	public class PaymentsYandex : IPayments
 	{
-		public Product[] Products { get; }
+		public Product[] Products { get; private set; }
 		public bool paymentsSupported => true;
 		public bool consummationSupported => true;
 
-		public IEnumerator Init()
+		public IEnumerator Init(PlatformSettings settings)
 		{
 			if(Billing.CatalogProducts == null || Billing.CatalogProducts.Length == 0)
 				yield break;
 
 			CurrencyName = Billing.CatalogProducts[0].priceCurrencyCode;
+			
+			#if UNITY_EDITOR
+			if(settings.products != null && settings.products.Length > 0)
+			{
+				Debug.LogWarning($"Warning, Products from Platform Settings are only for Editor purposes on this Platform ({nameof(YandexPlatform)})");
+				Products = settings.products;
+			}
+			#endif
+			
+			Products = Billing.CatalogProducts.Select(x => new Product
+			{
+				productId = x.id,
+				name = x.title,
+				description = x.description,
+				price = int.Parse(x.priceValue),
+			}).ToArray();
 			yield return Utils.DownloadSprite(Billing.CatalogProducts[0].priceCurrencyPicture, tex =>
 			{
 				CurrencySprite = Utils.TextureToSprite(tex);
