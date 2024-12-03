@@ -9,8 +9,6 @@ public class Boot : PlatformGateway
 	{
 		yield return Init();
 		
-		Debug.Log(Payments.CurrencySprite.name);
-		
 		SceneManager.LoadScene(1);
 	}
 }

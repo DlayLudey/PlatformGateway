@@ -13,6 +13,7 @@ namespace Examples
 		[SerializeField] private Button _getPurchasesButton;
 		[SerializeField] private Button _purchaseButton;
 		[SerializeField] private Button _consumePurchaseButton;
+		[SerializeField] private Image currencyImage;
 		[SerializeField] private GameObject _overlay;
 
 		private IPayments Payments => PlatformGateway.Payments;
@@ -23,6 +24,7 @@ namespace Examples
 			_getPurchasesButton.onClick.AddListener(OnGetPurchasesButtonClicked);
 			_purchaseButton.onClick.AddListener(OnPurchaseButtonClicked);
 			_consumePurchaseButton.onClick.AddListener(OnConsumePurchaseButtonClicked);
+			currencyImage.sprite = PlatformGateway.Payments.CurrencySprite;
 		}
 
 		private void OnGetCatalogButtonClicked()
