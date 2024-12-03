@@ -4,12 +4,12 @@ using System.Runtime.InteropServices;
 using AOT;
 using UnityEngine;
 
-namespace Qt.OkSdk
+namespace CarrotHood.PlatformGateway.Telegram
 {
-	public static class OkSdk
+	public static class TelegramSdk
 	{
 		[DllImport("__Internal")]
-		private static extern void OkSdkInitialize(Action onSuccess);
+		private static extern void TelegramSdkInitialize(Action onSuccess);
 
 		public static bool IsInitialized { get; private set; }
 
@@ -22,7 +22,7 @@ namespace Qt.OkSdk
 			}
 			
 			#if !UNITY_EDITOR
-			OkSdkInitialize(OnSdkInitialized);
+			TelegramSdkInitialize(OnSdkInitialized);
 			#else
 			OnSdkInitialized();
 			#endif

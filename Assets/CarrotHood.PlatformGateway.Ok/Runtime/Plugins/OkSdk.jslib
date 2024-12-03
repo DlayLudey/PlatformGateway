@@ -246,27 +246,27 @@ const library = {
         okSdk.okSdkInitialize(successCallbackPtr);
     },
     
-    ShowInterstitial: function (openCallbackPtr, closeCallbackPtr, errorCallbackPtr) {
+    OkShowInterstitial: function (openCallbackPtr, closeCallbackPtr, errorCallbackPtr) {
         okSdk.showInterstitial(openCallbackPtr, closeCallbackPtr, errorCallbackPtr);
     },
     
-    ShowRewarded: function (rewardedCallbackPtr, errorCallbackPtr) {
+    OkShowRewarded: function (rewardedCallbackPtr, errorCallbackPtr) {
         okSdk.showRewarded(rewardedCallbackPtr, errorCallbackPtr);
     },
     
-    ShowPayment: function (namePtr, descriptionPtr, codePtr, price, paymentSuccessCallbackPtr, paymentErrorCallbackPtr){
+    OkShowPayment: function (namePtr, descriptionPtr, codePtr, price, paymentSuccessCallbackPtr, paymentErrorCallbackPtr){
         okSdk.showPayment(namePtr, descriptionPtr, codePtr, price, paymentSuccessCallbackPtr, paymentErrorCallbackPtr);
     },
     
-    GetStorage: function(keyPtr, scopePtr, successCallbackPtr, errorCallbackPtr){
+    OkGetStorage: function(keyPtr, scopePtr, successCallbackPtr, errorCallbackPtr){
         okSdk.getStorage(keyPtr, scopePtr, successCallbackPtr, errorCallbackPtr);
     },
     
-    SetStorage: function(keyPtr, valuePtr, successCallbackPtr, errorCallbackPtr){
+    OkSetStorage: function(keyPtr, valuePtr, successCallbackPtr, errorCallbackPtr){
         okSdk.setStorage(keyPtr, valuePtr, successCallbackPtr, errorCallbackPtr);
     },
     
-    ShowInvite: function(textPtr, successCallbackPtr, errorCallbackPtr){
+    OkShowInvite: function(textPtr, successCallbackPtr, errorCallbackPtr){
         okSdk.showInvite(textPtr, successCallbackPtr, errorCallbackPtr);
     }
 }

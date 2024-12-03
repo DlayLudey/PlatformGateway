@@ -9,7 +9,7 @@ namespace Qt.OkSdk
 	{
 #region InterstitialAds
 		[DllImport("__Internal")]
-		private static extern void ShowInterstitial(Action onOpen, Action onClose, Action<string> onError);
+		private static extern void OkShowInterstitial(Action onOpen, Action onClose, Action<string> onError);
 
 		private const int InterstitialInterval = 30;
 		
@@ -35,7 +35,7 @@ namespace Qt.OkSdk
 			s_onInterstitialError = onError;
 			
 			#if !UNITY_EDITOR
-			ShowInterstitial(OnInterstitialOpen, OnInterstitialClosed, OnInterstitialError);
+			OkShowInterstitial(OnInterstitialOpen, OnInterstitialClosed, OnInterstitialError);
 			#else
 			OnInterstitialOpen();
 			OnInterstitialClosed();
@@ -65,7 +65,7 @@ namespace Qt.OkSdk
 
 #region RewardedAds
 		[DllImport("__Internal")]
-		private static extern void ShowRewarded(Action onRewarded, Action<string> onError);
+		private static extern void OkShowRewarded(Action onRewarded, Action<string> onError);
 
 		private static bool s_showingRewardedAd;
 
@@ -83,7 +83,7 @@ namespace Qt.OkSdk
 			s_onRewardedError = onError;
 			
 			#if !UNITY_EDITOR
-			ShowRewarded(OnRewardedShown, OnRewardedError);
+			OkShowRewarded(OnRewardedShown, OnRewardedError);
 			#else
 			OnRewardedShown();
 			#endif

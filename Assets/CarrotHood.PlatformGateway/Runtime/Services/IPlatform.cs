@@ -7,6 +7,6 @@ namespace CarrotHood.PlatformGateway
 		PlatformSettings Settings { get; }
 		PlatformType Type { get; }
 		string Language { get; }
-		IEnumerator Init(PlatformBuilder baseDeps);
+		IEnumerator Init(PlatformBuilder builder);
 	}
 }

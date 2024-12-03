@@ -17,7 +17,7 @@ namespace Qt.OkSdk
 
 #region GetStorage
         [DllImport("__Internal")]
-        private static extern void GetStorage(string key, string scope, Action<string> onSuccess, Action<string> onError);
+        private static extern void OkGetStorage(string key, string scope, Action<string> onSuccess, Action<string> onError);
 
         private static Action<string> s_onGetStorageSuccess;
         private static Action<string> s_onGetStorageError;
@@ -28,7 +28,7 @@ namespace Qt.OkSdk
             s_onGetStorageError = onError;
 
             #if !UNITY_EDITOR
-            GetStorage(key, scope.ToString(), OnGetStorageSuccess, OnGetStorageError);
+            OkGetStorage(key, scope.ToString(), OnGetStorageSuccess, OnGetStorageError);
             #else
             OnGetStorageSuccess(PlayerPrefs.GetString(key));
             #endif
@@ -48,7 +48,7 @@ namespace Qt.OkSdk
 
 #region SetStorage
         [DllImport("__Internal")]
-        private static extern void SetStorage(string key, string value, Action onSuccess, Action<string> onError);
+        private static extern void OkSetStorage(string key, string value, Action onSuccess, Action<string> onError);
 
         private static Action s_onSetStorageSuccess;
         private static Action<string> s_onSetStorageError;
@@ -59,7 +59,7 @@ namespace Qt.OkSdk
             s_onSetStorageError = onError;
 
             #if !UNITY_EDITOR
-            SetStorage(key, value, OnSetStorageSuccess, OnSetStorageError);
+            OkSetStorage(key, value, OnSetStorageSuccess, OnSetStorageError);
             #else
             PlayerPrefs.SetString(key, value);
             OnSetStorageSuccess();

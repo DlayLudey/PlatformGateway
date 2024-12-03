@@ -12,8 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 424713de57aaa4540a01d2aa6bf5558a, type: 3}
   m_Name: TelegramPlatform
   m_EditorClassIdentifier: 
-  Settings:
-    StartLevelInter: 0
-    RewardClicker: 0
-    InterClicker: 0
-    test: 0
+  settings:
+    startLevelInter: 0
+    rewardClicker: 0
+    interClicker: 0
+    interstitialCooldown: 60
+    products:
+    - productId: 0
+      name: Test1
+      description: Desc any
+      price: 3
+    - productId: 1
+      name: Test2
+      description: Desc any
+      price: 4
+    - productId: 2
+      name: Test3
+      description: Desc any
+      price: 5

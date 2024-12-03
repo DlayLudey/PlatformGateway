@@ -16,6 +16,8 @@ namespace CarrotHood.PlatformGateway.PlaygamaBridge
 
 		public override IEnumerator Init(PlatformBuilder builder)
 		{
+			yield return base.Init(builder);
+
 			builder.AddPayments(new PaymentsPlaygama(Settings.products));
 			
 			builder.AddAdvertisement(new AdvertisementPlaygama(Settings.interstitialCooldown));

@@ -16,18 +16,18 @@ namespace CarrotHood.PlatformGateway
 		public abstract PlatformType Type { get; }
 		public abstract string Language { get; }
 
-		public virtual IEnumerator Init(PlatformBuilder baseDeps)
+		public virtual IEnumerator Init(PlatformBuilder builder)
 		{
 			yield return null;
 		}
 
 #if UNITY_EDITOR
-		[ContextMenu("ImportProduct")]
-		public void ImportProgucts()
+		[ContextMenu("Export Products JSON")]
+		public void ExportProductsJson()
 		{
 			if (!settings.products.Any())
 			{
-				Debug.Log("Сначала необходимо заполнить объект продуктами");
+				Debug.Log("Products are empty");
 				return;
 			}
 			var productJson = JsonUtility.ToJson(new ImportProduct(settings.products));

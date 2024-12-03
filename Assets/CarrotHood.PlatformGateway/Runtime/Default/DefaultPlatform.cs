@@ -2,17 +2,15 @@ using System.Collections;
 
 namespace CarrotHood.PlatformGateway
 {
-	public class DefaultPlatform : IPlatform
+	public class DefaultPlatform : Platform
 	{
-		public PlatformSettings Settings => new PlatformSettings();
+		public override PlatformType Type => PlatformType.Default;
 
-		public PlatformType Type => PlatformType.Default;
+		public override string Language => "ru";
 
-		public string Language => "ru";
-
-		public IEnumerator Init(PlatformBuilder baseDeps)
+		public override IEnumerator Init(PlatformBuilder builder)
 		{
-			yield return baseDeps;
+			yield return base.Init(builder);
 		}
 	}
 }

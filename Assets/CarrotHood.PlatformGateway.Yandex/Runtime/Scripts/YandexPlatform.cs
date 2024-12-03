@@ -17,6 +17,8 @@ namespace CarrotHood.PlatformGateway.Yandex
 
 		public override IEnumerator Init(PlatformBuilder builder)
 		{
+			yield return base.Init(builder);
+
 			yield return YandexGamesSdk.Initialize();
 			yield return Billing.Initialize();
 

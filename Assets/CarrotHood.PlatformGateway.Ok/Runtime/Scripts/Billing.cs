@@ -7,7 +7,7 @@ namespace Qt.OkSdk
 	public static class Billing
 	{
 		[DllImport("__Internal")]
-		private static extern void ShowPayment(string name, string description, string code, int price,
+		private static extern void OkShowPayment(string name, string description, string code, int price,
 			Action onSuccess, Action<string> onError);
 
 		private static Action s_onPaymentSuccess;
@@ -20,7 +20,7 @@ namespace Qt.OkSdk
 			s_onPaymentError = onError;
 
 			#if !UNITY_EDITOR
-			ShowPayment(name, description, code, price, OnPaymentSuccess, OnPaymentError);
+			OkShowPayment(name, description, code, price, OnPaymentSuccess, OnPaymentError);
 			#else
 			OnPaymentSuccess();
 			#endif

@@ -16,6 +16,8 @@ namespace CarrotHood.PlatformGateway.Ok
 
 		public override IEnumerator Init(PlatformBuilder builder)
 		{
+			yield return base.Init(builder);
+
 			yield return OkSdk.Initialize();
 
 			builder.AddPayments(new PaymentsOk(Settings.products));
@@ -32,17 +34,17 @@ namespace CarrotHood.PlatformGateway.Ok
 	public class PaymentsOk : IPayments
 	{
 		public Product[] Products { get; }
+		public bool paymentsSupported => true;
+		public bool consummationSupported => false;
+		public string CurrencyName => "OK";
+		public Sprite CurrencySprite { get; }
+		
 		public PaymentsOk(Product[] products)
 		{
 			Products = products;
+			CurrencySprite = Resources.Load<Sprite>("PlatformGateway/CurrencyIcons/Ok");
 		}
 
-		public bool paymentsSupported => true;
-		public bool consummationSupported => false;
-		
-		public string CurrencyName => "OK";
-		public Sprite CurrencySprite => Resources.Load<Sprite>("PlatformGateway/CurrencyIcons/Ok");
-		
 		public void ConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null)
 		{
 			throw new NotSupportedException();
