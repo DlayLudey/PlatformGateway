@@ -1,0 +1,16 @@
+{
+    "name": "CarrotHood.PlatformGateway.Telegram",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6846cd7a62b50324eaa5962aa09034b0"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
