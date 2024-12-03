@@ -14,7 +14,6 @@ const library = {
         },
         
         windowMessageCallback: function (event) {
-            console.log(event);
             const message = event.data;
             const payload = message.payload;
 
@@ -72,8 +71,6 @@ const library = {
             tgSdk.rewardedClosedCallbackPtr = rewardedClosedCallbackPtr;
             tgSdk.rewardedErrorCallbackPtr = rewardedErrorCallbackPtr;
             
-            console.log(2);
-
             parent.postMessage({type: "showAd"}, '*');
         },
       
@@ -120,7 +117,6 @@ const library = {
     },
 
     TgShowRewarded: function (rewardedSuccessCallbackPtr, rewardedClosedCallbackPtr, rewardedErrorCallbackPtr) {
-        console.log(1);
         tgSdk.showRewarded(rewardedSuccessCallbackPtr, rewardedClosedCallbackPtr, rewardedErrorCallbackPtr);
     },
     
