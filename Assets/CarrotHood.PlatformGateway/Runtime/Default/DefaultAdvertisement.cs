@@ -19,10 +19,11 @@ namespace CarrotHood.PlatformGateway
 			onClose?.Invoke();
 		}
 
-		public override void ShowRewarded(Action onRewarded, Action onOpen = null, Action<string> onError = null)
+		public override void ShowRewarded(Action onRewarded, Action onOpen = null, Action onClose = null, Action<string> onError = null)
 		{
 			onOpen?.Invoke();
 			onRewarded?.Invoke();
+			onClose?.Invoke();
 		}
 	}
 }

@@ -131,6 +131,7 @@ namespace CarrotHood.PlatformGateway.PlaygamaBridge
 
 		private Action onRewardedOpened;
 		private Action onRewardedCompleted;
+		private Action onRewardedClosed;
 		private Action<string> onRewardedError;
 		private void OnRewardedStateChanged(RewardedState rewardedState)
 		{
@@ -145,6 +146,7 @@ namespace CarrotHood.PlatformGateway.PlaygamaBridge
 					onRewardedCompleted?.Invoke();
 					break;
 				case RewardedState.Closed:
+					onRewardedClosed?.Invoke();
 					break;
 				case RewardedState.Failed:
 					onRewardedError?.Invoke("Failed to show rewarded");
@@ -178,12 +180,13 @@ namespace CarrotHood.PlatformGateway.PlaygamaBridge
 			Bridge.advertisement.ShowInterstitial();
 		}
 
-		public override void ShowRewarded(Action onRewarded, Action onOpened = null, Action<string> onError = null)
+		public override void ShowRewarded(Action onRewarded, Action onOpened = null, Action onClosed = null, Action<string> onError = null)
 		{
-			onRewardedCompleted = onRewarded;
 			onRewardedOpened = onOpened;
+			onRewardedCompleted = onRewarded;
+			onRewardedClosed = onClosed;
 			onRewardedError = onError;
-			
+
 			Bridge.advertisement.ShowRewarded();
 		}
 	}
