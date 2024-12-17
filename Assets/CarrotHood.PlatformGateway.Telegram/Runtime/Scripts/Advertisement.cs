@@ -8,7 +8,7 @@ namespace CarrotHood.PlatformGateway.Telegram
     {
 #region Interstitial
         [DllImport("__Internal")]
-        private static extern void TgShowInterstitial(Action openCallback, Action closeCallback, Action errorCallback);
+        private static extern void TgShowInterstitial(Action openCallback, Action closeCallback, Action<string> errorCallback);
 
         private static Action interstitialOpenCallback;
         private static Action interstitialCloseCallback;
@@ -38,15 +38,15 @@ namespace CarrotHood.PlatformGateway.Telegram
             interstitialCloseCallback?.Invoke();
         }
         
-        [MonoPInvokeCallback(typeof(Action))]
-        private static void OnInterstitialError()
+        [MonoPInvokeCallback(typeof(Action<string>))]
+        private static void OnInterstitialError(string error)
         {
-            interstitialErrorCallback?.Invoke("Error showing interstitial ad");
+            interstitialErrorCallback?.Invoke(error);
         }
 #endregion
 #region Rewarded
         [DllImport("__Internal")]
-        private static extern void TgShowRewarded(Action openCallback, Action rewardedCallback, Action closeCallback, Action errorCallback);
+        private static extern void TgShowRewarded(Action openCallback, Action rewardedCallback, Action closeCallback, Action<string> errorCallback);
 
         private static Action rewardedOpenCallback;
         private static Action rewardedSuccessCallback;
@@ -83,10 +83,10 @@ namespace CarrotHood.PlatformGateway.Telegram
             rewardedCloseCallback?.Invoke();
         }
         
-        [MonoPInvokeCallback(typeof(Action))]
-        private static void OnRewardedError()
+        [MonoPInvokeCallback(typeof(Action<string>))]
+        private static void OnRewardedError(string error)
         {
-            rewardedErrorCallback?.Invoke("Error showing rewarded ad");
+            rewardedErrorCallback?.Invoke(error);
         }
 #endregion
     }

@@ -57,25 +57,44 @@ const library = {
         },
 
         showInterstitial: function (openCallbackPtr, closeCallbackPtr, errorCallbackPtr) {
-            tgSdk.adsgramApi.ShowInterstitial(() => {
-                {{{ makeDynCall('v', 'openCallbackPtr') }}}();
-            }, () => {
-                {{{ makeDynCall('v', 'closeCallbackPtr') }}}();
-            }, () => {
-                {{{ makeDynCall('v', 'errorCallbackPtr') }}}();
-            });
+            try{
+                tgSdk.adsgramApi.ShowInterstitial(() => {
+                    {{{ makeDynCall('v', 'openCallbackPtr') }}}();
+                }, () => {
+                    {{{ makeDynCall('v', 'closeCallbackPtr') }}}();
+                }, () => {
+                    const buffer = tgSdk.allocateUnmanagedString("Error showing rewarded ad");
+                    {{{ makeDynCall('vi', 'errorCallbackPtr') }}}(buffer);
+                    _free(buffer);
+                });   
+            }
+            catch (e){
+                const buffer = tgSdk.allocateUnmanagedString(e);
+                {{{ makeDynCall('vi', 'errorCallbackPtr') }}}(buffer);
+                _free(buffer);
+            }
         },
 
-        showRewarded: function(rewardedOpenCallbackPtr, rewardedSuccessCallbackPtr, rewardedClosedCallbackPtr, rewardedErrorCallbackPtr) {
-            tgSdk.adsgramApi.ShowRewarded(() => {
-                {{{ makeDynCall('v', 'rewardedOpenCallbackPtr') }}}();
-            }, () => {
-                {{{ makeDynCall('v', 'rewardedSuccessCallbackPtr') }}}();
-            }, () => {
-                {{{ makeDynCall('v', 'rewardedClosedCallbackPtr') }}}();
-            }, () => {
-                {{{ makeDynCall('v', 'rewardedErrorCallbackPtr') }}}();
-            });
+        showRewarded: function(openCallbackPtr, rewardedCallbackPtr, closedCallbackPtr, errorCallbackPtr) {
+            try{
+                tgSdk.adsgramApi.ShowRewarded(() => {
+                    {{{ makeDynCall('v', 'openCallbackPtr') }}}();
+                }, () => {
+                    {{{ makeDynCall('v', 'rewardedCallbackPtr') }}}();
+                }, () => {
+                    {{{ makeDynCall('v', 'closedCallbackPtr') }}}();
+                }, () => {
+                    const buffer = tgSdk.allocateUnmanagedString("Error showing rewarded ad");
+                    {{{ makeDynCall('vi', 'errorCallbackPtr') }}}(buffer);
+                    _free(buffer);
+                });    
+            }
+            catch (e){
+                const buffer = tgSdk.allocateUnmanagedString(e);
+                {{{ makeDynCall('vi', 'errorCallbackPtr') }}}(buffer);
+                _free(buffer);
+            }
+            
         },
 
         // Utils
@@ -97,8 +116,8 @@ const library = {
         tgSdk.showInterstitial(openCallbackPtr, closeCallbackPtr, errorCallbackPtr);
     },
 
-    TgShowRewarded: function (rewardedSuccessCallbackPtr, rewardedClosedCallbackPtr, rewardedErrorCallbackPtr) {
-        tgSdk.showRewarded(rewardedSuccessCallbackPtr, rewardedClosedCallbackPtr, rewardedErrorCallbackPtr);
+    TgShowRewarded: function (openCallbackPtr, rewardedCallbackPtr, closedCallbackPtr, errorCallbackPtr) {
+        tgSdk.showRewarded(openCallbackPtr, rewardedCallbackPtr, closedCallbackPtr, errorCallbackPtr);
     },
 
     TgSaveCloudData: function(keyPtr, valuePtr, successCallbackPtr, errorCallbackPtr){
