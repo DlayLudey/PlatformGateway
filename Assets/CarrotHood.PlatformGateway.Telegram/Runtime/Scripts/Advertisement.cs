@@ -8,7 +8,7 @@ namespace CarrotHood.PlatformGateway.Telegram
     {
 #region Interstitial
         [DllImport("__Internal")]
-        private static extern void TgShowInterstitial(Action openCallback, Action closeCallback, Action<string> errorCallback);
+        private static extern void TgShowInterstitial(Action openCallback, Action closeCallback, Action errorCallback);
 
         private static Action interstitialOpenCallback;
         private static Action interstitialCloseCallback;
@@ -38,29 +38,37 @@ namespace CarrotHood.PlatformGateway.Telegram
             interstitialCloseCallback?.Invoke();
         }
         
-        [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void OnInterstitialError(string error)
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void OnInterstitialError()
         {
-            interstitialErrorCallback?.Invoke(error);
+            interstitialErrorCallback?.Invoke("Error showing interstitial ad");
         }
 #endregion
 #region Rewarded
         [DllImport("__Internal")]
-        private static extern void TgShowRewarded(Action rewardedCallback, Action closeCallback, Action<string> errorCallback);
+        private static extern void TgShowRewarded(Action openCallback, Action rewardedCallback, Action closeCallback, Action errorCallback);
 
+        private static Action rewardedOpenCallback;
         private static Action rewardedSuccessCallback;
         private static Action rewardedCloseCallback;
         private static Action<string> rewardedErrorCallback;
-        public static void ShowRewardedAd(Action rewardedCallback, Action closeCallback = null, Action<string> errorCallback = null)
+        public static void ShowRewardedAd(Action openCallback, Action rewardedCallback, Action closeCallback = null, Action<string> errorCallback = null)
         {
+            rewardedOpenCallback = openCallback;
             rewardedSuccessCallback = rewardedCallback;
             rewardedCloseCallback = closeCallback;
             rewardedErrorCallback = errorCallback;
             #if !UNITY_EDITOR
-            TgShowRewarded(OnRewardedSuccess, OnRewardedClose, OnRewardedError);
+            TgShowRewarded(OnRewardedOpen, OnRewardedSuccess, OnRewardedClose, OnRewardedError);
             #else
             OnRewardedSuccess();
             #endif
+        }
+        
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void OnRewardedOpen()
+        {
+            rewardedOpenCallback?.Invoke();
         }
         
         [MonoPInvokeCallback(typeof(Action))]
@@ -75,10 +83,10 @@ namespace CarrotHood.PlatformGateway.Telegram
             rewardedCloseCallback?.Invoke();
         }
         
-        [MonoPInvokeCallback(typeof(Action<string>))]
-        private static void OnRewardedError(string error)
+        [MonoPInvokeCallback(typeof(Action))]
+        private static void OnRewardedError()
         {
-            rewardedErrorCallback?.Invoke(error);
+            rewardedErrorCallback?.Invoke("Error showing rewarded ad");
         }
 #endregion
     }

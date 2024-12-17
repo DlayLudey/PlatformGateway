@@ -1,6 +1,8 @@
 const library = {
     $tgSdk: {
         isInitializeCalled: false,
+        telegramApi: undefined,
+        adsgramApi: undefined,
 
         telegramSdkInitialize: function (successCallbackPtr) {
             if(tgSdk.isInitializeCalled)
@@ -8,95 +10,74 @@ const library = {
             
             tgSdk.isInitializeCalled = true;
 
-            window.addEventListener('message', tgSdk.windowMessageCallback);
+            const scriptSrc = 'https://telegram.carrothood.ru/iframe-api.js';
 
-            dynCall('v', successCallbackPtr, []);
+            const sdkScript = document.createElement('script');
+            sdkScript.src = scriptSrc;
+            sdkScript.onload = () => {
+                tgSdk.telegramApi = window.IframeTelegramApi;
+                tgSdk.adsgramApi = window.IframeAdsGramApi;
+
+                {{{ makeDynCall('v', 'successCallbackPtr') }}}();
+            };
+            sdkScript.onerror = () => {
+                console.error('Failed to load SDK script.');
+            };
+            document.head.appendChild(sdkScript);
         },
-        
-        windowMessageCallback: function (event) {
-            const message = event.data;
-            const payload = message.payload;
 
-            switch (message.type) {
-                case "user-info":
-                    dynCall('vi', tgSdk.getUserInfoSuccessCallbackPtr, [tgSdk.allocateUnmanagedString(JSON.stringify(payload.user))]);
-
-                    break;
-                case "cloudStorageSaved":
-                    break;
-                case "cloudStorageData":
-                    break;
-                case "adStatus":
-                    switch (payload.status){
-                        case "watched":
-                            dynCall('v', tgSdk.rewardedSuccessCallbackPtr, []);
-                            break;
-                        case "not_watched":
-                            dynCall('v', tgSdk.rewardedClosedCallbackPtr, []);
-                            break;
-                        case "error":
-                            dynCall('vi', tgSdk.rewardedErrorCallbackPtr, [tgSdk.allocateUnmanagedString(JSON.stringify(payload.message))]);
-                            break;
-                    }
-            }
-        },
-        
-        //Player Account
-        getUserInfoSuccessCallbackPtr: undefined,
         getUserInfo: function (successCallbackPtr) {
-            tgSdk.getUserInfoSuccessCallbackPtr = successCallbackPtr;
-            
-            parent.postMessage({type: "getUserInfo"}, '*');
+            tgSdk.telegramApi.GetUserData((data) => {
+                const buffer = tgSdk.allocateUnmanagedString(JSON.stringify(data));
+                {{{ makeDynCall('vi', 'successCallbackPtr') }}}(buffer);
+                _free(buffer);
+            });
         },
-        
-        // Advertisment
-        interstitialOpenCallbackPtr: undefined,
-        interstitialClosedCallbackPtr: undefined,
-        interstitialErrorCallbackPtr: undefined,
+
+        saveCloudData: function(key, value, successCallbackPtr, errorCallbackPtr){
+            tgSdk.telegramApi.SaveCloudData(key, value, () => {
+                {{{ makeDynCall('v', 'successCallbackPtr') }}}();
+            }, (error) => {
+                const buffer = tgSdk.allocateUnmanagedString(JSON.stringify(error));
+                {{{ makeDynCall('vi', 'errorCallbackPtr') }}}(buffer);
+                _free(buffer);
+            });
+        },
+
+        getCloudData: function(key, successCallbackPtr, errorCallbackPtr){
+            tgSdk.telegramApi.GetCloudData(key, (data) => {
+                const buffer = tgSdk.allocateUnmanagedString(data);
+                {{{ makeDynCall('vi', 'successCallbackPtr') }}}(buffer);
+                _free(buffer);
+            }, (error) => {
+                const buffer = tgSdk.allocateUnmanagedString(JSON.stringify(error));
+                {{{ makeDynCall('vi', 'errorCallbackPtr') }}}(buffer);
+                _free(buffer);
+            });
+        },
+
         showInterstitial: function (openCallbackPtr, closeCallbackPtr, errorCallbackPtr) {
-            tgSdk.interstitialOpenCallbackPtr = openCallbackPtr;
-            tgSdk.interstitialClosedCallbackPtr = closeCallbackPtr;
-            tgSdk.interstitialErrorCallbackPtr = errorCallbackPtr;
-
-            console.log("Interstitials are not invented yet, sadge");
-            dynCall('vi', errorCallbackPtr, [tgSdk.allocateUnmanagedString("Interstitials are not invented, what can do")]);
-            // parent.postMessage({type: "showAd"}, '*');
+            tgSdk.adsgramApi.ShowInterstitial(() => {
+                {{{ makeDynCall('v', 'openCallbackPtr') }}}();
+            }, () => {
+                {{{ makeDynCall('v', 'closeCallbackPtr') }}}();
+            }, () => {
+                {{{ makeDynCall('v', 'errorCallbackPtr') }}}();
+            });
         },
 
-        rewardedSuccessCallbackPtr: undefined,
-        rewardedClosedCallbackPtr: undefined,
-        rewardedErrorCallbackPtr: undefined,
-        showRewarded: function(rewardedSuccessCallbackPtr, rewardedClosedCallbackPtr, rewardedErrorCallbackPtr) {
-            tgSdk.rewardedSuccessCallbackPtr = rewardedSuccessCallbackPtr;
-            tgSdk.rewardedClosedCallbackPtr = rewardedClosedCallbackPtr;
-            tgSdk.rewardedErrorCallbackPtr = rewardedErrorCallbackPtr;
-            
-            parent.postMessage({type: "showAd"}, '*');
+        showRewarded: function(rewardedOpenCallbackPtr, rewardedSuccessCallbackPtr, rewardedClosedCallbackPtr, rewardedErrorCallbackPtr) {
+            tgSdk.adsgramApi.ShowRewarded(() => {
+                {{{ makeDynCall('v', 'rewardedOpenCallbackPtr') }}}();
+            }, () => {
+                {{{ makeDynCall('v', 'rewardedSuccessCallbackPtr') }}}();
+            }, () => {
+                {{{ makeDynCall('v', 'rewardedClosedCallbackPtr') }}}();
+            }, () => {
+                {{{ makeDynCall('v', 'rewardedErrorCallbackPtr') }}}();
+            });
         },
-      
-        // Storage
-        getStorageSuccessCallbackPtr: undefined,
-        getStorageErrorCallbackPtr: undefined,
-        getStorage: function(keyPtr, successCallbackPtr, errorCallbackPtr){
-            tgSdk.getStorageSuccessCallbackPtr = successCallbackPtr;
-            tgSdk.getStorageErrorCallbackPtr = errorCallbackPtr;
 
-            console.log("Getting storage, but data is not settable so im gonna return error :p");
-            dynCall('vi', errorCallbackPtr, [tgSdk.allocateUnmanagedString("Data is not settable, what can do")]);
-            // parent.postMessage({type: "getFromCloudStorage"}, '*');
-        },
-        
-        setStorageSuccessCallbackPtr: undefined,
-        setStorageErrorCallbackPtr: undefined,
-        setStorage: function(keyPtr, valuePtr, successCallbackPtr, errorCallbackPtr){
-            tgSdk.setStorageSuccessCallbackPtr = successCallbackPtr;
-            tgSdk.setStorageErrorCallbackPtr = errorCallbackPtr;
-
-            console.log("Setting storage, but data is not settable so im gonna return error :p");
-            dynCall('vi', errorCallbackPtr, [tgSdk.allocateUnmanagedString("Data is not settable, what can do")]);
-            // parent.postMessage({type: "saveToCloudStorage"}, '*');
-        },
-               
         // Utils
 
         allocateUnmanagedString: function (string) {
@@ -119,13 +100,13 @@ const library = {
     TgShowRewarded: function (rewardedSuccessCallbackPtr, rewardedClosedCallbackPtr, rewardedErrorCallbackPtr) {
         tgSdk.showRewarded(rewardedSuccessCallbackPtr, rewardedClosedCallbackPtr, rewardedErrorCallbackPtr);
     },
-    
-    TgGetStorage: function(keyPtr, successCallbackPtr, errorCallbackPtr){
-        tgSdk.getStorage(keyPtr, successCallbackPtr, errorCallbackPtr);
+
+    TgSaveCloudData: function(keyPtr, valuePtr, successCallbackPtr, errorCallbackPtr){
+        tgSdk.saveCloudData(UTF8ToString(keyPtr), UTF8ToString(valuePtr), successCallbackPtr, errorCallbackPtr);
     },
-    
-    TgSetStorage: function(keyPtr, valuePtr, successCallbackPtr, errorCallbackPtr){
-        tgSdk.setStorage(keyPtr, valuePtr, successCallbackPtr, errorCallbackPtr);
+
+    TgGetCloudData: function(keyPtr, successCallbackPtr, errorCallbackPtr){
+        tgSdk.getCloudData(UTF8ToString(keyPtr), successCallbackPtr, errorCallbackPtr);
     },
 
     TgGetUserInfo: function(successCallbackPtr){

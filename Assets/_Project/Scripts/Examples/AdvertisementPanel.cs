@@ -45,15 +45,6 @@ namespace Examples
         private void OnShowBannerButtonClicked()
         {
             var options = new Dictionary<string, object>();
-
-            //switch (Bridge.platform.id)
-            //{
-            //    case "vk":
-            //        options.Add("position", "bottom");
-            //        options.Add("layoutType", "resize");
-            //        options.Add("canClose", false);
-            //        break;
-            //}
             
             Ads.ShowBanner(options);
         }
@@ -65,12 +56,27 @@ namespace Examples
 
         private void OnShowInterstitialButtonClicked()
         {
-            Ads.ShowInterstitial();
+            Ads.ShowInterstitial(() =>
+            {
+                Debug.Log("Open");
+            }, () =>
+            {
+                Debug.Log("Closed");
+            }, Debug.LogError);
         }
 
         private void OnShowRewardedButtonClicked()
         {
-            Ads.ShowRewarded(()=>Debug.Log("Rewardet"));
+            Ads.ShowRewarded(() =>
+            {
+                Debug.Log("Rewarded");
+            }, () =>
+            {
+                Debug.Log("Open");
+            }, () =>
+            {
+                Debug.Log("Closed");
+            }, Debug.LogError);
         }
 
         private void OnCheckAdBlockButtonClicked()

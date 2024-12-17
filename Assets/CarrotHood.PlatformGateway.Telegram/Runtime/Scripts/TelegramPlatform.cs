@@ -9,14 +9,14 @@ namespace CarrotHood.PlatformGateway.Telegram
     public class TelegramPlatform : Platform
     {
         public override PlatformType Type => PlatformType.Telegram;
-        public override string Language => PlayerAccount.UserInfo == null ? "ru" : PlayerAccount.UserInfo.languageCode;
+        public override string Language => PlayerAccount.userInfo == null ? "ru" : PlayerAccount.userInfo.languageCode;
 
         public override IEnumerator Init(PlatformBuilder builder)
         {
             yield return base.Init(builder);
 
             yield return TelegramSdk.Initialize();
-            yield return PlayerAccount.GetUserInfo();
+            yield return PlayerAccount.Initialize();
 
             builder.AddAdvertisement(new AdvertisementTelegram(Settings.interstitialCooldown));
             builder.AddStorage(new StorageTelegram());
@@ -44,7 +44,7 @@ namespace CarrotHood.PlatformGateway.Telegram
         public override void ShowRewarded(Action onRewarded, Action onOpened = null, Action onClose = null, Action<string> onError = null)
         {
             onOpened?.Invoke();
-            Advertisement.ShowRewardedAd(onRewarded, onClose, onError);
+            Advertisement.ShowRewardedAd(onOpened, onRewarded, onClose, onError);
         }
     }
 
@@ -52,12 +52,12 @@ namespace CarrotHood.PlatformGateway.Telegram
     {
         public void GetValue(string key, Action<string> onSuccess, Action<string> onError = null)
         {
-            Storage.GetStorageValue(key, onSuccess, onError);
+            Storage.GetCloudData(key, onSuccess, onError);
         }
 
         public void SetValue(string key, string value, Action onSuccess = null, Action<string> onError = null)
         {
-            Storage.SetStorageValue(key, value, onSuccess, onError);
+            Storage.SetCloudData(key, value, onSuccess, onError);
         }
     }
 

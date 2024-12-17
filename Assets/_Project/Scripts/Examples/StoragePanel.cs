@@ -27,14 +27,8 @@ namespace Examples
 
 		private void Start()
 		{
-			//_isLocalStorageSupportedText.text = $"Is Local Storage Supported: { Storage.IsSupported(StorageType.LocalStorage) }";
-			//_isPlatformInternalSupportedText.text = $"Is Platform Internal Supported: { Storage.IsSupported(StorageType.PlatformInternal) }";
-			//_isLocalStorageAvailableText.text = $"Is Local Storage Available: { Storage.IsAvailable(StorageType.LocalStorage) }";
-			//_isPlatformInternalAvailableText.text = $"Is Platform Internal Available: { Storage.IsAvailable(StorageType.PlatformInternal) }";
-
 			_setStorageDataButton.onClick.AddListener(OnSetStorageDataButtonClicked);
 			_getStorageDataButton.onClick.AddListener(OnGetStorageDataButtonClicked);
-			//_deleteStorageDataButton.onClick.AddListener(OnDeleteStorageDataButtonClicked);
 		}
 
 		private void OnSetStorageDataButtonClicked()
@@ -62,9 +56,7 @@ namespace Examples
 		private void OnGetStorageDataButtonClicked()
 		{
 			_overlay.SetActive(true);
-
-			var keys = new List<string> { _coinsKey, _levelKey };
-
+			
 			Storage.GetValue("save", (x) =>
 			{
 				Debug.Log(x);
@@ -78,18 +70,5 @@ namespace Examples
 				_overlay.SetActive(false);
 			});
 		}
-
-		//private void OnDeleteStorageDataButtonClicked()
-		//{
-		//    _overlay.SetActive(true);
-
-		//    var keys = new List<string> { _coinsKey, _levelKey };
-		//    Storage.Delete(keys, success =>
-		//    {
-		//        _coinsInput.text = string.Empty;
-		//        _levelInput.text = string.Empty;
-		//        _overlay.SetActive(false);
-		//    });
-		//}
 	}
 }

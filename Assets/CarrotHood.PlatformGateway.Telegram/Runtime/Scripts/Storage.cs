@@ -12,25 +12,18 @@ namespace CarrotHood.PlatformGateway.Telegram
     {
 #region SetStorage
         [DllImport("__Internal")]
-        private static extern void TgSetStorage(string key, string value, Action onSuccess, Action<string> onError);
+        private static extern void TgSaveCloudData(string key, string value, Action onSuccess, Action<string> onError);
 
         private static Action onSetStorageSuccess;
         private static Action<string> onSetStorageError;
         
-        public static void SetStorageValue(string key, string value, Action onSuccess, Action<string> onError = null)
+        public static void SetCloudData(string key, string value, Action onSuccess, Action<string> onError = null)
         {
-            if (!TelegramSdk.IsInitialized)
-            {
-                Debug.LogWarning("Sdk is not initialized!");
-                
-                return;
-            }
-
             onSetStorageSuccess = onSuccess;
             onSetStorageError = onError;
             
             #if !UNITY_EDITOR
-            TgSetStorage(key, value, OnSetStorageSuccess, OnSetStorageError);
+            TgSaveCloudData(key, value, OnSetStorageSuccess, OnSetStorageError);
             #else
             PlayerPrefs.SetString(key, value);
             OnSetStorageSuccess();
@@ -52,25 +45,18 @@ namespace CarrotHood.PlatformGateway.Telegram
         
 #region GetStorage
         [DllImport("__Internal")]
-        private static extern void TgGetStorage(string key, Action<string> onSuccess, Action<string> onError);
+        private static extern void TgGetCloudData(string key, Action<string> onSuccess, Action<string> onError);
 
         private static Action<string> onGetStorageSuccess;
         private static Action<string> onGetStorageError;
         
-        public static void GetStorageValue(string key, Action<string> onSuccess, Action<string> onError = null)
+        public static void GetCloudData(string key, Action<string> onSuccess, Action<string> onError = null)
         {
-            if (!TelegramSdk.IsInitialized)
-            {
-                Debug.LogWarning("Sdk is not initialized!");
-                
-                return;
-            }
-
             onGetStorageSuccess = onSuccess;
             onGetStorageError = onError;
             
             #if !UNITY_EDITOR
-            TgGetStorage(key, OnGetStorageSuccess, OnGetStorageError);
+            TgGetCloudData(key, OnGetStorageSuccess, OnGetStorageError);
             #else
             OnGetStorageSuccess(PlayerPrefs.GetString(key));
             #endif
