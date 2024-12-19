@@ -4,26 +4,29 @@ using UnityEngine;
 
 namespace CarrotHood.PlatformGateway
 {
-	public class DefaultPayments : IPayments
+	public class DefaultPayments : PaymentsBase
 	{
-		public DefaultPayments(PlatformSettings settings)
-		{
-			Products = settings?.products;
-		}
+		public DefaultPayments(StorageBase storageBase) : base(storageBase) { }
 		
-		public Product[] Products { get; }
-		public bool paymentsSupported => false;
-		public bool consummationSupported => false;
+		public override Product[] Products { get; protected set; }
 
-		public string CurrencyName => "Dabloons";
-		public Sprite CurrencySprite => Resources.Load<Sprite>("PlatformGateway/CurrencyIcons/Dabloon");
+		public override string CurrencyName { get; protected set; } = "$";
+		public override Sprite CurrencySprite { get; protected set; } = Resources.Load<Sprite>("PlatformGateway/CurrencyIcons/Dabloon");
 
-		public void ConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null) { }
+		public override bool PaymentsSupported => true;
+		public override bool ConsummationSupported => true;
+		
+		protected override void InternalConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null)
+		{
+			onSuccessCallback?.Invoke();
+		}
 
-		public void GetPurchases(Action<PurchasedProduct[]> onSuccessCallback, Action<string> onErrorCallback = null) { }
+		protected override void InternalGetPurchases(Action<PurchasedProduct[]> onSuccessCallback, Action<string> onErrorCallback = null)
+		{
+			onSuccessCallback?.Invoke(new PurchasedProduct[]{});
+		}
 
-		public void Purchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null,
-			Action<string> onErrorCallback = null)
+		protected override void InternalPurchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null)
 		{
 			onSuccessCallback?.Invoke(null);
 		}

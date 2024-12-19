@@ -21,20 +21,12 @@ namespace CarrotHood.PlatformGateway
 			get
 			{
 #if !UNITY_EDITOR && UNITY_WEBGL
-				
+
 				var platform = GetPlatform();
 				switch (platform)
 				{
-					case "vk": return PlatformType.VK;
-					case "vk_play": return PlatformType.VKPlay;
-					case "ok": return PlatformType.OK;
+					case "ok": return PlatformType.Ok;
 					case "yandex": return PlatformType.Yandex;
-					case "crazy_games": return PlatformType.CrazyGames;
-					case "absolute_games": return PlatformType.AbsoluteGames;
-					case "game_distribution": return PlatformType.GameDistribution;
-					case "playgama": return PlatformType.Playgama;
-					case "wortal": return PlatformType.Wortal;
-					case "playdeck": return PlatformType.Playdeck;
 					case "telegram": return PlatformType.Telegram;
 					case "mock": return PlatformType.Default;
 					default: return PlatformType.Default;

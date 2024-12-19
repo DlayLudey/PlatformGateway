@@ -72,7 +72,7 @@ namespace CarrotHood.PlatformGateway.PlaygamaBridge
 				onSuccessCallback.Invoke(data.Select(purchase => new PurchasedProduct
 				{
 					productId = purchase["productID"],
-					consummationToken = purchase["purchaseToken"],
+					PaymentsBase = purchase["purchaseToken"],
 				}).ToArray());
 			});
 		}
@@ -217,7 +217,7 @@ namespace CarrotHood.PlatformGateway.PlaygamaBridge
 			Bridge.social.CreatePost(options, onComplete);
 		}
 
-		public void InviteFriends(string inviteText, Action<int> onComplete = null, Action<string> onError = null)
+		public void InviteFriends(string inviteText, Action<bool> onComplete = null, Action<string> onError = null)
 		{
 			Bridge.social.InviteFriends(new Dictionary<string, object>{{"text", inviteText}}, success =>
 			{
@@ -247,7 +247,7 @@ namespace CarrotHood.PlatformGateway.PlaygamaBridge
 		}
 	}
 
-	public class StoragePlaygama : IStorage
+	public class StoragePlaygama : StorageBase
 	{
 		public void GetValue(string key, Action<string> onSuccess, Action<string> onError = null)
 		{

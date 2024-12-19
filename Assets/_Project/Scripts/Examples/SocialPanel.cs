@@ -116,12 +116,12 @@ namespace Examples
             var options = new Dictionary<string, object>();
             switch (PlatformGateway.PlatformType)
             {
-                case PlatformType.VK:
+                case PlatformType.Vk:
                     options.Add("message", "Hello World!");
                     options.Add("attachments", "photo-199747461_457239629");
                     break;
 
-                case PlatformType.OK:
+                case PlatformType.Ok:
                     var media = new object[]
                     {
                         new Dictionary<string, object>

@@ -102,6 +102,35 @@ namespace Qt.OkSdk
 			s_onRewardedError?.Invoke(error);
 			s_showingRewardedAd = false;
 		}
+		
+		[DllImport("__Internal")]
+		private static extern void OkLoadRewardedAd(Action onSuccess, Action<string> onError);
+
+		private static Action s_onLoadRewardedAdSuccess;
+		private static Action<string> s_onLoadRewardedAdError;
+		public static void LoadRewardedAd(Action onSuccess, Action<string> onError)
+		{
+			s_onLoadRewardedAdSuccess = onSuccess;
+			s_onLoadRewardedAdError = onError;
+			
+			#if !UNITY_EDITOR
+			OkLoadRewardedAd(OnLoadRewardedAdSuccess, OnLoadRewardedAdError);
+			#else
+			OnLoadRewardedAdSuccess();
+			#endif
+		}
+		
+		[MonoPInvokeCallback(typeof(Action))]
+		private static void OnLoadRewardedAdSuccess()
+		{
+			s_onLoadRewardedAdSuccess?.Invoke();
+		}
+		
+		[MonoPInvokeCallback(typeof(Action<string>))]
+		private static void OnLoadRewardedAdError(string error)
+		{
+			s_onLoadRewardedAdError?.Invoke(error);
+		}
 #endregion
 	}
 }

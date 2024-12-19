@@ -67,6 +67,14 @@ namespace Examples
 
         private void OnShowRewardedButtonClicked()
         {
+            if(!Ads.NeedToPreloadRewarded)
+                ShowRewarded();
+            else
+                Ads.PreloadRewarded(ShowRewarded, Debug.LogError);
+        }
+
+        private void ShowRewarded()
+        {
             Ads.ShowRewarded(() =>
             {
                 Debug.Log("Rewarded");

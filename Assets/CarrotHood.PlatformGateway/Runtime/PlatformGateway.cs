@@ -7,25 +7,25 @@ namespace CarrotHood.PlatformGateway
 {
 	public class PlatformGateway : MonoBehaviour
 	{
-		public static PlatformGateway instance;
+		public static PlatformGateway Instance;
 
 		public static PlatformBuilder PlatformBuilder { get; private set; }
 
 		public static AdvertisementBase Advertisement => PlatformBuilder?.Advertisement;
-		public static IPayments Payments => PlatformBuilder?.Payments;
-		public static IStorage Storage => PlatformBuilder?.Storage;
+		public static PaymentsBase Payments => PlatformBuilder?.Payments;
+		public static StorageBase Storage => PlatformBuilder?.Storage;
 		public static ISocial Social => PlatformBuilder?.Social;
 		public static IPlayer Player => PlatformBuilder?.Player;
 		public static ILeaderboard Leaderboard => PlatformBuilder?.Leaderboard;
-		public static IPlatform currentPlatform => PlatformBuilder?.Platform;
+		public static PlatformBase CurrentPlatform => PlatformBuilder?.Platform;
 		public static PlatformType PlatformType { get; private set; } = PlatformType.Default;
 
 		[SerializeField] public PlatformType editorPlatformType;
-		[SerializeField] private List<Platform> platforms;
+		[SerializeField] private List<PlatformBase> platforms;
 
 		protected virtual void Awake()
 		{
-			instance = this;
+			Instance = this;
 			DontDestroyOnLoad(gameObject);
 		}
 
@@ -55,13 +55,6 @@ namespace CarrotHood.PlatformGateway
 			yield return PlatformBuilder.Build();
 
 			Debug.Log("Initialize complete!");
-
-			yield return OnInit();
-		}
-
-		protected virtual IEnumerator OnInit()
-		{
-			yield return null;
 		}
 	}
 }

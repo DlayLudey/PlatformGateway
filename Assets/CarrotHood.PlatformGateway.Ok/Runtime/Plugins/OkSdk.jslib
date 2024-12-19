@@ -50,7 +50,7 @@ const library = {
                 () => {
                     console.log("Sdk initialized successfully.");
                     window["API_callback"] = (method, result, data) => okSdk.apiCallbacks[method](result, data);
-                    dynCall('v', successCallbackPtr, []);
+                    {{{ makeDynCall('v', 'successCallbackPtr') }}}();
                 },
                 () => {
                     console.warn("Sdk failed to initialize.");
@@ -73,19 +73,41 @@ const library = {
         showAdCallback: function (result, data) {
             if(result !== "ok")
             {
-                const errorDataUnmanagedStringPtr = okSdk.allocateUnmanagedString(data);
-                dynCall('vi', okSdk.interstitialErrorCallbackPtr, [errorDataUnmanagedStringPtr]);
+                const buffer = okSdk.allocateUnmanagedString(data);
+                {{{ makeDynCall('vi', 'okSdk.interstitialErrorCallbackPtr') }}}(buffer);
+                _free(buffer);
                 return;
             }
             
             switch(data){
                 case "ad_prepared":
-                    dynCall('v', okSdk.interstitialOpenCallbackPtr, []);
+                    {{{ makeDynCall('v', 'okSdk.interstitialOpenCallbackPtr') }}}();
                     break;
                 case "ad_shown":
-                    dynCall('v', okSdk.interstitialClosedCallbackPtr, []);
+                    {{{ makeDynCall('v', 'okSdk.interstitialClosedCallbackPtr') }}}();
                     break;
             }
+        },
+        
+        loadAdSuccessCallbackPtr: undefined,
+        loadAdErrorCallbackPtr: undefined,
+        loadRewardedAd: function(successCallbackPtr, errorCallbackPtr){
+            okSdk.loadAdSuccessCallbackPtr = successCallbackPtr;
+            okSdk.loadAdErrorCallbackPtr = errorCallbackPtr;
+            
+            okSdk.FAPI.UI.loadAd();
+        },
+
+        loadAdCallback: function(result, data){
+            if(result !== "ok")
+            {
+                const buffer = okSdk.allocateUnmanagedString(data);
+                {{{ makeDynCall('vi', 'okSdk.loadAdErrorCallbackPtr') }}}(buffer);
+                _free(buffer);
+                return;
+            }
+
+            {{{ makeDynCall('v', 'okSdk.loadAdSuccessCallbackPtr') }}}(buffer);
         },
 
         rewardedShownCallbackPtr: undefined,
@@ -94,30 +116,22 @@ const library = {
             okSdk.rewardedShownCallbackPtr = rewardedCallbackPtr;
             okSdk.rewardedErrorCallbackPtr = errorCallbackPtr;
 
-            okSdk.FAPI.UI.loadAd();
-        },
-        
-        loadAdCallback: function(result, data){
-            if(result !== "ok"){
-                console.log("Rewarded ad error: " + data);
-                return;
-            }
-
             okSdk.FAPI.UI.showLoadedAd();
         },
         
         showLoadedAdCallback: function(result, data) {
             if(result !== "ok")
             {
-                const errorDataUnmanagedStringPtr = okSdk.allocateUnmanagedString(data);
-                dynCall('vi', okSdk.rewardedErrorCallbackPtr, [errorDataUnmanagedStringPtr]);
+                const buffer = okSdk.allocateUnmanagedString(data);
+                {{{ makeDynCall('vi', 'okSdk.rewardedErrorCallbackPtr') }}}(buffer);
+                 _free(buffer);
                 return;
             }
             
             switch(data){
                 case "complete":
                 case "ad_shown":
-                    dynCall('v', okSdk.rewardedShownCallbackPtr, []);
+                    {{{ makeDynCall('v', 'okSdk.rewardedShownCallbackPtr') }}}();
                     break
             }
         },
@@ -143,16 +157,16 @@ const library = {
         
         showPaymentCallback: function(result, data){
             if(result !== "ok"){
-                const errorDataUnmanagedStringPtr = okSdk.allocateUnmanagedString(data);
-                dynCall('vi', okSdk.paymentErrorCallbackPtr, [errorDataUnmanagedStringPtr]);
+                const buffer = okSdk.allocateUnmanagedString(data);
+                {{{ makeDynCall('vi', 'okSdk.paymentErrorCallbackPtr') }}}(buffer);
+                _free(buffer);
                 return;
             }
 
-            dynCall('v', okSdk.paymentSuccessCallbackPtr, []);
+            {{{ makeDynCall('v', 'okSdk.paymentSuccessCallbackPtr') }}}(buffer);
         },
         
         // Storage
-
         getStorageSuccessCallbackPtr: undefined,
         getStorageErrorCallbackPtr: undefined,
         getStorageKey: undefined,
@@ -171,19 +185,22 @@ const library = {
         
         getStorageCallback: function(status, data, error){
             if(status !== "ok"){
-                const errorDataUnmanagedStringPtr = okSdk.allocateUnmanagedString(JSON.stringify(error));
-                dynCall('vi', okSdk.getStorageErrorCallbackPtr, [errorDataUnmanagedStringPtr]);
+                const buffer = okSdk.allocateUnmanagedString(JSON.stringify(error));
+                {{{ makeDynCall('vi', 'okSdk.getStorageErrorCallbackPtr') }}}(buffer);
+                _free(buffer);
                 return;
             }
+            
+            var data = "";
             
             if(data === undefined || data["data"] === undefined)
-            {
-                dynCall('vi', okSdk.getStorageSuccessCallbackPtr, [okSdk.allocateUnmanagedString("")]);
-                return;
-            }
+                data = ""
+            else
+                data = data["data"][okSdk.getStorageKey];
             
-            const successDataUnmanagedStringPtr = okSdk.allocateUnmanagedString(data["data"][okSdk.getStorageKey]);
-            dynCall('vi', okSdk.getStorageSuccessCallbackPtr, [successDataUnmanagedStringPtr]);
+            const buffer = okSdk.allocateUnmanagedString(data);
+            {{{ makeDynCall('vi', 'okSdk.getStorageSuccessCallbackPtr') }}}(buffer);
+            _free(buffer);
         },
         
         setStorageSuccessCallbackPtr: undefined,
@@ -202,12 +219,13 @@ const library = {
         
         setStorageCallback: function(status, data, error){
             if(status !== "ok"){
-                const errorDataUnmanagedStringPtr = okSdk.allocateUnmanagedString(JSON.stringify(error));
-                dynCall('vi', okSdk.setStorageErrorCallbackPtr, [errorDataUnmanagedStringPtr]);
+                const buffer = okSdk.allocateUnmanagedString(JSON.stringify(error));
+                {{{ makeDynCall('vi', 'okSdk.setStorageErrorCallbackPtr') }}}(buffer);
+                _free(buffer);
                 return;
             }
 
-            dynCall('v', okSdk.setStorageSuccessCallbackPtr, []);
+            {{{ makeDynCall('v', 'okSdk.setStorageSuccessCallbackPtr') }}}();
         },
         
         // Social
@@ -223,12 +241,13 @@ const library = {
 
         showInviteCallback: function(result, data){
             if(result !== "ok"){
-                const errorDataUnmanagedStringPtr = okSdk.allocateUnmanagedString(JSON.stringify(data));
-                dynCall('vi', okSdk.showInviteErrorCallbackPtr, [errorDataUnmanagedStringPtr]);
+                const buffer = okSdk.allocateUnmanagedString(JSON.stringify(data));
+                {{{ makeDynCall('vi', 'okSdk.showInviteErrorCallbackPtr') }}}(buffer);
+                _free(buffer);
                 return;
             }
 
-            dynCall('vi', okSdk.showInviteSuccessCallbackPtr, [data.split(",").length]);
+            {{{ makeDynCall('vi', 'okSdk.showInviteSuccessCallbackPtr') }}}(data.split(",").length);
         },
         
         // Utils
@@ -248,6 +267,10 @@ const library = {
     
     OkShowInterstitial: function (openCallbackPtr, closeCallbackPtr, errorCallbackPtr) {
         okSdk.showInterstitial(openCallbackPtr, closeCallbackPtr, errorCallbackPtr);
+    },
+    
+    OkLoadRewardedAd: function(successCallbackPtr, errorCallbackPtr){
+        return okSdk.loadRewardedAd(successCallbackPtr, errorCallbackPtr);
     },
     
     OkShowRewarded: function (rewardedCallbackPtr, errorCallbackPtr) {

@@ -21,9 +21,8 @@ namespace Examples
 		[SerializeField] private Button _deleteStorageDataButton;
 		[SerializeField] private GameObject _overlay;
 
-		private const string _coinsKey = "coins";
-		private const string _levelKey = "level";
-		private IStorage Storage => PlatformGateway.Storage;
+		private StorageBase Storage => PlatformGateway.Storage;
+		private PlayerData _playerData = new ();
 
 		private void Start()
 		{
@@ -33,42 +32,27 @@ namespace Examples
 
 		private void OnSetStorageDataButtonClicked()
 		{
-			_overlay.SetActive(true);
-
-			Test test = new Test()
-			{
-				_coinsKey = _coinsInput.text,
-				_levelKey = _levelInput.text
-
-			};
-			Storage.SetValue("save", JsonUtility.ToJson(test), () => _overlay.SetActive(false), (x) =>
-			{
-				Debug.Log($"Error: {x}");
-				_overlay.SetActive(false);
-			});
+			_playerData.coins = _coinsInput.text;
+			_playerData.level = _levelInput.text;
+			Storage.SetValue("Save", _playerData);
 		}
-		[Serializable]
-		public struct Test
-		{
-			public string _coinsKey;
-			public string _levelKey;
-		}
+		
 		private void OnGetStorageDataButtonClicked()
 		{
 			_overlay.SetActive(true);
 			
-			Storage.GetValue("save", (x) =>
-			{
-				Debug.Log(x);
-				var test = JsonUtility.FromJson<Test>(x);
-				_coinsInput.text = test._coinsKey;
-				_levelInput.text = test._levelKey;
-				_overlay.SetActive(false);
-			}, (x) =>
-			{
-				Debug.Log($"Error: {x}");
-				_overlay.SetActive(false);
-			});
+			_playerData = Storage.GetValue("Save", new PlayerData());
+
+			_coinsInput.text = _playerData.coins;
+			_levelInput.text = _playerData.level;
+			
+			_overlay.SetActive(false);
+		}
+
+		private class PlayerData
+		{
+			public string coins;
+			public string level;
 		}
 	}
 }

@@ -17,7 +17,7 @@ namespace CarrotHood.PlatformGateway
 		void AddToFavorites(Action<bool> onComplete = null);
 		void AddToHomeScreen(Action<bool> onComplete = null);
 		void CreatePost(Dictionary<string, object> options, Action<bool> onComplete = null);
-		void InviteFriends(string inviteText, Action<int> onComplete = null, Action<string> onError = null);
+		void InviteFriends(string inviteText, Action<bool> onComplete = null, Action<string> onError = null);
 		void JoinCommunity(Dictionary<string, object> options, Action<bool> onComplete = null);
 		void Rate(Action<bool> onComplete = null);
 		void Share(Dictionary<string, object> options, Action<bool> onComplete = null);

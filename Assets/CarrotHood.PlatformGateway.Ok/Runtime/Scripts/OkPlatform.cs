@@ -4,58 +4,58 @@ using System.Collections.Generic;
 using System.Linq;
 using Qt.OkSdk;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using Social = Qt.OkSdk.Social;
 
 namespace CarrotHood.PlatformGateway.Ok
 {
 	[CreateAssetMenu(fileName = "OkPlatform", menuName = "Platforms/Ok")]
-	public partial class OkPlatform : Platform
+	public class OkPlatform : PlatformBase
 	{
-		public override PlatformType Type => PlatformType.OK;
+		[SerializeField] private Product[] products;
+		
+		public override PlatformType Type => PlatformType.Ok;
 		public override string Language => "ru";
 
 		public override IEnumerator Init(PlatformBuilder builder)
 		{
-			yield return base.Init(builder);
-
 			yield return OkSdk.Initialize();
 
-			builder.AddPayments(new PaymentsOk(Settings.products));
+			builder.Storage = new StorageOk(saveCooldown);
+
+			yield return builder.Storage.Initialize();
 			
-			builder.AddAdvertisement(new AdvertisementOk(Settings.interstitialCooldown));
-			
-			builder.AddSocial(new SocialOk());
-			
-			builder.AddStorage(new StorageOk());
+			builder.Payments = new PaymentsOk(products, builder.Storage);
+
+			builder.Advertisement = new AdvertisementOk(interstitialCooldown);
+			builder.Social = new SocialOk();
 		}
 	}
 
-	//Здесь используем кастомный пакет
-	public class PaymentsOk : IPayments
+	public class PaymentsOk : PaymentsBase
 	{
-		public Product[] Products { get; }
-		public bool paymentsSupported => true;
-		public bool consummationSupported => false;
-		public string CurrencyName => "OK";
-		public Sprite CurrencySprite { get; }
-		
-		public PaymentsOk(Product[] products)
+		public PaymentsOk(Product[] products, StorageBase storageBase) : base(storageBase)
 		{
 			Products = products;
-			CurrencySprite = Resources.Load<Sprite>("PlatformGateway/CurrencyIcons/Ok");
 		}
 
-		public void ConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null)
+		public override Product[] Products { get; protected set; }
+
+		public override string CurrencyName { get; protected set; } = "OK";
+		public override Sprite CurrencySprite { get; protected set; } = Resources.Load<Sprite>("PlatformGateway/CurrencyIcons/Ok");
+		public override bool PaymentsSupported => true;
+		public override bool ConsummationSupported => false;
+		protected override void InternalConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null)
 		{
-			throw new NotSupportedException();
+			onErrorCallback?.Invoke("Consummation is not supported.");
 		}
 
-		public void GetPurchases(Action<PurchasedProduct[]> onSuccessCallback, Action<string> onErrorCallback = null)
+		protected override void InternalGetPurchases(Action<PurchasedProduct[]> onSuccessCallback, Action<string> onErrorCallback = null)
 		{
-			throw new NotSupportedException();
+			onErrorCallback?.Invoke("Consummation is not supported.");
 		}
 
-		public void Purchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null)
+		protected override void InternalPurchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null)
 		{
 			if (Products.All(x => x.productId != productId))
 				throw new KeyNotFoundException($"There is no product with id: {productId}");
@@ -74,7 +74,7 @@ namespace CarrotHood.PlatformGateway.Ok
 
 	public class AdvertisementOk : AdvertisementBase
 	{
-		public AdvertisementOk(int platformInterstitialCooldown) : base(platformInterstitialCooldown) { }
+		public AdvertisementOk(float platformInterstitialCooldown) : base(platformInterstitialCooldown) { }
 
 		public override void CheckAdBlock(Action<bool> callback) => callback?.Invoke(false);
 
@@ -84,9 +84,17 @@ namespace CarrotHood.PlatformGateway.Ok
 
 		protected override void ShowInterstitialInternal(Action onOpen, Action onClose, Action<string> onError)
 		{
+			SpriteAsset aa;
 			Advertisement.ShowInterstitialAd(onOpen, onClose, onError);
 		}
 
+		public override bool NeedToPreloadRewarded => true;
+
+		public override void PreloadRewarded(Action onSuccess, Action<string> onError = null)
+		{
+			Advertisement.LoadRewardedAd(onSuccess, onError);
+		}
+		
 		public override void ShowRewarded(Action onRewarded, Action onOpened = null, Action onClose = null, Action<string> onError = null)
 		{
 			Advertisement.ShowRewardedAd(() =>
@@ -113,10 +121,9 @@ namespace CarrotHood.PlatformGateway.Ok
 		public void AddToHomeScreen(Action<bool> onComplete = null) { }
 
 		public void CreatePost(Dictionary<string, object> options, Action<bool> onComplete = null) { }
-
-		public void InviteFriends(string inviteText, Action<int> onComplete = null, Action<string> onError = null)
+		public void InviteFriends(string inviteText, Action<bool> onComplete = null, Action<string> onError = null)
 		{
-			Social.InviteFriends(inviteText, onComplete, onError);
+			Social.InviteFriends(inviteText, (i) => onComplete?.Invoke(i > 0), onError);
 		}
 
 		public void JoinCommunity(Dictionary<string, object> options, Action<bool> onComplete = null) { }
@@ -126,16 +133,18 @@ namespace CarrotHood.PlatformGateway.Ok
 		public void Share(Dictionary<string, object> options, Action<bool> onComplete = null) { }
 	}
 
-	public class StorageOk : IStorage
+	public class StorageOk : StorageBase
 	{
-		public void GetValue(string key, Action<string> onSuccess, Action<string> onError = null)
+		public StorageOk(float savePeriod) : base(savePeriod) { }
+
+		protected override void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null)
 		{
-			Storage.GetStorageValue(key, onSuccess, onError);
+			Storage.GetStorageValue(key, successCallback, errorCallback);
 		}
 
-		public void SetValue(string key, string value, Action onSuccess = null, Action<string> onError = null)
+		public override void SaveData(string key, string value, Action successCallback = null, Action<string> errorCallback = null)
 		{
-			Storage.SetStorageValue(key, value, onSuccess, onError);
+			Storage.SetStorageValue(key, value, successCallback, errorCallback);
 		}
 	}
 }

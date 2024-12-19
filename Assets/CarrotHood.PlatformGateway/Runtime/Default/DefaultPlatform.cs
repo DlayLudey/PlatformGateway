@@ -1,8 +1,9 @@
 using System.Collections;
+using UnityEngine;
 
 namespace CarrotHood.PlatformGateway
 {
-	public class DefaultPlatform : Platform
+	public class DefaultPlatform : PlatformBase
 	{
 		public override PlatformType Type => PlatformType.Default;
 
@@ -10,7 +11,7 @@ namespace CarrotHood.PlatformGateway
 
 		public override IEnumerator Init(PlatformBuilder builder)
 		{
-			yield return base.Init(builder);
+			yield return null;
 		}
 	}
 }

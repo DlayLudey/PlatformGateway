@@ -4,12 +4,12 @@ using UnityEngine;
 
 public abstract class AdvertisementBase
 {
-	public int interstitialCooldown { get; protected set; }
+	public float interstitialCooldown { get; protected set; }
 	
 	private float _lastInterstitialTime;
 	public bool isInterstitialAvailable => Time.realtimeSinceStartup - _lastInterstitialTime > interstitialCooldown;
 
-	public AdvertisementBase(int platformInterstitialCooldown)
+	public AdvertisementBase(float platformInterstitialCooldown)
 	{
 		interstitialCooldown = platformInterstitialCooldown;
 		_lastInterstitialTime = -interstitialCooldown;
@@ -38,5 +38,7 @@ public abstract class AdvertisementBase
 
 	protected abstract void ShowInterstitialInternal(Action onOpen, Action onClose, Action<string> onError);
 
+	public virtual bool NeedToPreloadRewarded => false;
+	public virtual void PreloadRewarded(Action onSuccess, Action<string> onError = null) => onSuccess?.Invoke();
 	public abstract void ShowRewarded(Action onRewarded, Action onOpened = null, Action onClosed = null, Action<string> onError = null);
 }

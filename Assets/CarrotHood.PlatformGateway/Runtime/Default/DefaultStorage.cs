@@ -1,19 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace CarrotHood.PlatformGateway
 {
-	public class DefaultStorage : IStorage
+	public class DefaultStorage : StorageBase
 	{
-		public void GetValue(string key, Action<string> onSuccess, Action<string> onError)
+		public DefaultStorage(float savePeriod) : base(savePeriod) { }
+
+		protected override void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null)
 		{
-			onSuccess?.Invoke(PlayerPrefs.GetString(key));
+			successCallback?.Invoke(PlayerPrefs.GetString(key));
 		}
 
-		public void SetValue(string key, string value, Action onSuccess, Action<string> onError)
+		public override void SaveData(string key, string value, Action successCallback = null, Action<string> errorCallback = null)
 		{
 			PlayerPrefs.SetString(key, value);
-			onSuccess?.Invoke();
+			successCallback?.Invoke();
 		}
 	}
 }

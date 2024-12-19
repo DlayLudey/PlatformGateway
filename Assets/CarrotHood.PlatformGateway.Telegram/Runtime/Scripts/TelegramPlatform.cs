@@ -6,29 +6,34 @@ using UnityEngine;
 namespace CarrotHood.PlatformGateway.Telegram
 {
     [CreateAssetMenu(fileName = "TelegramPlatform", menuName = "Platforms/Telegram")]
-    public class TelegramPlatform : Platform
+    public class TelegramPlatform : PlatformBase
     {
+        [SerializeField] protected Product[] products;
+        
         public override PlatformType Type => PlatformType.Telegram;
         public override string Language => PlayerAccount.userInfo == null ? "ru" : PlayerAccount.userInfo.languageCode;
 
         public override IEnumerator Init(PlatformBuilder builder)
         {
-            yield return base.Init(builder);
-
             yield return TelegramSdk.Initialize();
             yield return PlayerAccount.Initialize();
 
-            builder.AddAdvertisement(new AdvertisementTelegram(Settings.interstitialCooldown));
-            builder.AddStorage(new StorageTelegram());
+            builder.Advertisement = new AdvertisementTelegram(interstitialCooldown);
+
+            builder.Storage = new StorageTelegram(saveCooldown);
             
-            builder.AddSocial(new SocialTelegram());
-            builder.AddPayments(new PaymentsTelegram(Settings.products));
+            yield return builder.Storage.Initialize();
+
+            builder.Payments = new PaymentsTelegram(products, builder.Storage);
+            builder.Advertisement = new AdvertisementTelegram(interstitialCooldown);
+
+            builder.Social = new SocialTelegram();
         }
     }
 
     public class AdvertisementTelegram : AdvertisementBase
     {
-        public AdvertisementTelegram(int platformInterstitialCooldown) : base(platformInterstitialCooldown) { }
+        public AdvertisementTelegram(float platformInterstitialCooldown) : base(platformInterstitialCooldown) { }
 
         public override void CheckAdBlock(Action<bool> callback) => callback?.Invoke(false);
 
@@ -48,16 +53,18 @@ namespace CarrotHood.PlatformGateway.Telegram
         }
     }
 
-    public class StorageTelegram : IStorage
+    public class StorageTelegram : StorageBase
     {
-        public void GetValue(string key, Action<string> onSuccess, Action<string> onError = null)
+        public StorageTelegram(float savePeriod) : base(savePeriod) { }
+
+        protected override void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null)
         {
-            Storage.GetCloudData(key, onSuccess, onError);
+            Storage.GetCloudData(key, successCallback, errorCallback);
         }
 
-        public void SetValue(string key, string value, Action onSuccess = null, Action<string> onError = null)
+        public override void SaveData(string key, string value, Action successCallback = null, Action<string> errorCallback = null)
         {
-            Storage.SetCloudData(key, value, onSuccess, onError);
+            Storage.SetCloudData(key, value, successCallback, errorCallback);
         }
     }
 
@@ -77,7 +84,7 @@ namespace CarrotHood.PlatformGateway.Telegram
 
         public void CreatePost(Dictionary<string, object> options, Action<bool> onComplete = null) { }
 
-        public void InviteFriends(string inviteText, Action<int> onComplete = null, Action<string> onError = null) { }
+        public void InviteFriends(string inviteText, Action<bool> onComplete = null, Action<string> onError = null) { }
 
         public void JoinCommunity(Dictionary<string, object> options, Action<bool> onComplete = null) { }
 
@@ -86,24 +93,26 @@ namespace CarrotHood.PlatformGateway.Telegram
         public void Share(Dictionary<string, object> options, Action<bool> onComplete = null) { }
     }
 
-    public class PaymentsTelegram : IPayments
+    public class PaymentsTelegram : PaymentsBase
     {
-        public Product[] Products { get; }
-        public string CurrencyName => "TON";
-        public Sprite CurrencySprite { get; }
-        public bool paymentsSupported => false;
-        public bool consummationSupported => false;
-
-        public PaymentsTelegram(Product[] products)
+        public PaymentsTelegram(Product[] products, StorageBase storageBase) : base(storageBase)
         {
             Products = products;
-            CurrencySprite = Resources.Load<Sprite>("PlatformGateway/CurrencyIcons/Telegram");
         }
+        
+        public sealed override Product[] Products { get; protected set; }
 
-        public void ConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null) { }
+        public override string CurrencyName { get; protected set; } = "TON";
 
-        public void GetPurchases(Action<PurchasedProduct[]> onSuccessCallback, Action<string> onErrorCallback = null) { }
+        public override Sprite CurrencySprite { get; protected set; } = Resources.Load<Sprite>("PlatformGateway/CurrencyIcons/Telegram");
 
-        public void Purchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null) { }
+        public override bool PaymentsSupported { get; } = false;
+        public override bool ConsummationSupported { get; } = false;
+        
+        protected override void InternalConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null) { }
+
+        protected override void InternalGetPurchases(Action<PurchasedProduct[]> onSuccessCallback, Action<string> onErrorCallback = null) { }
+
+        protected override void InternalPurchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null) { }
     }
 }
