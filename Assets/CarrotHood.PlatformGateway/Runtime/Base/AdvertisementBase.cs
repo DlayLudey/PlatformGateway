@@ -6,13 +6,13 @@ public abstract class AdvertisementBase
 {
 	public float interstitialCooldown { get; protected set; }
 	
-	private float _lastInterstitialTime;
-	public bool isInterstitialAvailable => Time.realtimeSinceStartup - _lastInterstitialTime > interstitialCooldown;
+	protected float lastInterstitialTime;
+	public bool isInterstitialAvailable => Time.realtimeSinceStartup - lastInterstitialTime > interstitialCooldown;
 
 	public AdvertisementBase(float platformInterstitialCooldown)
 	{
 		interstitialCooldown = platformInterstitialCooldown;
-		_lastInterstitialTime = -interstitialCooldown;
+		lastInterstitialTime = -interstitialCooldown;
 	}
 
 	public abstract void CheckAdBlock(Action<bool> callback);
@@ -25,13 +25,13 @@ public abstract class AdvertisementBase
 	{
 		if (!isInterstitialAvailable)
 		{
-			onError?.Invoke($"Interstitial is not available yet, wait for {interstitialCooldown - (Time.realtimeSinceStartup - _lastInterstitialTime)}");
+			onError?.Invoke($"Interstitial is not available yet, wait for {interstitialCooldown - (Time.realtimeSinceStartup - lastInterstitialTime)}");
 			return;
 		}
 		
 		ShowInterstitialInternal(onOpen, () =>
 		{
-			_lastInterstitialTime = Time.realtimeSinceStartup;
+			lastInterstitialTime = Time.realtimeSinceStartup;
 			onClose?.Invoke();
 		}, onError);
 	}

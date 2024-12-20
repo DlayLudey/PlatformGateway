@@ -84,7 +84,6 @@ namespace CarrotHood.PlatformGateway.Ok
 
 		protected override void ShowInterstitialInternal(Action onOpen, Action onClose, Action<string> onError)
 		{
-			SpriteAsset aa;
 			Advertisement.ShowInterstitialAd(onOpen, onClose, onError);
 		}
 
@@ -102,6 +101,8 @@ namespace CarrotHood.PlatformGateway.Ok
 				onOpened?.Invoke();
 				onRewarded?.Invoke();
 				onClose?.Invoke();
+				
+				lastInterstitialTime = Time.realtimeSinceStartup;
 			}, onError);
 		}
 	}
