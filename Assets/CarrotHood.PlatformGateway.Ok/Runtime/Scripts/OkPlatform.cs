@@ -102,7 +102,8 @@ namespace CarrotHood.PlatformGateway.Ok
 				onRewarded?.Invoke();
 				onClose?.Invoke();
 				
-				lastInterstitialTime = Time.realtimeSinceStartup - (interstitialCooldown / 4 * 3);
+				if(isInterstitialAvailable)
+					lastInterstitialTime = Time.realtimeSinceStartup - (interstitialCooldown / 4 * 3);
 			}, onError);
 		}
 	}

@@ -33,7 +33,11 @@ public abstract class AdvertisementBase
 		{
 			lastInterstitialTime = Time.realtimeSinceStartup;
 			onClose?.Invoke();
-		}, onError);
+		}, s =>
+		{
+			lastInterstitialTime = Time.realtimeSinceStartup
+			onError?.Invoke(s)
+		})};
 	}
 
 	protected abstract void ShowInterstitialInternal(Action onOpen, Action onClose, Action<string> onError);
