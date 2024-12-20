@@ -6,7 +6,10 @@ namespace CarrotHood.PlatformGateway
 {
 	public class DefaultPayments : PaymentsBase
 	{
-		public DefaultPayments(StorageBase storageBase) : base(storageBase) { }
+		public DefaultPayments(Product[] products, StorageBase storageBase) : base(storageBase)
+		{
+			Products = products;
+		}
 		
 		public override Product[] Products { get; protected set; }
 

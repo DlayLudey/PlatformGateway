@@ -16,8 +16,6 @@ namespace CarrotHood.PlatformGateway
 		public PaymentsBase Payments;
 		public StorageBase Storage;
 		public ISocial Social;
-		public ILeaderboard Leaderboard;
-		public IPlayer Player;
 		
 		public IEnumerator Build()
 		{
@@ -34,10 +32,8 @@ namespace CarrotHood.PlatformGateway
 				yield return Storage.Initialize();
 			}
 			
-			Payments ??= new DefaultPayments(Storage);
+			Payments ??= new DefaultPayments(new Product[]{}, Storage);
 			Social ??= new DefaultSocial();
-			Leaderboard ??= new DefaultLeaderboard();
-			Player ??= new DefaultPlayer();
 		}
 	}
 }

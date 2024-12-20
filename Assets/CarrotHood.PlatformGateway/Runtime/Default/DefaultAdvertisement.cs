@@ -5,7 +5,7 @@ namespace CarrotHood.PlatformGateway
 {
 	public class DefaultAdvertisement : AdvertisementBase
 	{
-		public DefaultAdvertisement(int platformInterstitialCooldown) : base(platformInterstitialCooldown) { }
+		public DefaultAdvertisement(float platformInterstitialCooldown) : base(platformInterstitialCooldown) { }
 
 		public override void CheckAdBlock(Action<bool> callback) => callback?.Invoke(false);
 

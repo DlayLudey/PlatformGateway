@@ -15,8 +15,6 @@ namespace CarrotHood.PlatformGateway
 		public static PaymentsBase Payments => PlatformBuilder?.Payments;
 		public static StorageBase Storage => PlatformBuilder?.Storage;
 		public static ISocial Social => PlatformBuilder?.Social;
-		public static IPlayer Player => PlatformBuilder?.Player;
-		public static ILeaderboard Leaderboard => PlatformBuilder?.Leaderboard;
 		public static PlatformBase CurrentPlatform => PlatformBuilder?.Platform;
 		public static PlatformType PlatformType { get; private set; } = PlatformType.Default;
 
