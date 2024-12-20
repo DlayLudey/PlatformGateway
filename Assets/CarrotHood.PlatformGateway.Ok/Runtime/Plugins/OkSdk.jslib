@@ -191,14 +191,14 @@ const library = {
                 return;
             }
             
-            var data = "";
+            var value = "";
             
             if(data === undefined || data["data"] === undefined)
-                data = ""
+                value = ""
             else
-                data = data["data"][okSdk.getStorageKey];
+                value = data["data"][okSdk.getStorageKey];
             
-            const buffer = okSdk.allocateUnmanagedString(data);
+            const buffer = okSdk.allocateUnmanagedString(value);
             {{{ makeDynCall('vi', 'okSdk.getStorageSuccessCallbackPtr') }}}(buffer);
             _free(buffer);
         },
