@@ -79,7 +79,7 @@ namespace CarrotHood.PlatformGateway.Yandex
 				onSuccessCallback?.Invoke(response.purchasedProducts.Select(x => new PurchasedProduct
 				{
 					productId = x.productID,
-					PaymentsBase = x.purchaseToken
+					consummationToken = x.purchaseToken
 				}).ToArray());
 			}, onErrorCallback);
 		}
@@ -91,7 +91,7 @@ namespace CarrotHood.PlatformGateway.Yandex
 				onSuccessCallback?.Invoke(new PurchasedProduct
 				{
 					productId = response.purchaseData.productID,
-					PaymentsBase = response.purchaseData.purchaseToken
+					consummationToken = response.purchaseData.purchaseToken
 				});
 			}, onErrorCallback);
 		}

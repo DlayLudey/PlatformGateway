@@ -55,7 +55,7 @@ namespace CarrotHood.PlatformGateway
 			InternalPurchase(productId, (product) =>
 			{
 				if(consumable && ConsummationSupported)
-					ConsumePurchase(product!.Value.PaymentsBase, onSuccessCallback, onErrorCallback);
+					ConsumePurchase(product!.Value.consummationToken, onSuccessCallback, onErrorCallback);
 				else
 				{
 					onSuccessCallback?.Invoke();
@@ -87,6 +87,6 @@ namespace CarrotHood.PlatformGateway
 	public struct PurchasedProduct
 	{
 		public string productId;
-		[FormerlySerializedAs("consummationToken")] public string PaymentsBase;
+		public string consummationToken;
 	}
 }
