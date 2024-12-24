@@ -57,7 +57,7 @@ namespace CarrotHood.PlatformGateway.Telegram
     {
         public StorageTelegram(float savePeriod) : base(savePeriod) { }
 
-        protected override void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null)
+        public override void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null)
         {
             Storage.GetCloudData(key, successCallback, errorCallback);
         }

@@ -133,7 +133,7 @@ namespace CarrotHood.PlatformGateway.Yandex
 			onSuccess?.Invoke();
 		}
 
-		protected override void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null)
+		public override void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null)
 		{
 			#if !UNITY_EDITOR
 			Agava.YandexGames.PlayerAccount.GetCloudSaveData(successCallback, errorCallback);

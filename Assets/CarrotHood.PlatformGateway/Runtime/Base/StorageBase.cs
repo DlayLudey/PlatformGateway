@@ -76,7 +76,7 @@ namespace CarrotHood.PlatformGateway
 			SaveData(nameof(Data), JsonConvert.SerializeObject(Data), errorCallback: Debug.LogError);
 		}
 
-		protected abstract void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null);
+		public abstract void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null);
 
 		public abstract void SaveData(string key, string value, Action successCallback = null, Action<string> errorCallback = null);
 	}

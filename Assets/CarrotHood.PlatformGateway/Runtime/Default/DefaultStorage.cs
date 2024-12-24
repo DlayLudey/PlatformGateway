@@ -9,7 +9,7 @@ namespace CarrotHood.PlatformGateway
 	{
 		public DefaultStorage(float savePeriod) : base(savePeriod) { }
 
-		protected override void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null)
+		public override void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null)
 		{
 			successCallback?.Invoke(PlayerPrefs.GetString(key));
 		}
