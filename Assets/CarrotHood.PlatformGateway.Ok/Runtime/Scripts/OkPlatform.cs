@@ -139,7 +139,7 @@ namespace CarrotHood.PlatformGateway.Ok
 	{
 		public StorageOk(float savePeriod) : base(savePeriod) { }
 
-		protected override void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null)
+		public override void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null)
 		{
 			Storage.GetStorageValue(key, successCallback, errorCallback);
 		}
