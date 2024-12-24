@@ -10,6 +10,8 @@ namespace CarrotHood.PlatformGateway
 	{
 		protected Dictionary<string, object> Data;
 
+		protected string LastSavedJson;
+
 		private float savePeriod;
 
 		protected StorageBase(float savePeriod)
@@ -73,6 +75,13 @@ namespace CarrotHood.PlatformGateway
 		/// </summary>
 		public void SaveStoredData()
 		{
+			string json = JsonConvert.SerializeObject(Data);
+			
+			if(json == LastSavedJson)
+				return;
+			
+			LastSavedJson = json;
+			
 			SaveData(nameof(Data), JsonConvert.SerializeObject(Data), errorCallback: Debug.LogError);
 		}
 
