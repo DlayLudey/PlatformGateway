@@ -33,6 +33,7 @@ namespace CarrotHood.PlatformGateway.Yandex
 			builder.Payments = payments;
 
 			builder.Advertisement = new AdvertisementYandex(interstitialCooldown);
+			builder.Social = new SocialYandex();
 		}
 	}
 
@@ -151,5 +152,30 @@ namespace CarrotHood.PlatformGateway.Yandex
 			successCallback?.Invoke();
 			#endif
 		}
+	}
+
+	public class SocialYandex : ISocial
+	{
+		public bool isAddToFavoritesSupported => false;
+		public bool isAddToHomeScreenSupported => false;
+		public bool isCreatePostSupported => false;
+		public bool isExternalLinksAllowed => false;
+		public bool isInviteFriendsSupported => false;
+		public bool isJoinCommunitySupported => false;
+		public bool isRateSupported => false;
+		public bool isShareSupported => false;
+		public void AddToFavorites(Action<bool> onComplete = null) { }
+
+		public void AddToHomeScreen(Action<bool> onComplete = null) { }
+
+		public void CreatePost(Dictionary<string, object> options, Action<bool> onComplete = null) { }
+
+		public void InviteFriends(string inviteText, Action<bool> onComplete = null, Action<string> onError = null) { }
+
+		public void JoinCommunity(Dictionary<string, object> options, Action<bool> onComplete = null) { }
+
+		public void Rate(Action<bool> onComplete = null) { }
+
+		public void Share(Dictionary<string, object> options, Action<bool> onComplete = null) { }
 	}
 }
