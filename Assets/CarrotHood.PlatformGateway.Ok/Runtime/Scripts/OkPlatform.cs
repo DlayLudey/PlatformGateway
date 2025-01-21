@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Qt.OkSdk;
+#if UNITY_EDITOR
+using UnityEditor;
+using System.IO;
+#endif
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 using Social = Qt.OkSdk.Social;
 
 namespace CarrotHood.PlatformGateway.Ok
@@ -30,6 +33,37 @@ namespace CarrotHood.PlatformGateway.Ok
 			builder.Advertisement = new AdvertisementOk(interstitialCooldown);
 			builder.Social = new SocialOk();
 		}
+		
+		#if UNITY_EDITOR
+		[ContextMenu("Export Products")]
+		public void ExportProducts()
+		{
+			if (products == null || !products.Any())
+			{
+				products = new Product[]{};
+			}
+			
+			string productJson = JsonUtility.ToJson(new ExportProduct(products));
+
+			string path = EditorUtility.SaveFilePanel("Products", "", "product", "json");
+
+			if (string.IsNullOrEmpty(path))
+				return;
+
+			File.WriteAllText(path, productJson);
+		}
+
+		[Serializable]
+		private struct ExportProduct
+		{
+			public Product[] products;
+
+			public ExportProduct(Product[] products)
+			{
+				this.products = products;
+			}
+		}
+		#endif
 	}
 
 	public class PaymentsOk : PaymentsBase
