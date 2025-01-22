@@ -44,5 +44,5 @@ public abstract class AdvertisementBase
 
 	public virtual bool NeedToPreloadRewarded => false;
 	public virtual void PreloadRewarded(Action onSuccess, Action<string> onError = null) => onSuccess?.Invoke();
-	public abstract void ShowRewarded(Action onRewarded, Action onOpened = null, Action onClosed = null, Action<string> onError = null);
+	public abstract void ShowRewarded(Action onRewarded, Action onOpen = null, Action onClosed = null, Action<string> onError = null);
 }

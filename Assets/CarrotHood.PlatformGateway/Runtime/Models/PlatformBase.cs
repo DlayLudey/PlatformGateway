@@ -27,5 +27,6 @@ namespace CarrotHood.PlatformGateway
 		Telegram,
 		Ok,
 		Vk,
+		Playgama
 	}
 }

@@ -113,9 +113,9 @@ namespace CarrotHood.PlatformGateway.Yandex
 			Advertisement.ShowInterstitialAd(onOpen, onClose, onError);
 		}
 
-		public override void ShowRewarded(Action onRewarded, Action onOpened = null, Action onClose = null, Action<string> onError = null)
+		public override void ShowRewarded(Action onRewarded, Action onOpen = null, Action onClose = null, Action<string> onError = null)
 		{
-			Advertisement.ShowVideoAd(onOpened, onRewarded, onClose, onError);
+			Advertisement.ShowVideoAd(onOpen, onRewarded, onClose, onError);
 		}
 	}
 

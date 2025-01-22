@@ -1,0 +1,13 @@
+{
+    "name": "com.carrothood.platformgateway.playgama",
+    "version": "0.0.1",
+    "displayName": "Platfrom Gateway Playgama",
+    "description": "",
+    "samples": [
+        {
+            "displayName": "WebGL Template",
+            "description": "Contains a template for publishing on Playgama",
+            "path": "Samples~/WebGLTemplate/WebGLTemplates/PlaygamaTemplate"
+        }
+    ]
+}

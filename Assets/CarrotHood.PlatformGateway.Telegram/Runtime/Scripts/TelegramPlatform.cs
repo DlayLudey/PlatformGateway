@@ -46,10 +46,10 @@ namespace CarrotHood.PlatformGateway.Telegram
             Advertisement.ShowInterstitialAd(onOpen, onClose, onError);
         }
 
-        public override void ShowRewarded(Action onRewarded, Action onOpened = null, Action onClose = null, Action<string> onError = null)
+        public override void ShowRewarded(Action onRewarded, Action onOpen = null, Action onClose = null, Action<string> onError = null)
         {
-            onOpened?.Invoke();
-            Advertisement.ShowRewardedAd(onOpened, onRewarded, onClose, onError);
+            onOpen?.Invoke();
+            Advertisement.ShowRewardedAd(onOpen, onRewarded, onClose, onError);
         }
     }
 
