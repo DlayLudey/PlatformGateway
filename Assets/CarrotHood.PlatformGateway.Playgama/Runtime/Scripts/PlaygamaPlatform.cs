@@ -20,6 +20,10 @@ namespace CarrotHood.PlatformGateway.Playgama
 
 		public override IEnumerator Init(PlatformBuilder builder)
 		{
+			// Why does it have to be MonoBehaviour again?
+			Bridge bridge = new GameObject("Bridge").AddComponent<Bridge>();
+			DontDestroyOnLoad(bridge);
+			
 			builder.Storage = new StoragePlaygama(saveCooldown);
 
 			yield return builder.Storage.Initialize();
