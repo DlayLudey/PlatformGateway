@@ -11,8 +11,8 @@ namespace CarrotHood.PlatformGateway
 {
 	public abstract class PlatformBase : ScriptableObject
 	{
-		[SerializeField] protected float interstitialCooldown;
-		[SerializeField] protected float saveCooldown;
+		[SerializeField] protected float interstitialCooldown = 60;
+		[SerializeField] protected float saveCooldown = 4;
 		
 		public abstract PlatformType Type { get; }
 		public abstract string Language { get; }
