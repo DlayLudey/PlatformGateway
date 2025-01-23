@@ -50,44 +50,43 @@ namespace CarrotHood.PlatformGateway.Playgama
 
 			bool gotProducts = false;
 			string imageUri = "";
+
+			List<Dictionary<string, string>> jsonProducts = null;
 			
 			Bridge.payments.GetCatalog((success, productDict) =>
 			{
-				if (!success)
-				{
-					gotProducts = true;
-					return;
-				}
-				products = productDict.Select(x =>
-				{
-					// Creates shit SDK with the worst API I've ever seen
-					// Ads this id/productID bullshit
-					// Refuses to elaborate
-					// Right, Play fucking gama?
-					
-					string productId = x.TryGetValue("id", out string id) ? id : x["productID"]; 
-					
-					return new Product()
-					{
-						productId = productId,
-						name = x["title"],
-						description = x["description"],
-						// AND FUCKING AGAIN
-						price = int.TryParse(x.TryGetValue("priceValue", out string price) ? price : x["priceAmount"], out int parsedPrice) ? parsedPrice : 0,
-					};
-				}).ToArray();
-
-				if(productDict.Count > 0)
-				{
-					imageUri = productDict[0].GetValueOrDefault("imageUri", "");
-					CurrencyName = productDict[0].GetValueOrDefault("priceCurrencyCode", "");
-				}
+				jsonProducts = productDict;
 				
 				gotProducts = true;
 			});
 
 			yield return new WaitUntil(() => gotProducts);
+			
+			if(jsonProducts == null || jsonProducts.Count == 0)
+				yield break;
+			
+			products = jsonProducts.Select(x =>
+			{
+				// Creates shit SDK with the worst API I've ever seen
+				// Ads this id/productID bullshit
+				// Refuses to elaborate
+				// Right, Play fucking gama?
+					
+				string productId = x.TryGetValue("id", out string id) ? id : x["productID"]; 
+					
+				return new Product()
+				{
+					productId = productId,
+					name = x["title"],
+					description = x["description"],
+					// AND FUCKING AGAIN
+					price = int.TryParse(x.TryGetValue("priceValue", out string price) ? price : x["priceAmount"], out int parsedPrice) ? parsedPrice : 0,
+				};
+			}).ToArray();
 
+			imageUri = jsonProducts[0].GetValueOrDefault("imageUri", "");
+			CurrencyName = jsonProducts[0].GetValueOrDefault("priceCurrencyCode", "");
+			
 			Products = products;
 
 			if (!string.IsNullOrEmpty(imageUri))
