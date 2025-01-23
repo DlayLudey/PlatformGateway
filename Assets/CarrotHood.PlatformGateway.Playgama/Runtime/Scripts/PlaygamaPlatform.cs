@@ -147,8 +147,9 @@ namespace CarrotHood.PlatformGateway.Playgama
 					{"description", Products.First(x => x.productId == productId).description},
 					{"externalId", productId}
 				},
-				_ => throw new ArgumentOutOfRangeException(nameof(Bridge.platform.id), Bridge.platform.id, null),
+				_ => null,
 			};
+			
 			Bridge.payments.Purchase(options);
 		}
 	}
