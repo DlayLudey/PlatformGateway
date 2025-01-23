@@ -24,7 +24,7 @@ namespace CarrotHood.PlatformGateway.Playgama
 
 			yield return builder.Storage.Initialize();
 
-			PaymentsPlaygama payments = new PaymentsPlaygama(builder.Storage);
+			PaymentsPlaygama payments = new (builder.Storage);
 
 			builder.Payments = payments;
 
@@ -90,11 +90,12 @@ namespace CarrotHood.PlatformGateway.Playgama
 
 			Products = products;
 
-			if (string.IsNullOrEmpty(imageUri))
+			if (!string.IsNullOrEmpty(imageUri))
 			{
 				yield return Utils.DownloadSprite(imageUri, texture =>
 				{
-					CurrencySprite = Utils.TextureToSprite(texture);
+					if(texture != null)
+						CurrencySprite = Utils.TextureToSprite(texture);
 				});
 			}
 
