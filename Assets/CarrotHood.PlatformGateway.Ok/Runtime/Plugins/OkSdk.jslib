@@ -12,7 +12,23 @@ const library = {
                 showLoadedAd: (result, data) => okSdk.showLoadedAdCallback(result, data),
                 showPayment: (result, data) => okSdk.showPaymentCallback(result, data),
                 showInvite: (result, data) => okSdk.showInviteCallback(result, data),
+
+
+                showPermissions: (_, __) => this.dummy(_, __),
+                requestBannerAds: (_, __) => this.dummy(_, __),
+                showBannerAds: (_, __) => this.dummy(_, __),
+                hideBannerAds: (_, __) => this.dummy(_, __),
+                setBannerFormat: (_, __) => this.dummy(_, __),
+                showRatingDialog: (_, __) => this.dummy(_, __),
+                joinGroup: (_, __) => this.dummy(_, __),
+                showLoginSuggestion: (_, __) => this.dummy(_, __),
+                postMediatopic: (_, __) => this.dummy(_, __),
+                isAdBlockEnabled: (_, __) => this.dummy(_, __),
             }
+        },
+        
+        dummy: function (_, __){
+            
         },
         
         //Initialization
