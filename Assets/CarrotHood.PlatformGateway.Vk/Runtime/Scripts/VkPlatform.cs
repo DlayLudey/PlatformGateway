@@ -9,8 +9,6 @@ namespace CarrotHood.PlatformGateway.Vk
 	[CreateAssetMenu(fileName = "VkPlatform", menuName = "Platforms/Vk")]
 	public class VkPlatform : PlatformBase
 	{
-		[SerializeField] private Product[] products;
-
 		private LaunchParams _launchParams;
 
 		public override PlatformType Type => PlatformType.Vk;
@@ -27,7 +25,7 @@ namespace CarrotHood.PlatformGateway.Vk
 
 			yield return builder.Storage.Initialize();
 			
-			builder.Payments = new PaymentsVk(Language, products, builder.Storage);
+			builder.Payments = new PaymentsVk(Language, builder.Storage);
 			
 			builder.Advertisement = new AdvertisementVk(interstitialCooldown);
 			builder.Social = new SocialVk();
@@ -53,14 +51,12 @@ namespace CarrotHood.PlatformGateway.Vk
 
 	public class PaymentsVk : PaymentsBase
 	{
-		public PaymentsVk(string language, Product[] products, StorageBase storageBase) : base(storageBase)
+		public PaymentsVk(string language, StorageBase storageBase) : base(storageBase)
 		{
-			Products = products;
-			
 			CurrencyName = language == "en" ? "Votes" : "Голос";
 		}
-		
-		public override Product[] Products { get; protected set; }
+
+		public override Product[] Products { get; protected set; } = new Product[]{};
 		public override string CurrencyName { get; protected set; }
 		public override Sprite CurrencySprite { get; protected set; } = Resources.Load<Sprite>("PlatformGateway/CurrencyIcons/Vk");
 		public override bool PaymentsSupported => true;
