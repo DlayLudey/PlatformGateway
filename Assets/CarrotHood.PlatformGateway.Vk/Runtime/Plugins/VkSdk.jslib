@@ -129,7 +129,7 @@
                 ]})
                 .then((data) => {
                     if (data.keys) {
-                        vkSdk.invokeViCallback(successCallbackPtr, data.keys[key]);
+                        vkSdk.invokeViCallback(successCallbackPtr, data.keys[0].value);
                         return;
                     }
                     
@@ -207,8 +207,6 @@
         vkSdk.setStorage(UTF8ToString(keyPtr), UTF8ToString(valuePtr), successCallbackPtr, errorCallbackPtr);
     }
 }
-
-vkSdk = library.$vkSdk;
 
 autoAddDeps(library, '$vkSdk');
 mergeInto(LibraryManager.library, library);

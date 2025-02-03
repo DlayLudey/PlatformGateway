@@ -26,8 +26,11 @@ namespace CarrotHood.PlatformGateway.Vk
 			builder.Storage = new StorageVk(saveCooldown);
 
 			yield return builder.Storage.Initialize();
-
+			
+			builder.Payments = new PaymentsVk(Language, products, builder.Storage);
+			
 			builder.Advertisement = new AdvertisementVk(interstitialCooldown);
+			builder.Social = new SocialVk();
 		}
 
 		private IEnumerator GetLaunchParams()

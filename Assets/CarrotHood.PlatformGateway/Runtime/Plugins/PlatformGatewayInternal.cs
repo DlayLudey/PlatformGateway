@@ -29,6 +29,7 @@ namespace CarrotHood.PlatformGateway
 					case "yandex": return PlatformType.Yandex;
 					case "telegram": return PlatformType.Telegram;
 					case "mock": return PlatformType.Default;
+					case "vk": return PlatformType.Vk;
 					default: return PlatformType.Default;
 				}
 #else

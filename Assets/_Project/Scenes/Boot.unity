@@ -352,11 +352,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 592f668c4bddda24f8c2eb8eade52269, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  editorPlatformType: 0
+  forcedPlatformType: 0
   platforms:
   - {fileID: 11400000, guid: 6d7dd92d4fce98249aa94349d3cf72f3, type: 2}
   - {fileID: 11400000, guid: 1a318684fb05f2a4d9f50157d95030a1, type: 2}
   - {fileID: 11400000, guid: c7470b3db1fee7b47ac1c8c77235fe41, type: 2}
+  - {fileID: 11400000, guid: 3179015b6b8ff70419d90c347782904f, type: 2}
 --- !u!1 &368709248
 GameObject:
   m_ObjectHideFlags: 0
