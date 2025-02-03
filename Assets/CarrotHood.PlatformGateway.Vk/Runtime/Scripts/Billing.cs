@@ -18,7 +18,7 @@ namespace CarrotHood.PlatformGateway.Vk
 			onPurchaseError = onError;
 			
 			#if !UNITY_EDITOR
-			VkShowPayment(key, onSuccess, onError);
+			VkShowPayment(key, OnPaymentSuccess, OnPaymentError);
 			#else
 			OnPaymentSuccess();
 			#endif
