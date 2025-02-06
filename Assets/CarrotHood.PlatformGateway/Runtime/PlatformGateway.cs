@@ -48,7 +48,7 @@ namespace CarrotHood.PlatformGateway
 				PlatformBuilder = new PlatformBuilder(platform);
 			}
 
-			Debug.Log($"Initializing platform: {PlatformType}");
+			Debug.Log($"Initializing platform: {platform!.Type}");
 			
 			yield return PlatformBuilder.Build();
 

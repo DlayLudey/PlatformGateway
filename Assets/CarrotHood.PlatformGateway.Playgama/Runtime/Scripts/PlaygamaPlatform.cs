@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Playgama;
 using Playgama.Modules.Advertisement;
+using Playgama.Modules.Game;
 using UnityEngine;
 
 namespace CarrotHood.PlatformGateway.Playgama
@@ -18,26 +19,40 @@ namespace CarrotHood.PlatformGateway.Playgama
 		public override PlatformType Type => PlatformType.Playgama;
 		public override string Language => Bridge.platform.language;
 
+		private GameFocusManager gameFocusManager;
+		
 		public override IEnumerator Init(PlatformBuilder builder)
 		{
 			builder.Storage = new StoragePlaygama(saveCooldown);
 
 			yield return builder.Storage.Initialize();
 
-			PaymentsPlaygama payments = new (builder.Storage);
+			gameFocusManager = new GameFocusManager();
+			
+			PaymentsPlaygama payments = new (gameFocusManager, builder.Storage);
 
 			builder.Payments = payments;
 
 			yield return payments.Initialize(products);
 			
-			builder.Advertisement = new AdvertisementPlaygama(interstitialCooldown);
+			builder.Advertisement = new AdvertisementPlaygama(gameFocusManager, interstitialCooldown);
 			builder.Social = new SocialPlaygama();
+			
+			Bridge.game.visibilityStateChanged += state => gameFocusManager.InBackground = state == VisibilityState.Hidden;
 		}
 	}
 
+	/// <summary>
+	/// NOT YET SUPPORTED
+	/// </summary>
 	public class PaymentsPlaygama : PaymentsBase
 	{
-		public PaymentsPlaygama(StorageBase storageBase) : base(storageBase) { }
+		public PaymentsPlaygama(GameFocusManager gameFocusManager, StorageBase storageBase) : base(storageBase)
+		{
+			this.gameFocusManager = gameFocusManager;
+		}
+
+		private readonly GameFocusManager gameFocusManager;
 
 		public IEnumerator Initialize(Product[] products)
 		{
@@ -148,18 +163,47 @@ namespace CarrotHood.PlatformGateway.Playgama
 				},
 				_ => null,
 			};
+
+			gameFocusManager.InPayments = true;
 			
-			Bridge.payments.Purchase(options);
+			Bridge.payments.Purchase(options, (success, dict) =>
+			{
+				if(success)
+				{
+					switch (Bridge.platform.id)
+					{
+						case "yandex":
+						case "facebook":
+							onSuccessCallback?.Invoke(new PurchasedProduct
+							{
+								productId = dict["productID"],
+								consummationToken = dict["purchaseToken"],
+							});
+							break;
+						case "playdeck":
+							onSuccessCallback?.Invoke(null);
+							break;
+					} 
+				}
+				else
+					onErrorCallback?.Invoke("Payment Error");
+
+				gameFocusManager.InPayments = false;
+			});
 		}
 	}
 
 	public class AdvertisementPlaygama : AdvertisementBase
 	{
-		public AdvertisementPlaygama(float platformInterstitialCooldown) : base(platformInterstitialCooldown)
+		public AdvertisementPlaygama(GameFocusManager gameFocusManager, float platformInterstitialCooldown) : base(platformInterstitialCooldown)
 		{
 			Bridge.advertisement.interstitialStateChanged += OnInterstitialStateChanged;
 			Bridge.advertisement.rewardedStateChanged += OnRewardedStateChanged;
+
+			this.gameFocusManager = gameFocusManager;
 		}
+
+		private readonly GameFocusManager gameFocusManager;
 
 		public override void CheckAdBlock(Action<bool> callback) => Bridge.advertisement.CheckAdBlock(callback);
 
@@ -176,6 +220,8 @@ namespace CarrotHood.PlatformGateway.Playgama
 			_onInterstitialOpen = onOpen;
 			_onInterstitialClose = onClose;
 			_onInterstitialError = onError;
+			
+			gameFocusManager.InAdvert = true;
 			Bridge.advertisement.ShowInterstitial();
 		}
 		
@@ -188,9 +234,11 @@ namespace CarrotHood.PlatformGateway.Playgama
 					break;
 				case InterstitialState.Closed:
 					_onInterstitialClose?.Invoke();
+					gameFocusManager.InAdvert = false;
 					break;
 				case InterstitialState.Failed:
 					_onInterstitialError?.Invoke("Interstitial error");
+					gameFocusManager.InAdvert = false;
 					break;
 			}
 		}
@@ -206,7 +254,8 @@ namespace CarrotHood.PlatformGateway.Playgama
 			_onRewardedOpen = onOpen;
 			_onRewardedClose = onClosed;
 			_onRewardedError = onError;
-			
+
+			gameFocusManager.InAdvert = true;
 			Bridge.advertisement.ShowRewarded();
 		}
 		
@@ -222,9 +271,11 @@ namespace CarrotHood.PlatformGateway.Playgama
 					break;
 				case RewardedState.Closed:
 					_onRewardedClose?.Invoke();
+					gameFocusManager.InAdvert = false;
 					break;
 				case RewardedState.Failed:
 					_onRewardedError?.Invoke("Rewarded error");
+					gameFocusManager.InAdvert = false;
 					break;
 			}
 		}

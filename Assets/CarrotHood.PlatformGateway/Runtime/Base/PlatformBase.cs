@@ -16,6 +16,12 @@ namespace CarrotHood.PlatformGateway
 		
 		public abstract PlatformType Type { get; }
 		public abstract string Language { get; }
+
+		/// <summary>
+		/// True => In focus
+		/// False => Out of focus
+		/// </summary>
+		public Action<bool> OnGameFocusChanged;
 		
 		public abstract IEnumerator Init(PlatformBuilder builder);
 	}

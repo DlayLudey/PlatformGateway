@@ -359,11 +359,17 @@ PlayerSettings:
   openGLRequireES32: 0
   m_TemplateCustomTags:
     ADSGRAM_BLOCK_ID: 
+    FACEBOOK_PLACEMENT_ID: 
     GAME_DISTRIBUTION_GAME_ID: 
+    LAGGED_DEV_ID: 
+    LAGGED_PUBLISHER_ID: 
     OVERLAY_BACKGROUND_COLOR: 
     PROGRESS_BAR_BACKGROUND_COLOR: 
     PROGRESS_BAR_FILL_COLOR: 
     VK_PLAY_GAME_ID: 
+    Y8_ADSENSE_ID: 
+    Y8_CHANNEL_ID: 
+    Y8_GAME_ID: 
   mobileMTRendering:
     Android: 1
     iPhone: 1
@@ -636,7 +642,7 @@ PlayerSettings:
   webGLDebugSymbols: 0
   webGLEmscriptenArgs: 
   webGLModulesDirectory: 
-  webGLTemplate: PROJECT:PortraitMobile
+  webGLTemplate: PROJECT:PortraitPlaygama
   webGLAnalyzeBuildSize: 0
   webGLUseEmbeddedResources: 0
   webGLCompressionFormat: 2
