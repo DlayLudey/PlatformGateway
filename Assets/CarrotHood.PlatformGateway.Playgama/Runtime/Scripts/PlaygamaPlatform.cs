@@ -39,7 +39,7 @@ namespace CarrotHood.PlatformGateway.Playgama
 			builder.Social = new SocialPlaygama();
 			
 			Bridge.game.visibilityStateChanged += state => gameFocusManager.InBackground = state == VisibilityState.Hidden;
-			gameFocusManager.OnGameFocusChanged += OnGameFocusChanged;
+			gameFocusManager.OnGameFocusChanged += b => OnGameFocusChanged?.Invoke(b);
 		}
 	}
 
