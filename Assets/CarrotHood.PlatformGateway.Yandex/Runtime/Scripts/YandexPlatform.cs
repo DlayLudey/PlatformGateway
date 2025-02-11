@@ -35,6 +35,11 @@ namespace CarrotHood.PlatformGateway.Yandex
 			builder.Advertisement = new AdvertisementYandex(interstitialCooldown);
 			builder.Social = new SocialYandex();
 		}
+
+		public override void GameReady()
+		{
+			YandexGamesSdk.GameReady();
+		}
 	}
 
 	public class PaymentsYandex : PaymentsBase

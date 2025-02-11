@@ -24,6 +24,7 @@ namespace CarrotHood.PlatformGateway
 		public Action<bool> OnGameFocusChanged;
 		
 		public abstract IEnumerator Init(PlatformBuilder builder);
+		public virtual void GameReady(){}
 	}
 
 	public enum PlatformType

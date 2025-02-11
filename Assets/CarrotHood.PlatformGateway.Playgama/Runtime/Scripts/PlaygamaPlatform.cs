@@ -5,6 +5,7 @@ using System.Linq;
 using Playgama;
 using Playgama.Modules.Advertisement;
 using Playgama.Modules.Game;
+using Playgama.Modules.Platform;
 using UnityEngine;
 
 namespace CarrotHood.PlatformGateway.Playgama
@@ -40,6 +41,11 @@ namespace CarrotHood.PlatformGateway.Playgama
 			
 			Bridge.game.visibilityStateChanged += state => gameFocusManager.InBackground = state == VisibilityState.Hidden;
 			gameFocusManager.OnGameFocusChanged += b => OnGameFocusChanged?.Invoke(b);
+		}
+
+		public override void GameReady()
+		{
+			Bridge.platform.SendMessage(PlatformMessage.GameReady);
 		}
 	}
 
