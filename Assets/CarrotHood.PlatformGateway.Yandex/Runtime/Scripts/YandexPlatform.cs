@@ -21,6 +21,8 @@ namespace CarrotHood.PlatformGateway.Yandex
 			yield return Cloud.Initialize();
 			yield return Billing.Initialize();
 			Advertisement.Initialize();
+			
+			WebApplication.Initialize((isFocused) => OnGameFocusChanged?.Invoke(isFocused));
 
 			builder.Storage = new StorageYandex(saveCooldown);
 
