@@ -178,6 +178,8 @@ namespace CarrotHood.PlatformGateway.Vk
 
 	public class StorageVk : StorageBase
 	{
+		protected override int MaxSaveLength => 4096;
+
 		public StorageVk(float savePeriod) : base(savePeriod) { }
 
 		public override void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null)

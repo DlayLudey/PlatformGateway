@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
 
@@ -8,6 +9,11 @@ namespace CarrotHood.PlatformGateway
 {
 	public abstract class StorageBase
 	{
+		protected const string SaveLengthKey = "SaveLength";
+		protected const string SaveKey = "Save";
+		
+		protected virtual int MaxSaveLength => 0;
+
 		protected Dictionary<string, object> Data;
 
 		protected string LastSavedJson;
@@ -21,23 +27,69 @@ namespace CarrotHood.PlatformGateway
 
 		public IEnumerator Initialize()
 		{
-			LoadData(nameof(Data),
-				(data) =>
-				{
-					Data = !string.IsNullOrEmpty(data)
-						? JsonConvert.DeserializeObject<Dictionary<string, object>>(data)
-						: new Dictionary<string, object>();
-				}, (error) =>
-				{
-					Debug.LogError(error);
-					Data = new Dictionary<string, object>();
-				});
-
-			yield return new WaitUntil(() => Data != null);
-
+			yield return GetPartialSave();
+			
 			PlatformGateway.Instance.StartCoroutine(SaveTimerCoroutine());
 		}
 
+		private IEnumerator GetPartialSave()
+		{
+			int saveLength = 0;
+			
+			LoadData(SaveLengthKey, s =>
+			{
+				if (!int.TryParse(s, out saveLength))
+					saveLength = -1;
+			}, s =>
+			{
+				saveLength = -1;
+				Debug.LogError($"Load Save Error: {s}");
+			});
+
+			yield return new WaitUntil(() => saveLength != 0);
+
+			if (saveLength == -1)
+			{
+				Data = new Dictionary<string, object>();
+				yield break;
+			}
+
+			string[] jsonParts = new string[saveLength];
+			bool gotError = false;
+			
+			for (int i = 0; i < saveLength; i++)
+			{
+				int saveIndex = i;
+				
+				LoadData(SaveKey + i, s =>
+				{
+					jsonParts[saveIndex] = s;
+				}, s =>
+				{
+					Debug.LogError(s);
+					gotError = true;
+				});
+			}
+
+			yield return new WaitUntil(() => jsonParts.All(x => x != null) || gotError);
+			
+			if(gotError)
+			{
+				Data = new Dictionary<string, object>();
+				yield break;
+			}
+
+			string json = string.Join("", jsonParts);
+			
+			if(string.IsNullOrEmpty(json))
+			{
+				Data = new Dictionary<string, object>();
+				yield break;
+			}
+			
+			Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+		}
+		
 		private IEnumerator SaveTimerCoroutine()
 		{
 			while (Application.isPlaying)
@@ -82,7 +134,28 @@ namespace CarrotHood.PlatformGateway
 			
 			LastSavedJson = json;
 			
-			SaveData(nameof(Data), JsonConvert.SerializeObject(Data), errorCallback: Debug.LogError);
+			List<string> saveParts = new List<string>();
+
+			if (MaxSaveLength == 0)
+				saveParts.Add(json);
+			else
+			{
+				for (int i = 0; i < json.Length / MaxSaveLength + 1; i++)
+				{
+					int startIndex = i * MaxSaveLength;
+					saveParts.Add(
+						MaxSaveLength <= json.Length - startIndex
+							? json.Substring(startIndex, MaxSaveLength)
+							: json.Substring(startIndex));
+				}
+			}
+
+			SaveData(SaveLengthKey, saveParts.Count.ToString());
+			
+			for (int i = 0; i < saveParts.Count; i++)
+			{
+				SaveData(SaveKey + i, saveParts[i], errorCallback: s => Debug.LogError($"SaveError: {s}"));
+			}
 		}
 
 		public abstract void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null);
