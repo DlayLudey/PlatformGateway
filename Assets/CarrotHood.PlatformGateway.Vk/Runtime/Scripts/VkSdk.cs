@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Scripting;
 
-namespace CarrotHood.PlatformGateway.Vk.Runtime.Scripts
+namespace CarrotHood.PlatformGateway.Vk
 {
 	public static class VkSdk
 	{

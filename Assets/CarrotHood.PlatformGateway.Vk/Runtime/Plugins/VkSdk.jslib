@@ -32,6 +32,35 @@
             document.head.appendChild(sdkScript);
         },
         
+        webApplicationInitialize: function (onGameFocusChangeCallbackPtr) {
+
+            vkSdk.vkBridge.subscribe((e) => {
+                const { type, data } = e.detail;
+            
+                switch(type) {
+                    case 'VKWebAppViewHide':
+                        const reason = data.reason;
+                        
+                        if(reason === 'pip')
+                            return;
+                    
+                        {{{ makeDynCall('vi', 'onGameFocusChangeCallbackPtr') }}}(false);
+                        break;
+                    case 'VKWebAppViewRestore':
+                        {{{ makeDynCall('vi', 'onGameFocusChangeCallbackPtr') }}}(true);
+                        break;
+                }
+            });
+
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    {{{ makeDynCall('vi', 'onGameFocusChangeCallbackPtr') }}}(false);
+                } else {
+                    {{{ makeDynCall('vi', 'onGameFocusChangeCallbackPtr') }}}(true);
+                }
+            });
+        },
+        
         getLaunchParams: function (successCallbackPtr, errorCallbackPtr) {
             vkSdk.vkBridge.send('VKWebAppGetLaunchParams')
                 .then((data) => {
@@ -177,6 +206,10 @@
 
     VkSdkInitialize: function (successCallbackPtr) {
         vkSdk.vkSdkInitialize(successCallbackPtr);
+    },
+    
+    VkWebApplicationInitialize: function (onGameFocusChangeCallbackPtr){
+        vkSdk.webApplicationInitialize(onGameFocusChangeCallbackPtr);
     },
     
     VkGetLaunchParams: function (successCallbackPtr, errorCallbackPtr) {

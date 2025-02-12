@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using CarrotHood.PlatformGateway.Vk.Runtime.Scripts;
+using CarrotHood.PlatformGateway.Vk;
 using UnityEngine;
 
 namespace CarrotHood.PlatformGateway.Vk
@@ -15,6 +15,8 @@ namespace CarrotHood.PlatformGateway.Vk
 
 		public override string Language => _launchParams.language;
 		
+		private GameFocusManager gameFocusManager;
+		
 		public override IEnumerator Init(PlatformBuilder builder)
 		{
 			yield return VkSdk.Initialize();
@@ -22,13 +24,17 @@ namespace CarrotHood.PlatformGateway.Vk
 			yield return GetLaunchParams();
 			
 			builder.Storage = new StorageVk(saveCooldown);
+			gameFocusManager = new GameFocusManager();
 
 			yield return builder.Storage.Initialize();
 			
-			builder.Payments = new PaymentsVk(Language, builder.Storage);
+			builder.Payments = new PaymentsVk(gameFocusManager, Language, builder.Storage);
 			
-			builder.Advertisement = new AdvertisementVk(interstitialCooldown);
+			builder.Advertisement = new AdvertisementVk(gameFocusManager, interstitialCooldown);
 			builder.Social = new SocialVk();
+
+			WebApplication.Initialize(b => gameFocusManager.InBackground = !b);
+			gameFocusManager.OnGameFocusChanged += b => OnGameFocusChanged?.Invoke(b);
 		}
 
 		private IEnumerator GetLaunchParams()
@@ -51,9 +57,10 @@ namespace CarrotHood.PlatformGateway.Vk
 
 	public class PaymentsVk : PaymentsBase
 	{
-		public PaymentsVk(string language, StorageBase storageBase) : base(storageBase)
+		public PaymentsVk(GameFocusManager gameFocusManager, string language, StorageBase storageBase) : base(storageBase)
 		{
 			CurrencyName = language == "en" ? "Votes" : "Голос";
+			this.gameFocusManager = gameFocusManager;
 		}
 
 		public override Product[] Products { get; protected set; } = new Product[]{};
@@ -61,6 +68,8 @@ namespace CarrotHood.PlatformGateway.Vk
 		public override Sprite CurrencySprite { get; protected set; } = Resources.Load<Sprite>("PlatformGateway/CurrencyIcons/Vk");
 		public override bool PaymentsSupported => true;
 		public override bool ConsummationSupported => false;
+
+		private GameFocusManager gameFocusManager;
 
 		protected override void InternalConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null)
 		{
@@ -74,13 +83,29 @@ namespace CarrotHood.PlatformGateway.Vk
 
 		protected override void InternalPurchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null)
 		{
-			Billing.Purchase(productId, () => onSuccessCallback?.Invoke(null), onErrorCallback);
+			gameFocusManager.InPayments = true;
+			
+			Billing.Purchase(productId, () =>
+			{
+				gameFocusManager.InPayments = false;
+				onSuccessCallback?.Invoke(null);
+			}, s =>
+			{
+				gameFocusManager.InPayments = false;
+				onErrorCallback?.Invoke(s);
+			});
 		}
 	}
 
 	public class AdvertisementVk : AdvertisementBase
 	{
-		public AdvertisementVk(float platformInterstitialCooldown) : base(platformInterstitialCooldown) { }
+		public AdvertisementVk(GameFocusManager gameFocusManager, float platformInterstitialCooldown) : base(platformInterstitialCooldown)
+		{
+			this.gameFocusManager = gameFocusManager;
+		}
+
+		protected GameFocusManager gameFocusManager;
+		
 		public override void CheckAdBlock(Action<bool> callback) => callback?.Invoke(false);
 
 		public override void ShowBanner(Dictionary<string, object> options = null) { }
@@ -90,18 +115,36 @@ namespace CarrotHood.PlatformGateway.Vk
 		protected override void ShowInterstitialInternal(Action onOpen, Action onClose, Action<string> onError)
 		{
 			onOpen?.Invoke();
-			Advertisement.ShowInterstitialAd(onClose, onError);
+			
+			gameFocusManager.InAdvert = true;
+			
+			Advertisement.ShowInterstitialAd(() =>
+			{
+				gameFocusManager.InAdvert = false;
+				onClose?.Invoke();
+			}, s =>
+			{
+				gameFocusManager.InAdvert = false;
+				onError?.Invoke(s);
+			});
 		}
 
 		public override void ShowRewarded(Action onRewarded, Action onOpen = null, Action onClosed = null, Action<string> onError = null)
 		{
 			onOpen?.Invoke();
 			
+			gameFocusManager.InAdvert = true;
+			
 			Advertisement.ShowRewardedAd(() =>
 			{
+				gameFocusManager.InAdvert = false;
 				onRewarded?.Invoke();
 				onClosed?.Invoke();
-			}, onError);
+			}, s =>
+			{
+				gameFocusManager.InAdvert = false;
+				onError?.Invoke(s);
+			});
 		}
 	}
 
