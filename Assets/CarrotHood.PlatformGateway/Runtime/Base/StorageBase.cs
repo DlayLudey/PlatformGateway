@@ -159,6 +159,30 @@ namespace CarrotHood.PlatformGateway
 			}
 		}
 
+		public IEnumerator ClearData()
+		{
+			int saveLength = 0;
+			
+			LoadData(SaveLengthKey, s =>
+			{
+				if (!int.TryParse(s, out saveLength))
+					saveLength = -1;
+			}, s =>
+			{
+				saveLength = -1;
+				Debug.LogError($"Load Save Error: {s}");
+			});
+
+			yield return new WaitUntil(() => saveLength != 0);
+			
+			for (int i = 0; i < saveLength; i++)
+			{
+				SaveData(SaveKey + i, "");
+			}
+			
+			Data = new Dictionary<string, object>();
+		}
+
 		public abstract void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null);
 
 		public abstract void SaveData(string key, string value, Action successCallback = null, Action<string> errorCallback = null);
