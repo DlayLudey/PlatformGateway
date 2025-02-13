@@ -55,30 +55,31 @@ namespace CarrotHood.PlatformGateway
 			}
 
 			string[] jsonParts = new string[saveLength];
-			bool gotError = false;
 			
 			for (int i = 0; i < saveLength; i++)
 			{
+				bool gotError = false;
+				bool gotSave = false;
 				int saveIndex = i;
 				
 				LoadData(SaveKey + i, s =>
 				{
 					jsonParts[saveIndex] = s;
+					gotSave = true;
 				}, s =>
 				{
 					Debug.LogError(s);
 					gotError = true;
 				});
-			}
+				
+				yield return new WaitUntil(() => gotSave || gotError);
 
-			yield return new WaitUntil(() => jsonParts.All(x => x != null) || gotError);
-			
-			if(gotError)
-			{
+				if (!gotError) continue;
+				
 				Data = new Dictionary<string, object>();
 				yield break;
 			}
-
+			
 			string json = string.Join("", jsonParts);
 			
 			if(string.IsNullOrEmpty(json))
