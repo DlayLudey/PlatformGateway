@@ -180,6 +180,8 @@ namespace CarrotHood.PlatformGateway
 				SaveData(SaveKey + i, "");
 			}
 			
+			SaveData(SaveLengthKey, "");
+			
 			Data = new Dictionary<string, object>();
 		}
 
