@@ -87,8 +87,23 @@ namespace CarrotHood.PlatformGateway
 				Data = new Dictionary<string, object>();
 				yield break;
 			}
-			
-			Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+
+			try
+			{
+				Data = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+			}
+			catch (Exception e)
+			{
+				Debug.LogError(e);
+				Debug.LogError("JsonLoadError, JSON Parts:");
+
+				foreach (var jsonPart in jsonParts)
+				{
+					Debug.LogError(jsonPart);
+				}
+
+				Data = new Dictionary<string, object>();
+			}
 		}
 		
 		private IEnumerator SaveTimerCoroutine()
@@ -126,7 +141,7 @@ namespace CarrotHood.PlatformGateway
 		/// <summary>
 		/// Do not use this unless necessary, data automatically saves by this class
 		/// </summary>
-		public void SaveStoredData()
+		public void SaveStoredData(Action onSuccess = null, Action<string> onError = null)
 		{
 			string json = JsonConvert.SerializeObject(Data);
 			
@@ -151,12 +166,48 @@ namespace CarrotHood.PlatformGateway
 				}
 			}
 
-			SaveData(SaveLengthKey, saveParts.Count.ToString());
+			PlatformGateway.Instance.StartCoroutine(SavePartialDataIEnumerator(saveParts, onSuccess, onError));
+		}
+
+		private IEnumerator SavePartialDataIEnumerator(List<string> saveParts, Action onSuccess = null, Action<string> onError = null)
+		{
+			bool savedCount = false;
+			bool gotError = false;
+			
+			SaveData(SaveLengthKey, saveParts.Count.ToString(), () =>
+			{
+				savedCount = true;
+			}, s =>
+			{
+				onError?.Invoke(s);
+				gotError = true;
+			});
+
+			yield return new WaitUntil(() => savedCount || gotError);
+
+			if(gotError)
+				yield break;
 			
 			for (int i = 0; i < saveParts.Count; i++)
 			{
-				SaveData(SaveKey + i, saveParts[i], errorCallback: s => Debug.LogError($"SaveError: {s}"));
+				bool savedPart = false;
+				
+				SaveData(SaveKey + i, saveParts[i], () =>
+				{
+					savedPart = true;
+				}, s =>
+				{
+					gotError = true;
+					onError?.Invoke(s);
+				});
+
+				yield return new WaitUntil(() => savedPart || gotError);
+				
+				if(gotError)
+					yield break;
 			}
+			
+			onSuccess?.Invoke();
 		}
 
 		public IEnumerator ClearData()

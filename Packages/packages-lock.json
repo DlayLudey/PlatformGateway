@@ -1,11 +1,12 @@
 {
   "dependencies": {
     "com.blackbox.kimicuyandexgames": {
-      "version": "https://github.com/DasDaOne/KimicuYandexGames.git",
+      "version": "file:KimicuYandexGames",
       "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "c723985751d663f68509866c2cc129be6ecc39e6"
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.nuget.newtonsoft-json": "3.2.1"
+      }
     },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
@@ -45,8 +46,8 @@
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.services.analytics": "1.0.4",
-        "com.unity.ugui": "1.0.0"
+        "com.unity.ugui": "1.0.0",
+        "com.unity.services.analytics": "1.0.4"
       },
       "url": "https://packages.unity.com"
     },
@@ -130,10 +131,10 @@
       "source": "registry",
       "dependencies": {
         "com.unity.ugui": "1.0.0",
-        "com.unity.modules.unitywebrequest": "1.0.0",
-        "com.unity.modules.jsonserialize": "1.0.0",
+        "com.unity.services.core": "1.8.2",
         "com.unity.modules.androidjni": "1.0.0",
-        "com.unity.services.core": "1.8.2"
+        "com.unity.modules.jsonserialize": "1.0.0",
+        "com.unity.modules.unitywebrequest": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
@@ -143,8 +144,8 @@
       "source": "registry",
       "dependencies": {
         "com.unity.ugui": "1.0.0",
-        "com.unity.modules.jsonserialize": "1.0.0",
-        "com.unity.services.core": "1.12.4"
+        "com.unity.services.core": "1.12.4",
+        "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
@@ -153,9 +154,9 @@
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.unity.modules.unitywebrequest": "1.0.0",
+        "com.unity.modules.androidjni": "1.0.0",
         "com.unity.nuget.newtonsoft-json": "3.2.1",
-        "com.unity.modules.androidjni": "1.0.0"
+        "com.unity.modules.unitywebrequest": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
