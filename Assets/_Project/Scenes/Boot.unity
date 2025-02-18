@@ -352,7 +352,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 592f668c4bddda24f8c2eb8eade52269, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  forcedPlatformType: 0
+  forcedPlatformType: 5
   platforms:
   - {fileID: 11400000, guid: 2b00c701050fe0743a2c23834a478f39, type: 2}
   - {fileID: 11400000, guid: 6d7dd92d4fce98249aa94349d3cf72f3, type: 2}
