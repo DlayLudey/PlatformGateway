@@ -72,7 +72,7 @@
                     vkSdk.invokeViCallback(errorCallbackPtr, "GetLaunchParams data error");
                 })
                 .catch((error) => {
-                    vkSdk.invokeViCallback(errorCallbackPtr, error);
+                    vkSdk.invokeErrorCallback(errorCallbackPtr, error);
                 });
         },
         
@@ -91,7 +91,7 @@
                     vkSdk.invokeViCallback(errorCallbackPtr, "ShowPayment data error");
                 })
                 .catch((error) => {
-                    vkSdk.invokeViCallback(errorCallbackPtr, error);
+                    vkSdk.invokeErrorCallback(errorCallbackPtr, error);
                 });
         },
         
@@ -108,7 +108,7 @@
                     vkSdk.invokeViCallback(errorCallbackPtr, "InviteFriends data error");
                 })
                 .catch((error) => {
-                    vkSdk.invokeViCallback(errorCallbackPtr, error);
+                    vkSdk.invokeErrorCallback(errorCallbackPtr, error);
                 });
         },
         
@@ -126,7 +126,7 @@
                     vkSdk.invokeViCallback(errorCallbackPtr, "Interstitial error");
                 })
                 .catch((error) => { 
-                    vkSdk.invokeViCallback(errorCallbackPtr, error)
+                    vkSdk.invokeErrorCallback(errorCallbackPtr, error)
                 });
         },
 
@@ -143,7 +143,7 @@
                     vkSdk.invokeViCallback(errorCallbackPtr, "Interstitial error");
                 })
                 .catch((error) => {
-                    vkSdk.invokeViCallback(errorCallbackPtr, error)
+                    vkSdk.invokeErrorCallback(errorCallbackPtr, error)
                 });
         },
         
@@ -162,7 +162,7 @@
                     vkSdk.invokeViCallback(errorCallbackPtr, "GetStorage data error")
                 })
                 .catch((error) => {
-                    vkSdk.invokeViCallback(errorCallbackPtr, error);
+                    vkSdk.invokeErrorCallback(errorCallbackPtr, error);
                 });
         },
         
@@ -180,7 +180,7 @@
                     vkSdk.invokeViCallback(errorCallbackPtr, "SetStorage error");
                 })
                 .catch((error) => {
-                    vkSdk.invokeViCallback(errorCallbackPtr, error);
+                    vkSdk.invokeErrorCallback(errorCallbackPtr, error);
                 });
         },
         
@@ -198,7 +198,7 @@
             }).then((data) => {
                 vkSdk.invokeViCallback(successCallbackPtr, data.response);
             }).catch((error) => {
-                vkSdk.invokeViCallback(errorCallbackPtr, error);
+                vkSdk.invokeErrorCallback(errorCallbackPtr, error);
             });
         },
         
@@ -215,7 +215,7 @@
             }).then((data) => {
                 {{{ makeDynCall('v', 'successCallbackPtr') }}}();
             }).catch((error) => {
-                vkSdk.invokeViCallback(errorCallbackPtr, error);
+                vkSdk.invokeErrorCallback(errorCallbackPtr, error);
             });
         },
         
@@ -226,6 +226,10 @@
             {{{ makeDynCall('vi', 'callbackPtr') }}}(buffer);
             
             _free(buffer);
+        },
+        
+        invokeErrorCallback: function (callbackPtr, error){
+            vkSdk.invokeViCallback(callbackPtr, JSON.stringify(error, Object.getOwnPropertyNames(error)));
         },
 
         allocateUnmanagedString: function (string) {
