@@ -87,5 +87,7 @@ namespace CarrotHood.PlatformGateway.Vk
 		public string language;
 		[field: Preserve, JsonProperty("vk_platform")]
 		public string platform;
+		[field: Preserve, JsonProperty("vk_user_id")]
+		public int userId;
 	}
 }

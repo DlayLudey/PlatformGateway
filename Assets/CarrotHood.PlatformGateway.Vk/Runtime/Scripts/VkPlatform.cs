@@ -9,6 +9,8 @@ namespace CarrotHood.PlatformGateway.Vk
 	[CreateAssetMenu(fileName = "VkPlatform", menuName = "Platforms/Vk")]
 	public class VkPlatform : PlatformBase
 	{
+		[SerializeField] private string serviceToken;
+		
 		private LaunchParams _launchParams;
 
 		public override PlatformType Type => PlatformType.Vk;
@@ -23,7 +25,8 @@ namespace CarrotHood.PlatformGateway.Vk
 
 			yield return GetLaunchParams();
 			
-			builder.Storage = new StorageVk(saveCooldown);
+			builder.Storage = new StorageVk(serviceToken, _launchParams.userId, saveCooldown);
+			
 			gameFocusManager = new GameFocusManager();
 
 			yield return builder.Storage.Initialize();
@@ -178,18 +181,19 @@ namespace CarrotHood.PlatformGateway.Vk
 
 	public class StorageVk : StorageBase
 	{
-		protected override int MaxSaveLength => 4096;
-
-		public StorageVk(float savePeriod) : base(savePeriod) { }
+		public StorageVk(string token, int userId, float savePeriod) : base(savePeriod)
+		{
+			PartialStorage.Initialize(token, userId);
+		}
 
 		public override void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null)
 		{
-			Storage.GetStorage(key, successCallback, errorCallback);
+			PartialStorage.GetPartialStorage(key, successCallback, errorCallback);
 		}
 
 		public override void SaveData(string key, string value, Action successCallback = null, Action<string> errorCallback = null)
 		{
-			Storage.SetStorage(key, value, successCallback, errorCallback);
+			PartialStorage.SetPartialStorage(key, value, successCallback, errorCallback);
 		}
 	}
 }

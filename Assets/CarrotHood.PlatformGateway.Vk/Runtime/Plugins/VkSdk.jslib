@@ -77,7 +77,6 @@
         },
         
         // Billing
-        
         showPayment: function (key, successCallbackPtr, errorCallbackPtr) {
             vkSdk.vkBridge.send('VKWebAppShowOrderBox', {
                 type: 'item',
@@ -97,7 +96,6 @@
         },
         
         // Social
-        
         inviteFriends: function (successCallbackPtr, errorCallbackPtr) {
             vkSdk.vkBridge.send('VKWebAppShowInviteBox', {
             })
@@ -115,7 +113,6 @@
         },
         
         // Advertisement
-        
         showInterstitial: function (closeCallbackPtr, errorCallbackPtr){
             vkSdk.vkBridge.send('VKWebAppShowNativeAds', {
                 ad_format: 'interstitial'
@@ -187,6 +184,41 @@
                 });
         },
         
+        // PartialStorage
+        
+        getPartialStorage: function (key, token, userId, successCallbackPtr, errorCallbackPtr) {
+            vkSdk.vkBridge.send("VKWebAppCallAPIMethod", {
+                method: "execute.getPartialData",
+                params: {
+                    Key: key,
+                    UserId: userId,
+                    access_token: token,
+                    v: "5.199"
+                }
+            }).then((data) => {
+                vkSdk.invokeViCallback(successCallbackPtr, data.response);
+            }).catch((error) => {
+                vkSdk.invokeViCallback(errorCallbackPtr, error);
+            });
+        },
+        
+        setPartialStorage: function (key, value, token, userId, successCallbackPtr, errorCallbackPtr) {
+            vkSdk.vkBridge.send("VKWebAppCallAPIMethod", {
+                method: "execute.setPartialData",
+                params: {
+                    Key: key,
+                    Save: value,
+                    UserId: userId,
+                    access_token: token,
+                    v: "5.199"
+                }
+            }).then((data) => {
+                {{{ makeDynCall('v', 'successCallbackPtr') }}}();
+            }).catch((error) => {
+                vkSdk.invokeViCallback(errorCallbackPtr, error);
+            });
+        },
+        
         // Utils
         invokeViCallback: function (callbackPtr, data){
             const buffer = vkSdk.allocateUnmanagedString(data);
@@ -238,7 +270,15 @@
     
     VkSetStorage: function (keyPtr, valuePtr, successCallbackPtr, errorCallbackPtr) {
         vkSdk.setStorage(UTF8ToString(keyPtr), UTF8ToString(valuePtr), successCallbackPtr, errorCallbackPtr);
-    }
+    },
+    
+    VkGetPartialStorage: function (keyPtr, tokenPtr, userId, successCallbackPtr, errorCallbackPtr) {
+        vkSdk.getPartialStorage(UTF8ToString(keyPtr), UTF8ToString(tokenPtr), userId, successCallbackPtr, errorCallbackPtr);
+    },
+    
+    VkSetPartialStorage: function (keyPtr, valuePtr, tokenPtr, userId, successCallbackPtr, errorCallbackPtr) {
+        vkSdk.setPartialStorage(UTF8ToString(keyPtr), UTF8ToString(valuePtr), UTF8ToString(tokenPtr), userId, successCallbackPtr, errorCallbackPtr);
+    },
 }
 
 autoAddDeps(library, '$vkSdk');

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CarrotHood.PlatformGateway;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -34,6 +35,8 @@ namespace Examples
 		{
 			_playerData.coins = _coinsInput.text;
 			_playerData.level = _levelInput.text;
+			if(string.IsNullOrEmpty(_playerData.testData))
+				_playerData.testData = string.Concat(Enumerable.Repeat("12345678", 1024));
 			Storage.SetValue("Save", _playerData);
 		}
 		
@@ -47,12 +50,15 @@ namespace Examples
 			_levelInput.text = _playerData.level;
 			
 			_overlay.SetActive(false);
+			
+			Debug.LogWarning($"TestDataLength: {_playerData.testData.Length}\nTestData: {_playerData.testData}");
 		}
 
 		private class PlayerData
 		{
 			public string coins;
 			public string level;
+			public string testData;
 		}
 	}
 }
