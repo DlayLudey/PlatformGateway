@@ -74,7 +74,7 @@ namespace CarrotHood.PlatformGateway
 		/// <summary>
 		/// Do not use this unless necessary, data automatically saves by this class
 		/// </summary>
-		public void SaveStoredData()
+		public void SaveStoredData(Action onComplete, Action<string> onError)
 		{
 			string json = JsonConvert.SerializeObject(Data);
 			
@@ -83,7 +83,7 @@ namespace CarrotHood.PlatformGateway
 			
 			LastSavedJson = json;
 			
-			SaveData(nameof(Data), JsonConvert.SerializeObject(Data), errorCallback: Debug.LogError);
+			SaveData(nameof(Data), JsonConvert.SerializeObject(Data), onComplete, onError);
 		}
 
 		public abstract void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null);
