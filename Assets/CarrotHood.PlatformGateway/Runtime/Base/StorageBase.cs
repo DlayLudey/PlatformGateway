@@ -74,7 +74,7 @@ namespace CarrotHood.PlatformGateway
 		/// <summary>
 		/// Do not use this unless necessary, data automatically saves by this class
 		/// </summary>
-		public void SaveStoredData(Action onComplete, Action<string> onError)
+		public void SaveStoredData(Action onComplete = null, Action<string> onError = null)
 		{
 			string json = JsonConvert.SerializeObject(Data);
 			
