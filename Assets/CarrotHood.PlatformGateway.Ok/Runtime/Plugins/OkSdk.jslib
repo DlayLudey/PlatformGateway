@@ -423,7 +423,7 @@ const library = {
     },
     
     OkShowPayment: function (namePtr, descriptionPtr, codePtr, price, paymentSuccessCallbackPtr, paymentErrorCallbackPtr){
-        okSdk.showPayment(UTF8ToString(name), UTF8ToString(description), UTF8ToString(code), price, paymentSuccessCallbackPtr, paymentErrorCallbackPtr);
+        okSdk.showPayment(UTF8ToString(namePtr), UTF8ToString(descriptionPtr), UTF8ToString(codePtr), price, paymentSuccessCallbackPtr, paymentErrorCallbackPtr);
     },
     
     OkGetStorage: function(keyPtr, scopePtr, successCallbackPtr, errorCallbackPtr){
