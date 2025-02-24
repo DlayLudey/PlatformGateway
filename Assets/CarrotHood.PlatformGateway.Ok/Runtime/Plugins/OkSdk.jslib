@@ -229,7 +229,8 @@ const library = {
                 {
                     "method": "storage.set",
                     "key":key,
-                    "value":value
+                    "value":value,
+                    "scope":"GLOBAL"
                 }, okSdk.setStorageCallback);
         },
         
@@ -344,7 +345,8 @@ const library = {
                 {
                     "method": "storage.set",
                     "key": key + "Length",
-                    "value": okSdk.setPartialStoragePartsAmount
+                    "value": okSdk.setPartialStoragePartsAmount,
+                    "scope":"GLOBAL"
                 }, okSdk.setPartialStorageCallback);
             
             for (let i = 0; i < okSdk.setPartialStoragePartsAmount; i++) {
@@ -352,7 +354,8 @@ const library = {
                     {
                         "method": "storage.set",
                         "key": key + i,
-                        "value":partialValue[i]
+                        "value":partialValue[i],
+                        "scope":"GLOBAL"
                     }, okSdk.setPartialStorageCallback);
             }
         },
