@@ -9,26 +9,20 @@ namespace Qt.OkSdk
 {
     public static class Storage
     {
-        public enum Scope
-        {
-            CUSTOM,
-            GLOBAL
-        }
-
 #region GetStorage
         [DllImport("__Internal")]
-        private static extern void OkGetStorage(string key, string scope, Action<string> onSuccess, Action<string> onError);
+        private static extern void OkGetStorage(string key, Action<string> onSuccess, Action<string> onError);
 
         private static Action<string> s_onGetStorageSuccess;
         private static Action<string> s_onGetStorageError;
         
-        public static void GetStorageValue(string key, Action<string> onSuccess, Action<string> onError = null, Scope scope = Scope.CUSTOM)
+        public static void GetStorageValue(string key, Action<string> onSuccess, Action<string> onError = null)
         {
             s_onGetStorageSuccess = onSuccess;
             s_onGetStorageError = onError;
 
             #if !UNITY_EDITOR
-            OkGetStorage(key, scope.ToString(), OnGetStorageSuccess, OnGetStorageError);
+            OkGetStorage(key, OnGetStorageSuccess, OnGetStorageError);
             #else
             OnGetStorageSuccess(PlayerPrefs.GetString(key));
             #endif
@@ -53,7 +47,7 @@ namespace Qt.OkSdk
         private static Action s_onSetStorageSuccess;
         private static Action<string> s_onSetStorageError;
         
-        public static void SetStorageValue(string key, string value, Action onSuccess = null, Action<string> onError = null, Scope scope = Scope.CUSTOM)
+        public static void SetStorageValue(string key, string value, Action onSuccess = null, Action<string> onError = null)
         {
             s_onSetStorageSuccess = onSuccess;
             s_onSetStorageError = onError;

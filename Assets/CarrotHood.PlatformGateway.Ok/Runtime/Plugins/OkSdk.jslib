@@ -186,7 +186,7 @@ const library = {
         getStorageSuccessCallbackPtr: undefined,
         getStorageErrorCallbackPtr: undefined,
         getStorageKey: undefined,
-        getStorage: function(key, scope, successCallbackPtr, errorCallbackPtr){
+        getStorage: function(key, successCallbackPtr, errorCallbackPtr){
             okSdk.getStorageSuccessCallbackPtr = successCallbackPtr;
             okSdk.getStorageErrorCallbackPtr = errorCallbackPtr;
             okSdk.getStorageKey = key;
@@ -195,7 +195,7 @@ const library = {
                 {
                     "method": "storage.get",
                     "keys":[okSdk.getStorageKey],
-                    "scope":scope
+                    "scope":"GLOBAL"
                 }, okSdk.getStorageCallback);
         },
         
@@ -250,19 +250,17 @@ const library = {
         getPartialStorageErrorCallbackPtr: undefined,
         getPartialStorageInitialKey: undefined,
         getPartialStorageAmountKey: undefined,
-        getPartialStorageScope: undefined,
-        getPartialStorage: function(key, scope, successCallbackPtr, errorCallbackPtr){
+        getPartialStorage: function(key, successCallbackPtr, errorCallbackPtr){
             okSdk.getPartialStorageSuccessCallbackPtr = successCallbackPtr;
             okSdk.getPartialStorageErrorCallbackPtr = errorCallbackPtr;
             okSdk.getPartialStorageInitialKey = key;
             okSdk.getPartialStorageAmountKey = key + "Length";
-            okSdk.getPartialStorageScope = scope;
 
             okSdk.FAPI.Client.call(
                 {
                     "method": "storage.get",
                     "keys":okSdk.getPartialStorageAmountKey,
-                    "scope":scope,
+                    "scope":"GLOBAL",
                 }, okSdk.getPartialStorageKeyAmountCallback);
         },
 
@@ -299,7 +297,7 @@ const library = {
                 {
                     "method": "storage.get",
                     "keys":keys,
-                    "scope":okSdk.getPartialStorageScope,
+                    "scope":"GLOBAL",
                 }, okSdk.getPartialStorageValuesCallback);
         
         },
@@ -426,16 +424,16 @@ const library = {
         okSdk.showPayment(UTF8ToString(namePtr), UTF8ToString(descriptionPtr), UTF8ToString(codePtr), price, paymentSuccessCallbackPtr, paymentErrorCallbackPtr);
     },
     
-    OkGetStorage: function(keyPtr, scopePtr, successCallbackPtr, errorCallbackPtr){
-        okSdk.getStorage(UTF8ToString(keyPtr), UTF8ToString(scopePtr), successCallbackPtr, errorCallbackPtr);
+    OkGetStorage: function(keyPtr, successCallbackPtr, errorCallbackPtr){
+        okSdk.getStorage(UTF8ToString(keyPtr), successCallbackPtr, errorCallbackPtr);
     },
     
     OkSetStorage: function(keyPtr, valuePtr, successCallbackPtr, errorCallbackPtr){
         okSdk.setStorage(UTF8ToString(keyPtr), UTF8ToString(valuePtr), successCallbackPtr, errorCallbackPtr);
     },
     
-    OkGetPartialStorage: function(keyPtr, scopePtr, successCallbackPtr, errorCallbackPtr){
-        okSdk.getPartialStorage(UTF8ToString(keyPtr), UTF8ToString(scopePtr), successCallbackPtr, errorCallbackPtr);
+    OkGetPartialStorage: function(keyPtr, successCallbackPtr, errorCallbackPtr){
+        okSdk.getPartialStorage(UTF8ToString(keyPtr), successCallbackPtr, errorCallbackPtr);
     },
     
     OkSetPartialStorage: function(keyPtr, valuePtr, successCallbackPtr, errorCallbackPtr){

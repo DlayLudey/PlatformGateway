@@ -42,18 +42,18 @@ namespace CarrotHood.PlatformGateway.Ok
 #endregion
 #region GetStorage
 		[DllImport("__Internal")]
-		private static extern void OkGetPartialStorage(string key, string scope, Action<string> onSuccess, Action<string> onError);
+		private static extern void OkGetPartialStorage(string key, Action<string> onSuccess, Action<string> onError);
 
 		private static Action<string> onGetPartialStorageSuccess;
 		private static Action<string> onGetPartialStorageError;
 
-		public static void GetPartialStorage(string key, Action<string> onSuccess, Action<string> onError, Storage.Scope scope = Storage.Scope.CUSTOM)
+		public static void GetPartialStorage(string key, Action<string> onSuccess, Action<string> onError)
 		{
 			onGetPartialStorageSuccess = onSuccess;
 			onGetPartialStorageError = onError;
 			
 			#if !UNITY_EDITOR
-			OkGetPartialStorage(key, scope.ToString(), OnGetPartialStorageSuccess, OnGetPartialStorageError);
+			OkGetPartialStorage(key, OnGetPartialStorageSuccess, OnGetPartialStorageError);
 			#else
 			OnGetPartialStorageSuccess(PlayerPrefs.GetString(key));
 			#endif
