@@ -367,12 +367,8 @@ const library = {
                 _free(buffer);
                 return;
             }
-
-            okSdk.setPartialStorageSuccessAmount++;
             
-            console.log(okSdk.setPartialStorageSuccessAmount, okSdk.setPartialStoragePartsAmount)
-    
-            if(okSdk.setPartialStorageSuccessCallbackPtr === okSdk.setPartialStoragePartsAmount + 1)
+            if(okSdk.setPartialStorageSuccessAmount === okSdk.setPartialStoragePartsAmount + 1)
                 {{{ makeDynCall('v', 'okSdk.setPartialStorageSuccessCallbackPtr') }}}();
         },
         
