@@ -16,6 +16,13 @@ namespace CarrotHood.PlatformGateway.Ok
 	public class OkPlatform : PlatformBase
 	{
 		[SerializeField] private Product[] products;
+		[SerializeField] private StorageType storageType;
+		
+		private enum StorageType
+		{
+			Default,
+			Partial
+		}
 		
 		public override PlatformType Type => PlatformType.Ok;
 		public override string Language => "ru";
@@ -24,8 +31,11 @@ namespace CarrotHood.PlatformGateway.Ok
 		{
 			yield return OkSdk.Initialize();
 
-			builder.Storage = new StorageOk(saveCooldown);
-
+			if(storageType == StorageType.Default)
+				builder.Storage = new StorageOk(saveCooldown);
+			else
+				builder.Storage = new PartialStorageOk(saveCooldown);
+			
 			yield return builder.Storage.Initialize();
 			
 			builder.Payments = new PaymentsOk(products, builder.Storage);
@@ -181,6 +191,21 @@ namespace CarrotHood.PlatformGateway.Ok
 		public override void SaveData(string key, string value, Action successCallback = null, Action<string> errorCallback = null)
 		{
 			Storage.SetStorageValue(key, value, successCallback, errorCallback);
+		}
+	}
+
+	public class PartialStorageOk : StorageBase
+	{
+		public PartialStorageOk(float savePeriod) : base(savePeriod) { }
+		
+		public override void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null)
+		{
+			PartialStorage.GetPartialStorage(key, successCallback, errorCallback);
+		}
+
+		public override void SaveData(string key, string value, Action successCallback = null, Action<string> errorCallback = null)
+		{
+			PartialStorage.SetPartialStorage(key, value, successCallback, errorCallback);
 		}
 	}
 }

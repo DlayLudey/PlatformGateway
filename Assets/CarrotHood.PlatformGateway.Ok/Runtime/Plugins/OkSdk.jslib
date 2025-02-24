@@ -156,14 +156,14 @@ const library = {
         
         paymentSuccessCallbackPtr: undefined,
         paymentErrorCallbackPtr: undefined,
-        showPayment: function(namePtr, descriptionPtr, codePtr, price, successCallbackPtr, errorCallbackPtr) {
+        showPayment: function(name, description, code, price, successCallbackPtr, errorCallbackPtr) {
             okSdk.paymentSuccessCallbackPtr = successCallbackPtr;
             okSdk.paymentErrorCallbackPtr = errorCallbackPtr;
             
             okSdk.FAPI.UI.showPayment(
-                UTF8ToString(namePtr), 
-                UTF8ToString(descriptionPtr), 
-                UTF8ToString(codePtr), 
+                name, 
+                description, 
+                code, 
                 price, 
                 undefined, 
                 undefined, 
@@ -186,16 +186,16 @@ const library = {
         getStorageSuccessCallbackPtr: undefined,
         getStorageErrorCallbackPtr: undefined,
         getStorageKey: undefined,
-        getStorage: function(keyPtr, scopePtr, successCallbackPtr, errorCallbackPtr){
+        getStorage: function(key, scope, successCallbackPtr, errorCallbackPtr){
             okSdk.getStorageSuccessCallbackPtr = successCallbackPtr;
             okSdk.getStorageErrorCallbackPtr = errorCallbackPtr;
-            okSdk.getStorageKey = UTF8ToString(keyPtr);
+            okSdk.getStorageKey = key;
             
             okSdk.FAPI.Client.call(
                 {
                     "method": "storage.get",
                     "keys":[okSdk.getStorageKey],
-                    "scope":UTF8ToString(scopePtr)
+                    "scope":scope
                 }, okSdk.getStorageCallback);
         },
         
@@ -221,15 +221,15 @@ const library = {
         
         setStorageSuccessCallbackPtr: undefined,
         setStorageErrorCallbackPtr: undefined,
-        setStorage: function(keyPtr, valuePtr, successCallbackPtr, errorCallbackPtr){
+        setStorage: function(key, value, successCallbackPtr, errorCallbackPtr){
             okSdk.setStorageSuccessCallbackPtr = successCallbackPtr;
             okSdk.setStorageErrorCallbackPtr = errorCallbackPtr;
             
             okSdk.FAPI.Client.call(
                 {
                     "method": "storage.set",
-                    "key":UTF8ToString(keyPtr),
-                    "value":UTF8ToString(valuePtr)
+                    "key":key,
+                    "value":value
                 }, okSdk.setStorageCallback);
         },
         
@@ -244,15 +244,144 @@ const library = {
             {{{ makeDynCall('v', 'okSdk.setStorageSuccessCallbackPtr') }}}();
         },
         
+        // Partial storage
+
+        getPartialStorageSuccessCallbackPtr: undefined,
+        getPartialStorageErrorCallbackPtr: undefined,
+        getPartialStorageInitialKey: undefined,
+        getPartialStorageAmountKey: undefined,
+        getPartialStorageScope: undefined,
+        getPartialStorage: function(key, scope, successCallbackPtr, errorCallbackPtr){
+            okSdk.getPartialStorageSuccessCallbackPtr = successCallbackPtr;
+            okSdk.getPartialStorageErrorCallbackPtr = errorCallbackPtr;
+            okSdk.getPartialStorageInitialKey = key;
+            okSdk.getPartialStorageAmountKey = key + "Length";
+            okSdk.getPartialStorageScope = scope;
+
+            okSdk.FAPI.Client.call(
+                {
+                    "method": "storage.get",
+                    "keys":okSdk.getPartialStorageAmountKey,
+                    "scope":scope,
+                }, okSdk.getPartialStorageKeyAmountCallback);
+        },
+
+        getPartialStorageKeys: undefined,
+        getPartialStorageLength: undefined,
+        getPartialStorageKeyAmountCallback: function(status, data, error){
+            if(status !== "ok"){
+                const buffer = okSdk.allocateUnmanagedString(JSON.stringify(error));
+                {{{ makeDynCall('vi', 'okSdk.getPartialStorageErrorCallbackPtr') }}}(buffer);
+                _free(buffer);
+                return;
+            }
+
+            var keyAmount = 0;
+
+            if(data !== undefined && data["data"] !== undefined)
+                keyAmount = data["data"][okSdk.getPartialStorageAmountKey];
+            
+            if(keyAmount === 0)
+            {
+                const buffer = okSdk.allocateUnmanagedString("");
+                {{{ makeDynCall('vi', 'okSdk.getPartialStorageSuccessCallbackPtr') }}}(buffer);
+                _free(buffer);
+                return;
+            }
+            
+            okSdk.getPartialStorageLength = keyAmount;
+            
+            var keys = [];
+            for (let i = 0; i < keyAmount; i++)
+                keys.push(okSdk.getPartialStorageInitialKey + i)
+
+            okSdk.FAPI.Client.call(
+                {
+                    "method": "storage.get",
+                    "keys":keys,
+                    "scope":okSdk.getPartialStorageScope,
+                }, okSdk.getPartialStorageValuesCallback);
+        
+        },
+        
+        getPartialStorageValuesCallback: function (status, data, error){
+            if(status !== "ok"){
+                const buffer = okSdk.allocateUnmanagedString(JSON.stringify(error));
+                {{{ makeDynCall('vi', 'okSdk.getPartialStorageErrorCallbackPtr') }}}(buffer);
+                _free(buffer);
+                return;
+            }
+
+            var value = "";
+
+            if(data === undefined || data["data"] === undefined){
+                const buffer = okSdk.allocateUnmanagedString("");
+                {{{ makeDynCall('vi', 'okSdk.getPartialStorageSuccessCallbackPtr') }}}(buffer);
+                _free(buffer);                
+                return;
+            }
+
+            for (let i = 0; i < okSdk.getPartialStorageLength; i++)
+                value += data["data"][okSdk.getPartialStorageInitialKey + i]
+
+
+            const buffer = okSdk.allocateUnmanagedString(value);
+            {{{ makeDynCall('vi', 'okSdk.getPartialStorageSuccessCallbackPtr') }}}(buffer);
+            _free(buffer);
+        },
+
+        setPartialStorageSuccessCallbackPtr: undefined,
+        setPartialStorageErrorCallbackPtr: undefined,
+        setPartialStoragePartsAmount: undefined,
+        setPartialStorageSuccessAmount: undefined,
+        setPartialStorage: function(key, value, successCallbackPtr, errorCallbackPtr){
+            okSdk.setPartialStorageSuccessCallbackPtr = successCallbackPtr;
+            okSdk.setPartialStorageErrorCallbackPtr = errorCallbackPtr;
+
+            const partialValue = value.match(/.{1,4096}/g); // Split value by 4096 symbols
+            okSdk.setPartialStoragePartsAmount = partialValue.length;
+            okSdk.setPartialStorageSuccessAmount = 0;
+            
+            okSdk.FAPI.Client.call(
+                {
+                    "method": "storage.set",
+                    "key": key + "Length",
+                    "value": okSdk.setPartialStoragePartsAmount
+                }, okSdk.setPartialStorageCallback);
+            
+            for (let i = 0; i < okSdk.setPartialStoragePartsAmount; i++) {
+                okSdk.FAPI.Client.call(
+                    {
+                        "method": "storage.set",
+                        "key": key + i,
+                        "value":partialValue[i]
+                    }, okSdk.setPartialStorageCallback);
+            }
+        },
+
+        setPartialStorageCallback: function(status, data, error){
+            if(status !== "ok"){
+                const buffer = okSdk.allocateUnmanagedString(JSON.stringify(error));
+                {{{ makeDynCall('vi', 'okSdk.setPartialStorageErrorCallbackPtr') }}}(buffer);
+                _free(buffer);
+                return;
+            }
+
+            okSdk.setPartialStorageSuccessAmount++;
+    
+            if(okSdk.setPartialStorageSuccessCallbackPtr === okSdk.setPartialStoragePartsAmount + 1)
+                {{{ makeDynCall('v', 'okSdk.setPartialStorageSuccessCallbackPtr') }}}();
+        },
+        
         // Social
         
         showInviteSuccessCallbackPtr: undefined,
         showInviteErrorCallbackPtr: undefined,
-        showInvite: function(textPtr, successCallbackPtr, errorCallbackPtr){
+        showInvite: function(text, successCallbackPtr, errorCallbackPtr){
             okSdk.showInviteSuccessCallbackPtr = successCallbackPtr;
             okSdk.showInviteErrorCallbackPtr = errorCallbackPtr;
 
-            okSdk.FAPI.UI.showInvite(UTF8ToString(textPtr));
+            okSdk.FAPI.UI.showInvite(text);
         },
 
         showInviteCallback: function(result, data){
@@ -294,19 +423,27 @@ const library = {
     },
     
     OkShowPayment: function (namePtr, descriptionPtr, codePtr, price, paymentSuccessCallbackPtr, paymentErrorCallbackPtr){
-        okSdk.showPayment(namePtr, descriptionPtr, codePtr, price, paymentSuccessCallbackPtr, paymentErrorCallbackPtr);
+        okSdk.showPayment(UTF8ToString(name), UTF8ToString(description), UTF8ToString(code), price, paymentSuccessCallbackPtr, paymentErrorCallbackPtr);
     },
     
     OkGetStorage: function(keyPtr, scopePtr, successCallbackPtr, errorCallbackPtr){
-        okSdk.getStorage(keyPtr, scopePtr, successCallbackPtr, errorCallbackPtr);
+        okSdk.getStorage(UTF8ToString(keyPtr), UTF8ToString(scopePtr), successCallbackPtr, errorCallbackPtr);
     },
     
     OkSetStorage: function(keyPtr, valuePtr, successCallbackPtr, errorCallbackPtr){
-        okSdk.setStorage(keyPtr, valuePtr, successCallbackPtr, errorCallbackPtr);
+        okSdk.setStorage(UTF8ToString(keyPtr), UTF8ToString(valuePtr), successCallbackPtr, errorCallbackPtr);
+    },
+    
+    OkGetPartialStorage: function(keyPtr, scopePtr, successCallbackPtr, errorCallbackPtr){
+        okSdk.getPartialStorage(UTF8ToString(keyPtr), UTF8ToString(scopePtr), successCallbackPtr, errorCallbackPtr);
+    },
+    
+    OkSetPartialStorage: function(keyPtr, valuePtr, successCallbackPtr, errorCallbackPtr){
+        okSdk.setPartialStorage(UTF8ToString(keyPtr), UTF8ToString(valuePtr), successCallbackPtr, errorCallbackPtr)
     },
     
     OkShowInvite: function(textPtr, successCallbackPtr, errorCallbackPtr){
-        okSdk.showInvite(textPtr, successCallbackPtr, errorCallbackPtr);
+        okSdk.showInvite(UTF8ToString(textPtr), successCallbackPtr, errorCallbackPtr);
     }
 }
 
