@@ -338,7 +338,7 @@ const library = {
             okSdk.setPartialStorageSuccessCallbackPtr = successCallbackPtr;
             okSdk.setPartialStorageErrorCallbackPtr = errorCallbackPtr;
 
-            const partialValue = value.match(/.{1,4096}/g); // Split value by 4096 symbols
+            const partialValue = value.match(/.{1,1024}/g); // Split value by 1024 symbols
             okSdk.setPartialStoragePartsAmount = partialValue.length;
             okSdk.setPartialStorageSuccessAmount = 0;
             
