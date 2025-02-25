@@ -76,6 +76,24 @@
                 });
         },
         
+        getAuthToken: function (appId, successCallbackPtr, errorCallbackPtr) {
+            vkSdk.vkBridge.send('VKWebAppGetAuthToken', {
+                app_id: appId,
+                scope: ''
+            })
+                .then((data) => {
+                    if (data.access_token) {
+                        vkSdk.invokeViCallback(successCallbackPtr, data.access_token);
+                        return;
+                    }
+                    
+                    vkSdk.invokeViCallback(errorCallbackPtr, "GetAuth data error");
+                })
+                .catch( (error) => {
+                    vkSdk.invokeErrorCallback(errorCallbackPtr, error);
+                });
+        },
+        
         // Billing
         showPayment: function (key, successCallbackPtr, errorCallbackPtr) {
             vkSdk.vkBridge.send('VKWebAppShowOrderBox', {
@@ -196,7 +214,11 @@
                     v: "5.199"
                 }
             }).then((data) => {
-                vkSdk.invokeViCallback(successCallbackPtr, data.response);
+                const response = data.response;
+                if(typeof response === "object")
+                    vkSdk.invokeViCallback(successCallbackPtr, JSON.stringify(response));
+                else
+                    vkSdk.invokeViCallback(successCallbackPtr, response);
             }).catch((error) => {
                 vkSdk.invokeErrorCallback(errorCallbackPtr, error);
             });
@@ -250,6 +272,10 @@
     
     VkGetLaunchParams: function (successCallbackPtr, errorCallbackPtr) {
         vkSdk.getLaunchParams(successCallbackPtr, errorCallbackPtr);
+    },
+
+    VkGetAuthToken: function (appId, successCallbackPtr, errorCallbackPtr) {
+        vkSdk.getAuthToken(appId, successCallbackPtr, errorCallbackPtr);
     },
     
     VkShowPayment: function (keyPtr, successCallbackPtr, errorCallbackPtr) {

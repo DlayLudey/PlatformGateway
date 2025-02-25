@@ -9,10 +9,11 @@ namespace CarrotHood.PlatformGateway.Vk
 	[CreateAssetMenu(fileName = "VkPlatform", menuName = "Platforms/Vk")]
 	public class VkPlatform : PlatformBase
 	{
-		[SerializeField] private string serviceToken;
+		[SerializeField] private int appId;
 		
 		private LaunchParams _launchParams;
-
+		private string authToken;
+		
 		public override PlatformType Type => PlatformType.Vk;
 
 		public override string Language => _launchParams.language;
@@ -24,8 +25,15 @@ namespace CarrotHood.PlatformGateway.Vk
 			yield return VkSdk.Initialize();
 
 			yield return GetLaunchParams();
+
+			VkSdk.GetAuthToken(appId, token =>
+			{
+				authToken = token;
+			}, Debug.LogError);
 			
-			builder.Storage = new StorageVk(serviceToken, _launchParams.userId, saveCooldown);
+			yield return new WaitUntil(() => !string.IsNullOrEmpty(authToken));
+			
+			builder.Storage = new StorageVk(authToken, _launchParams.userId, saveCooldown);
 			
 			gameFocusManager = new GameFocusManager();
 

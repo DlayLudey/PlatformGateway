@@ -76,6 +76,39 @@ namespace CarrotHood.PlatformGateway.Vk
 			onGetLaunchParamsError?.Invoke(error);
 		}
 #endregion
+
+#region AuthToken
+		[DllImport("__Internal")]
+		private static extern void VkGetAuthToken(int appId, Action<string> onSuccess, Action<string> onError);
+		
+		private static Action<string> onGetAuthTokenSuccess;
+		private static Action<string> onGetAuthTokenError;
+	
+		public static void GetAuthToken(int appId, Action<string> onSuccess, Action<string> onError)
+		{
+			onGetAuthTokenSuccess = onSuccess;
+			onGetAuthTokenError = onError;
+			
+			#if !UNITY_EDITOR
+			VkGetAuthToken(appId, OnGetAuthTokenSuccess, OnGetAuthTokenError);
+			#else
+			OnGetAuthTokenSuccess("Auth Token Example");
+			#endif
+		}
+
+		
+		[MonoPInvokeCallback(typeof(Action<string>))]
+		private static void OnGetAuthTokenSuccess(string token)
+		{
+			onGetAuthTokenSuccess?.Invoke(token);
+		}
+		
+		[MonoPInvokeCallback(typeof(Action<string>))]
+		private static void OnGetAuthTokenError(string error)
+		{
+			onGetAuthTokenError?.Invoke(error);
+		}
+#endregion
 	}
 
 	[Serializable]
