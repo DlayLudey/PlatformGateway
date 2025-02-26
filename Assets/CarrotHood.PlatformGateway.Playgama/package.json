@@ -5,9 +5,9 @@
     "description": "",
     "samples": [
         {
-            "displayName": "Playgama WebGL Templates",
+            "displayName": "WebGLTemplates",
             "description": "Contains templates for publishing on Playgama",
-            "path": "Samples~/WebGLTemplates"
+            "path": "WebGLTemplates"
         }
     ]
 }
