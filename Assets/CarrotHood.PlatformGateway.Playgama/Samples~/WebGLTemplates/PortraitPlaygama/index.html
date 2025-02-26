@@ -99,12 +99,15 @@
                 meta.name = 'viewport'
                 meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes'
                 document.getElementsByTagName('head')[0].appendChild(meta)
-                canvas.classList.add("mobile");
-            }   
-            else{
-                canvas.classList.add("desktop");
             }
-            
+
+            function onResize(){
+                canvas.classList = (window.innerWidth / window.innerHeight) > (9 / 16) ? 'desktop' : 'mobile'
+            }
+
+            window.addEventListener('resize', onResize)
+            onResize();
+
             // utils
             window.unityInstance = null
             let progressBarFillingInterval = null
