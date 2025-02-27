@@ -27,6 +27,8 @@ namespace CarrotHood.PlatformGateway.Ok
 		public override PlatformType Type => PlatformType.Ok;
 		public override string Language => "ru";
 
+		private GameFocusManager gameFocusManager;
+
 		public override IEnumerator Init(PlatformBuilder builder)
 		{
 			yield return OkSdk.Initialize();
@@ -38,10 +40,15 @@ namespace CarrotHood.PlatformGateway.Ok
 			
 			yield return builder.Storage.Initialize();
 			
-			builder.Payments = new PaymentsOk(products, builder.Storage);
+			gameFocusManager = new GameFocusManager();
+			
+			builder.Payments = new PaymentsOk(products, gameFocusManager, builder.Storage);
 
-			builder.Advertisement = new AdvertisementOk(interstitialCooldown);
+			builder.Advertisement = new AdvertisementOk(interstitialCooldown, gameFocusManager);
 			builder.Social = new SocialOk();
+			
+			WebApplication.Initialize(b => gameFocusManager.InBackground = !b);
+			gameFocusManager.OnGameFocusChanged += b => OnGameFocusChanged?.Invoke(b);
 		}
 		
 		#if UNITY_EDITOR
@@ -78,9 +85,12 @@ namespace CarrotHood.PlatformGateway.Ok
 
 	public class PaymentsOk : PaymentsBase
 	{
-		public PaymentsOk(Product[] products, StorageBase storageBase) : base(storageBase)
+		private GameFocusManager gameFocusManager;
+		
+		public PaymentsOk(Product[] products, GameFocusManager gameFocusManager, StorageBase storageBase) : base(storageBase)
 		{
 			Products = products;
+			this.gameFocusManager = gameFocusManager;
 		}
 
 		public override Product[] Products { get; protected set; }
@@ -106,19 +116,34 @@ namespace CarrotHood.PlatformGateway.Ok
 			
 			Product product = Products.FirstOrDefault(x => x.productId == productId);
 			
+			gameFocusManager.InPayments = true;
+			
 			Billing.Purchase(
 				product.name, 
 				product.description, 
 				product.productId, 
-				product.price, 
-				() => onSuccessCallback?.Invoke(null), 
-				onErrorCallback);
+				product.price,
+				() =>
+				{
+					gameFocusManager.InPayments = false;
+					onSuccessCallback?.Invoke(null);
+				}, 
+				s =>
+				{
+					gameFocusManager.InPayments = false;
+					onErrorCallback?.Invoke(s);
+				});
 		}
 	}
 
 	public class AdvertisementOk : AdvertisementBase
 	{
-		public AdvertisementOk(float platformInterstitialCooldown) : base(platformInterstitialCooldown) { }
+		private GameFocusManager gameFocusManager;
+		
+		public AdvertisementOk(float platformInterstitialCooldown, GameFocusManager gameFocusManager) : base(platformInterstitialCooldown)
+		{
+			this.gameFocusManager = gameFocusManager;
+		}
 
 		public override void CheckAdBlock(Action<bool> callback) => callback?.Invoke(false);
 
@@ -128,7 +153,17 @@ namespace CarrotHood.PlatformGateway.Ok
 
 		protected override void ShowInterstitialInternal(Action onOpen, Action onClose, Action<string> onError)
 		{
-			Advertisement.ShowInterstitialAd(onOpen, onClose, onError);
+			gameFocusManager.InAdvert = true;
+			
+			Advertisement.ShowInterstitialAd(onOpen, () =>
+			{
+				gameFocusManager.InAdvert = false;
+				onClose?.Invoke();
+			}, s =>
+			{
+				gameFocusManager.InAdvert = false;
+				onError?.Invoke(s);
+			});
 		}
 
 		public override bool NeedToPreloadRewarded => true;
@@ -140,15 +175,22 @@ namespace CarrotHood.PlatformGateway.Ok
 		
 		public override void ShowRewarded(Action onRewarded, Action onOpen = null, Action onClose = null, Action<string> onError = null)
 		{
+			gameFocusManager.InAdvert = true;
 			Advertisement.ShowRewardedAd(() =>
 			{
+				gameFocusManager.InAdvert = false;
+				
 				onOpen?.Invoke();
 				onRewarded?.Invoke();
 				onClose?.Invoke();
 				
 				if(isInterstitialAvailable)
 					lastInterstitialTime = Time.realtimeSinceStartup - (interstitialCooldown / 4 * 3);
-			}, onError);
+			}, s =>
+			{
+				gameFocusManager.InAdvert = false;
+				onError?.Invoke(s);
+			});
 		}
 	}
 

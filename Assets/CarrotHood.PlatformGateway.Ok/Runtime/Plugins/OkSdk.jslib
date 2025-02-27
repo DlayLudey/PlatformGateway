@@ -74,6 +74,16 @@ const library = {
             );
         },
         
+        webApplicationInitialize: function (onGameFocusChangeCallbackPtr){
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    {{{ makeDynCall('vi', 'onGameFocusChangeCallbackPtr') }}}(false);
+                } else {
+                    {{{ makeDynCall('vi', 'onGameFocusChangeCallbackPtr') }}}(true);
+                }
+            });
+        },
+        
         // Advertisment
         interstitialOpenCallbackPtr: undefined,
         interstitialClosedCallbackPtr: undefined,
@@ -409,6 +419,10 @@ const library = {
 
     OkSdkInitialize: function (successCallbackPtr) {
         okSdk.okSdkInitialize(successCallbackPtr);
+    },
+    
+    OkWebApplicationInitialize: function (onGameFocusChangeCallbackPtr) {
+        okSdk.webApplicationInitialize(onGameFocusChangeCallbackPtr);
     },
     
     OkShowInterstitial: function (openCallbackPtr, closeCallbackPtr, errorCallbackPtr) {
