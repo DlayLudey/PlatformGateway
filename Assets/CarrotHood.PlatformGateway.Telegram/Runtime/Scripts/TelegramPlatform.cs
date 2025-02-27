@@ -29,6 +29,11 @@ namespace CarrotHood.PlatformGateway.Telegram
 
             builder.Social = new SocialTelegram();
         }
+
+        public override void GameReady()
+        {
+            TelegramSdk.GameReady();
+        }
     }
 
     public class AdvertisementTelegram : AdvertisementBase

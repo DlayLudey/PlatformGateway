@@ -8,6 +8,7 @@ namespace CarrotHood.PlatformGateway.Telegram
 {
 	public static class TelegramSdk
 	{
+#region Initialization
 		[DllImport("__Internal")]
 		private static extern void TelegramSdkInitialize(Action onSuccess);
 
@@ -35,5 +36,22 @@ namespace CarrotHood.PlatformGateway.Telegram
 		{
 			IsInitialized = true;
 		}
+#endregion
+
+#region GameReady
+
+		[DllImport("__Internal")]
+		private static extern void TgGameReady();
+
+		public static void GameReady()
+		{
+			#if !UNITY_EDITOR
+			TgGameReady();
+			#else
+			Debug.Log("Telegram GameReady");
+			#endif
+		}
+
+#endregion
 	}
 }

@@ -13,5 +13,10 @@ namespace CarrotHood.PlatformGateway
 		{
 			yield return null;
 		}
+
+		public override void GameReady()
+		{
+			Debug.Log("GameReady Invoke");
+		}
 	}
 }

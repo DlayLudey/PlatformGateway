@@ -26,6 +26,10 @@ const library = {
             document.head.appendChild(sdkScript);
         },
 
+        gameReady: function(){
+            tgSdk.telegramApi.GameReady();
+        },
+
         getUserInfo: function (successCallbackPtr) {
             tgSdk.telegramApi.GetUserData((data) => {
                 const buffer = tgSdk.allocateUnmanagedString(JSON.stringify(data));
@@ -110,6 +114,10 @@ const library = {
 
     TelegramSdkInitialize: function (successCallbackPtr) {
         tgSdk.telegramSdkInitialize(successCallbackPtr);
+    },
+    
+    TgGameReady: function (){
+        tgSdk.gameReady();
     },
     
     TgShowInterstitial: function (openCallbackPtr, closeCallbackPtr, errorCallbackPtr) {
