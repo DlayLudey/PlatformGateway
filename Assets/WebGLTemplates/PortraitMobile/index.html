@@ -5,13 +5,11 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Unity WebGL Player | {{{ PRODUCT_NAME }}}</title>
     <link rel="stylesheet" href="./static/css/main.css">
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-    <script>eruda.init();</script>
   </head>
   <body style="text-align: center; padding: 0; border: 0; margin: 0;">
   <div class="unity-container">
     <canvas id="unity-canvas" style="background: {{{ BACKGROUND_FILENAME ? 'url(\'Build/' + BACKGROUND_FILENAME.replace(/'/g, '%27') + '\') center / cover' : BACKGROUND_COLOR }}}"></canvas>
-    <div id="unity-loading-bar">
+    <div id="unity-loading-bar" style="display: block;">
       <div id="unity-logo"></div>
       <div id="unity-progress-bar-empty">
         <div id="unity-progress-bar-full"></div>
@@ -23,24 +21,14 @@
     <script>
       const unityContainer = document.querySelector(".unity-container");
       const canvas = document.querySelector("#unity-canvas");
-      var loadingBar = document.querySelector("#unity-loading-bar");
-      var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
-        unityContainer.classList.add("handheld");
-        document.body.style.textAlign = "left";
-      }
-      else
-      {
-        unityContainer.classList.add("desktop");
-      }
+      const loadingBar = document.querySelector("#unity-loading-bar");
+      const progressBarFull = document.querySelector("#unity-progress-bar-full");
 
-      loadingBar.style.display = "block";
+      const forcedResolution = "{{{ FORCED_RESOLUTION }}}";
+      
+      var unityInstance = null;
+      var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      var resizeCanvas = !isNaN(forcedResolution) && forcedResolution > 100;
 
       var buildUrl = "Build";
       var loaderUrl = buildUrl + "/{{{ LOADER_FILENAME }}}";
@@ -58,16 +46,53 @@
         #endif
         streamingAssetsUrl: "StreamingAssets",
         companyName: {{{ JSON.stringify(COMPANY_NAME) }}},
-      productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
-      productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}}
+        productName: {{{ JSON.stringify(PRODUCT_NAME) }}},
+        productVersion: {{{ JSON.stringify(PRODUCT_VERSION) }}},
+
+        matchWebGLToCanvasSize: isMobile || !resizeCanvas, // Mobile renders as full res, PC will change WebGL render size later
       };
+
+      if (isMobile) {
+        
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
+        unityContainer.classList.add("handheld");
+        document.body.style.textAlign = "left";
+      }
+      else
+      {
+        unityContainer.classList.add("desktop");
+
+        if(resizeCanvas){
+          function ResizeCanvas() {
+            const resolution = Math.max(canvas.offsetWidth, canvas.offsetHeight)
+  
+            var multiplier = 1;
+  
+            if(resolution < forcedResolution)
+              multiplier = forcedResolution / resolution;
+  
+            canvas.width = canvas.offsetWidth * multiplier;
+            canvas.height = canvas.offsetHeight * multiplier;
+            if(unityInstance != null && unityInstance.Module != null)
+              unityInstance.Module.setCanvasSize(canvas.width, canvas.height);
+          }
+  
+          window.addEventListener('resize', ResizeCanvas);
+  
+          ResizeCanvas(); 
+        }
+      }
 
       const script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
           progressBarFull.style.width = 100 * progress + "%";
-        }).then((unityInstance) => {
+        }).then((instance) => {
+          unityInstance = instance;
           loadingBar.style.display = "none";
         }).catch((message) => {
           alert(message);
