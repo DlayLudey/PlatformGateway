@@ -18,7 +18,6 @@ namespace CarrotHood.PlatformGateway.Yandex
 		public override IEnumerator Init(PlatformBuilder builder)
 		{
 			yield return YandexGamesSdk.Initialize();
-			yield return Cloud.Initialize();
 			yield return Billing.Initialize();
 			Advertisement.Initialize();
 			
@@ -129,17 +128,6 @@ namespace CarrotHood.PlatformGateway.Yandex
 	public class StorageYandex : StorageBase
 	{
 		public StorageYandex(float savePeriod) : base(savePeriod) { }
-
-		public void GetValue(string key, Action<string> onSuccess, Action<string> onError = null)
-		{
-			onSuccess?.Invoke(Cloud.GetValue(key, ""));
-		}
-
-		public void SetValue(string key, string value, Action onSuccess = null, Action<string> onError = null)
-		{
-			Cloud.SetValue(key, value, true);
-			onSuccess?.Invoke();
-		}
 
 		public override void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null)
 		{
