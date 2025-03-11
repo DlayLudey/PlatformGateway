@@ -205,7 +205,7 @@ const library = {
                 {
                     "method": "storage.get",
                     "keys":[okSdk.getStorageKey],
-                    "scope":"CUSTOM"
+                    "scope":"GLOBAL"
                 }, okSdk.getStorageCallback);
         },
         
@@ -240,7 +240,7 @@ const library = {
                     "method": "storage.set",
                     "key":key,
                     "value":value,
-                    "scope":"CUSTOM"
+                    "scope":"GLOBAL"
                 }, okSdk.setStorageCallback);
         },
         
@@ -271,7 +271,7 @@ const library = {
                 {
                     "method": "storage.get",
                     "keys":okSdk.getPartialStorageAmountKey,
-                    "scope":"CUSTOM",
+                    "scope":"GLOBAL",
                 }, okSdk.getPartialStorageKeyAmountCallback);
         },
 
@@ -308,7 +308,7 @@ const library = {
                 {
                     "method": "storage.get",
                     "keys":keys,
-                    "scope":"CUSTOM",
+                    "scope":"GLOBAL",
                 }, okSdk.getPartialStorageValuesCallback);
         
         },
@@ -356,7 +356,7 @@ const library = {
                     "method": "storage.set",
                     "key": key + "Length",
                     "value": okSdk.setPartialStoragePartsAmount,
-                    "scope":"CUSTOM"
+                    "scope":"GLOBAL"
                 }, okSdk.setPartialStorageCallback);
             
             for (let i = 0; i < okSdk.setPartialStoragePartsAmount; i++) {
@@ -365,7 +365,7 @@ const library = {
                         "method": "storage.set",
                         "key": key + i,
                         "value":partialValue[i],
-                        "scope":"CUSTOM"
+                        "scope":"GLOBAL"
                     }, okSdk.setPartialStorageCallback);
             }
         },
