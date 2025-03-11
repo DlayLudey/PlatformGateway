@@ -17,6 +17,7 @@ namespace CarrotHood.PlatformGateway
 			if (www.result is UnityWebRequest.Result.ConnectionError or UnityWebRequest.Result.ProtocolError)
 			{
 				Debug.Log($"Error downloading texture: {www.error}");
+				onSuccessCallback?.Invoke(null);
 			}
 			else
 			{

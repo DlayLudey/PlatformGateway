@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using CarrotHood.PlatformGateway;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
@@ -8,66 +10,51 @@ namespace Examples
 {
     public class PlayerPanel : MonoBehaviour
     {
-        [SerializeField] private Text _isAuthorizationSupported;
-        [SerializeField] private Text _isAuthorized;
         [SerializeField] private Text _id;
         [SerializeField] private Text _name;
         [SerializeField] private Image _photo;
         [SerializeField] private Button _authorizeButton;
         [SerializeField] private GameObject _overlay;
 
-        //private void Start()
-        //{
-        //    UpdateValues();
-        //    _overlay.SetActive(false);
-        //    _authorizeButton.onClick.AddListener(OnAuthorizeButtonClicked);
-        //}
+        private void Start()
+        {
+            _overlay.SetActive(true);
+            _authorizeButton.onClick.AddListener(OnAuthorizeButtonClicked);
+            StartCoroutine(GetImage(x =>
+            {
+                UpdateVisuals(x);
+                _overlay.SetActive(false);
+            }));
+        }
 
-        //private void OnAuthorizeButtonClicked()
-        //{
-        //    _overlay.SetActive(true);
+        private void OnAuthorizeButtonClicked()
+        {
+            StartCoroutine(Authorize());
+        }
+
+        private IEnumerator Authorize()
+        {
+            _overlay.SetActive(true);
             
-        //    var options = new Dictionary<string, object>();
-        //    switch (Bridge.platform.id)
-        //    {
-        //        case "yandex":
-        //            options.Add("scopes", true);
-        //            break;
-        //    }
+            yield return PlatformGateway.Account.GetPlayerData();
+            yield return GetImage(UpdateVisuals);
             
-        //    Bridge.player.Authorize(options, OnAuthorizePlayerCompleted);
-        //}
+            _overlay.SetActive(false);
+        }
 
-        //private void OnAuthorizePlayerCompleted(bool success)
-        //{
-        //    UpdateValues();
-        //    _overlay.SetActive(false);
-        //}
+        private IEnumerator GetImage(Action<Sprite> callback)
+        {
+            yield return Utils.DownloadSprite(PlatformGateway.Account.Player.profilePictureUrl, texture2D =>
+            {
+                callback?.Invoke(Utils.TextureToSprite(texture2D));
+            });
+        }
 
-        //private void UpdateValues()
-        //{
-        //    _isAuthorizationSupported.text = $"Is Authorization Supported: { Bridge.player.isAuthorizationSupported }";
-        //    _isAuthorized.text = $"Is Authorized: { Bridge.player.isAuthorized }";
-        //    _id.text = $"ID: { Bridge.player.id }";
-        //    _name.text = $"Name: { Bridge.player.name }";
-
-        //    if (Bridge.player.photos.Count > 0)
-        //    {
-        //        StartCoroutine(LoadPhoto(Bridge.player.photos[0]));
-        //    }
-        //}
-
-        //private IEnumerator LoadPhoto(string url)
-        //{
-        //    var request = UnityWebRequestTexture.GetTexture(url);
-        //    yield return request.SendWebRequest();
-
-        //    if (request.result == UnityWebRequest.Result.Success)
-        //    {
-        //        var texture = ((DownloadHandlerTexture) request.downloadHandler).texture;
-        //        var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-        //        _photo.sprite = sprite;
-        //    }
-        //}
+        private void UpdateVisuals(Sprite photoSprite)
+        {
+            _id.text = PlatformGateway.Account.Player.id;
+            _name.text = PlatformGateway.Account.Player.name;
+            _photo.sprite = photoSprite;
+        }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kimicu.YandexGames;
 using UnityEngine;
+using static CarrotHood.PlatformGateway.IAccount;
 using Billing = Kimicu.YandexGames.Billing;
 using YandexGamesSdk = Kimicu.YandexGames.YandexGamesSdk;
 
@@ -22,7 +23,7 @@ namespace CarrotHood.PlatformGateway.Yandex
 			Advertisement.Initialize();
 			
 			WebApplication.Initialize((isFocused) => OnGameFocusChanged?.Invoke(isFocused));
-
+			
 			builder.Storage = new StorageYandex(saveCooldown);
 
 			yield return builder.Storage.Initialize();
@@ -33,6 +34,10 @@ namespace CarrotHood.PlatformGateway.Yandex
 
 			builder.Payments = payments;
 
+			builder.Account = new AccountYandex();
+
+			yield return builder.Account.GetPlayerData();
+			
 			builder.Advertisement = new AdvertisementYandex(interstitialCooldown);
 			builder.Social = new SocialYandex();
 		}
@@ -172,5 +177,28 @@ namespace CarrotHood.PlatformGateway.Yandex
 		public void Rate(Action<bool> onComplete = null) { }
 
 		public void Share(Dictionary<string, object> options, Action<bool> onComplete = null) { }
+	}
+
+	public class AccountYandex : IAccount
+	{
+		public PlayerData Player { get; private set; }
+		
+		public IEnumerator GetPlayerData()
+		{
+			bool gotPlayer = false;
+			
+			Account.GetProfileData(x =>
+			{
+				gotPlayer = true;
+				Player = new PlayerData()
+				{
+					id = x.uniqueID,
+					name = x.publicName,
+					profilePictureUrl = x.profilePicture
+				};
+			}, Debug.LogError);
+
+			yield return new WaitUntil(() => gotPlayer);
+		}
 	}
 }

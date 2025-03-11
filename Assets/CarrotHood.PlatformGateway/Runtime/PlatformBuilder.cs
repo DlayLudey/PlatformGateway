@@ -16,6 +16,7 @@ namespace CarrotHood.PlatformGateway
 		public PaymentsBase Payments;
 		public StorageBase Storage;
 		public ISocial Social;
+		public IAccount Account;
 		
 		public IEnumerator Build()
 		{
@@ -34,6 +35,7 @@ namespace CarrotHood.PlatformGateway
 			
 			Payments ??= new DefaultPayments(new Product[]{}, Storage);
 			Social ??= new DefaultSocial();
+			Account ??= new DefaultAccount();
 		}
 	}
 }

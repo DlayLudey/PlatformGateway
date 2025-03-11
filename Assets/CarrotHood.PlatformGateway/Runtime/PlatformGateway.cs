@@ -15,6 +15,7 @@ namespace CarrotHood.PlatformGateway
 		public static PaymentsBase Payments => PlatformBuilder?.Payments;
 		public static StorageBase Storage => PlatformBuilder?.Storage;
 		public static ISocial Social => PlatformBuilder?.Social;
+		public static IAccount Account => PlatformBuilder?.Account;
 		public static PlatformBase CurrentPlatform => PlatformBuilder?.Platform;
 		public static PlatformType PlatformType { get; private set; } = PlatformType.Default;
 
