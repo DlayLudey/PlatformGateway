@@ -89,7 +89,7 @@ const library = {
         interstitialClosedCallbackPtr: undefined,
         interstitialErrorCallbackPtr: undefined,
         showInterstitial: function (openCallbackPtr, closeCallbackPtr, errorCallbackPtr) {
-            okSdk.interstitialClosedCallbackPtr = openCallbackPtr;
+            okSdk.interstitialOpenCallbackPtr = openCallbackPtr;
             okSdk.interstitialClosedCallbackPtr = closeCallbackPtr;
             okSdk.interstitialErrorCallbackPtr = errorCallbackPtr;
 
