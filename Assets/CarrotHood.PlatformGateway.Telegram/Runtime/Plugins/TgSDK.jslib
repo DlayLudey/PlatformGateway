@@ -10,7 +10,7 @@ const library = {
             
             tgSdk.isInitializeCalled = true;
 
-            const scriptSrc = 'https://telegram.carrothood.ru/iframe-api.js';
+            const scriptSrc = 'https://tgbot.dev-carrothood.ru/iframe-api.js';
 
             const sdkScript = document.createElement('script');
             sdkScript.src = scriptSrc;
