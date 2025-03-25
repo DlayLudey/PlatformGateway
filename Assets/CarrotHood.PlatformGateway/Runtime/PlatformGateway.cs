@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
@@ -7,7 +8,19 @@ namespace CarrotHood.PlatformGateway
 {
 	public class PlatformGateway : MonoBehaviour
 	{
-		public static PlatformGateway Instance;
+		private static PlatformGateway cachedInstance;
+		public static PlatformGateway Instance
+		{
+			get
+			{
+				cachedInstance ??= FindObjectOfType<PlatformGateway>();
+
+				if (cachedInstance == null)
+					throw new NullReferenceException("Platform Gateway object was not found!");
+
+				return cachedInstance;
+			}
+		}
 
 		public static PlatformBuilder PlatformBuilder { get; private set; }
 
@@ -24,7 +37,14 @@ namespace CarrotHood.PlatformGateway
 
 		protected virtual void Awake()
 		{
-			Instance = this;
+			if(cachedInstance != null && cachedInstance != this)
+			{
+				Destroy(gameObject);
+				return;
+			}
+			
+			
+			cachedInstance = this;
 			DontDestroyOnLoad(gameObject);
 		}
 
