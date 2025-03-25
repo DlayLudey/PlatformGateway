@@ -16,8 +16,9 @@ namespace CarrotHood.PlatformGateway.Telegram
         public override IEnumerator Init(PlatformBuilder builder)
         {
             yield return TelegramSdk.Initialize();
-            yield return PlayerAccount.Initialize();
 
+            builder.Account = new AccountTelegram();
+            
             builder.Advertisement = new AdvertisementTelegram(interstitialCooldown);
 
             builder.Storage = new StorageTelegram(saveCooldown);
@@ -33,6 +34,23 @@ namespace CarrotHood.PlatformGateway.Telegram
         public override void GameReady()
         {
             TelegramSdk.GameReady();
+        }
+    }
+    
+    public class AccountTelegram : IAccount
+    {
+        public IAccount.PlayerData Player { get; private set; }
+        
+        public IEnumerator GetPlayerData()
+        {
+            yield return PlayerAccount.Initialize();
+
+            Player = new IAccount.PlayerData
+            {
+                name = $"{PlayerAccount.userInfo.firstName} {PlayerAccount.userInfo.lastName}",
+                id = PlayerAccount.userInfo.id,
+                profilePictureUrl = PlayerAccount.userInfo.photoUrl
+            };
         }
     }
 
