@@ -15,6 +15,7 @@ namespace CarrotHood.PlatformGateway.Yandex
 	{
 		public override PlatformType Type => PlatformType.Yandex;
 		public override string Language => YandexGamesSdk.Environment.i18n.lang;
+		public override DateTime CurrentTime => YandexGamesSdk.ServerTime;
 
 		public override IEnumerator Init(PlatformBuilder builder)
 		{

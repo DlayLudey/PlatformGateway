@@ -16,6 +16,7 @@ namespace CarrotHood.PlatformGateway
 		
 		public abstract PlatformType Type { get; }
 		public abstract string Language { get; }
+		public virtual DateTime CurrentTime => DateTime.Now;
 
 		/// <summary>
 		/// True => In focus
