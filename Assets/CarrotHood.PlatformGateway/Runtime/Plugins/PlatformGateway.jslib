@@ -62,6 +62,35 @@ const library = {
 
             return platformGateway.PLATFORM_ID["MOCK"];
         },
+        
+        svg2Png: function(svgUrl, width, height, successCallbackPtr){
+            const img = new Image();
+            
+            img.crossOrigin = "anonymous";
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+
+                ctx.clearRect(0, 0, width, height);
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const pngBase64 = canvas.toDataURL("image/png");
+                
+                const buffer = this.allocateUnmanagedString(pngBase64);
+                
+                {{{ makeDynCall('vi', 'successCallbackPtr') }}}(buffer);
+
+                _free(buffer);
+
+                URL.revokeObjectURL(svgUrl);
+            };
+
+            img.src = svgUrl;
+        },
 
         allocateUnmanagedString: function (string) {
             const stringBufferSize = lengthBytesUTF8(string) + 1;
@@ -73,8 +102,11 @@ const library = {
 
     GetPlatform: function(){
         return  platformGateway.getPlatform();
-    }
+    },
     
+    Svg2Png: function(svgUrlPtr, width, height, successCallbackPtr){
+        platformGateway.svg2Png(UTF8ToString(svgUrlPtr), width, height, successCallbackPtr);
+    }
 }
 
 autoAddDeps(library, '$platformGateway');

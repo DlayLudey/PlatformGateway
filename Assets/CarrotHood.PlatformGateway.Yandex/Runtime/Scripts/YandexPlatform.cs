@@ -2,10 +2,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Agava.YandexGames;
 using Kimicu.YandexGames;
 using UnityEngine;
 using static CarrotHood.PlatformGateway.IAccount;
 using Billing = Kimicu.YandexGames.Billing;
+using WebApplication = Kimicu.YandexGames.WebApplication;
 using YandexGamesSdk = Kimicu.YandexGames.YandexGamesSdk;
 
 namespace CarrotHood.PlatformGateway.Yandex
@@ -20,7 +22,7 @@ namespace CarrotHood.PlatformGateway.Yandex
 		public override IEnumerator Init(PlatformBuilder builder)
 		{
 			yield return YandexGamesSdk.Initialize();
-			yield return Billing.Initialize();
+			yield return Billing.Initialize(ProductPictureSize.svg);
 			Advertisement.Initialize();
 			
 			WebApplication.Initialize((isFocused) => OnGameFocusChanged?.Invoke(isFocused));
@@ -73,11 +75,15 @@ namespace CarrotHood.PlatformGateway.Yandex
 				description = x.description,
 				price = int.Parse(x.priceValue),
 			}).ToArray();
-			
-			yield return Utils.DownloadSprite(Billing.CatalogProducts[0].priceCurrencyPicture, tex =>
+
+			bool downloadedCurrency = false;
+			Utils.DownloadSvg(Billing.CatalogProducts[0].priceCurrencyPicture, tex =>
 			{
 				CurrencySprite = Utils.TextureToSprite(tex);
+				downloadedCurrency = true;
 			});
+
+			yield return new WaitUntil(() => downloadedCurrency);
 		}
 		
 		protected override void InternalConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null)
