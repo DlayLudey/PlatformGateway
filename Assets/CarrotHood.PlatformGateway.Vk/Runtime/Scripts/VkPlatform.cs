@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using CarrotHood.PlatformGateway.Vk;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 using UnityEngine;
 
 namespace CarrotHood.PlatformGateway.Vk
@@ -9,6 +14,7 @@ namespace CarrotHood.PlatformGateway.Vk
 	[CreateAssetMenu(fileName = "VkPlatform", menuName = "Platforms/Vk")]
 	public class VkPlatform : PlatformBase
 	{
+		[SerializeField] private Product[] products;
 		[SerializeField] private int appId;
 		
 		private LaunchParams _launchParams;
@@ -64,6 +70,54 @@ namespace CarrotHood.PlatformGateway.Vk
 
 			yield return new WaitUntil(() => gotParams);
 		}
+		
+		#if UNITY_EDITOR
+		[ContextMenu("Export Products")]
+		public void ExportProducts()
+		{
+			if (products == null || !products.Any())
+			{
+				products = new Product[]{};
+			}
+			
+			string productJson = JsonUtility.ToJson(new ExportJson(products));
+
+			string path = EditorUtility.SaveFilePanel("Products", "", "products", "json");
+
+			if (string.IsNullOrEmpty(path))
+				return;
+
+			File.WriteAllText(path, productJson);
+		}
+		
+		[Serializable]
+		private struct ExportProduct
+		{
+			public string productId;
+			public string name;
+			public string photoUrl;
+			public int price;
+
+			public ExportProduct(Product product)
+			{
+				productId = product.productId;
+				name = product.name;
+				photoUrl = "";
+				price = product.price;
+			}
+		}
+		
+		[Serializable]
+		private struct ExportJson
+		{
+			public ExportProduct[] products;
+
+			public ExportJson(Product[] products)
+			{
+				this.products = products.Select(x => new ExportProduct(x)).ToArray();
+			}
+		}
+		#endif
 	}
 
 	public class PaymentsVk : PaymentsBase
