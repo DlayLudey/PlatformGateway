@@ -31,6 +31,22 @@ mergeInto(LibraryManager.library, {
         stringToUTF8(platformTld, buffer, bufferSize)
         return buffer
     },
+
+    PlaygamaBridgeIsPlatformGetAllGamesSupported: function() {
+        var isAllGamesSupported = window.getIsPlatformGetAllGamesSupported()
+        var bufferSize = lengthBytesUTF8(isAllGamesSupported) + 1
+        var buffer = _malloc(bufferSize)
+        stringToUTF8(isAllGamesSupported, buffer, bufferSize)
+        return buffer
+    },
+
+    PlaygamaBridgeIsPlatformGetGameByIdSupported: function() {
+        var isGameByIdSupported = window.getIsPlatformGetGameByIdSupported()
+        var bufferSize = lengthBytesUTF8(isGameByIdSupported) + 1
+        var buffer = _malloc(bufferSize)
+        stringToUTF8(isGameByIdSupported, buffer, bufferSize)
+        return buffer
+    },
     
     PlaygamaBridgeSendMessageToPlatform: function(message) {
         window.sendMessageToPlatform(UTF8ToString(message))
@@ -40,6 +56,13 @@ mergeInto(LibraryManager.library, {
         window.getServerTime()
     },
 
+    PlaygamaBridgeGetAllGames: function() {
+        window.getAllGames()
+    },
+
+    PlaygamaBridgeGetGameById: function(options) {
+        window.getGameById(UTF8ToString(options))
+    },
 
     PlaygamaBridgeGetDeviceType: function() {
         var deviceType = window.getDeviceType()
@@ -164,25 +187,33 @@ mergeInto(LibraryManager.library, {
         stringToUTF8(minimumDelayBetweenInterstitial, buffer, bufferSize)
         return buffer
     },
+    
+    PlaygamaBridgeRewardedPlacement: function() {
+        var rewardedPlacement = window.getRewardedPlacement()
+        var bufferSize = lengthBytesUTF8(rewardedPlacement) + 1
+        var buffer = _malloc(bufferSize)
+        stringToUTF8(rewardedPlacement, buffer, bufferSize)
+        return buffer
+    },
 
     PlaygamaBridgeSetMinimumDelayBetweenInterstitial: function(options) {
         window.setMinimumDelayBetweenInterstitial(UTF8ToString(options))
     },
     
-    PlaygamaBridgeShowBanner: function(options) {
-        window.showBanner(UTF8ToString(options))
+    PlaygamaBridgeShowBanner: function(position, placement) {
+        window.showBanner(UTF8ToString(position), UTF8ToString(placement))
     },
         
     PlaygamaBridgeHideBanner: function() {
         window.hideBanner()
     },
 
-    PlaygamaBridgeShowInterstitial: function() {
-        window.showInterstitial()
+    PlaygamaBridgeShowInterstitial: function(placement) {
+        window.showInterstitial(UTF8ToString(placement))
     },
 
-    PlaygamaBridgeShowRewarded: function() {
-        window.showRewarded()
+    PlaygamaBridgeShowRewarded: function(placement) {
+        window.showRewarded(UTF8ToString(placement))
     },
     
     PlaygamaBridgeCheckAdBlock: function() {
@@ -347,36 +378,12 @@ mergeInto(LibraryManager.library, {
         return buffer
     },
 
-    PlaygamaBridgeIsCatalogSupported: function() {
-        var isGetCatalogSupported = window.getIsCatalogSupported()
-        var bufferSize = lengthBytesUTF8(isGetCatalogSupported) + 1
-        var buffer = _malloc(bufferSize)
-        stringToUTF8(isGetCatalogSupported, buffer, bufferSize)
-        return buffer
+    PlaygamaBridgePaymentsPurchase: function(id) {
+        window.paymentsPurchase(UTF8ToString(id))
     },
 
-    PlaygamaBridgeIsPurchaseListSupported: function() {
-        var isGetPurchasesSupported = window.getIsPurchaseListSupported()
-        var bufferSize = lengthBytesUTF8(isGetPurchasesSupported) + 1
-        var buffer = _malloc(bufferSize)
-        stringToUTF8(isGetPurchasesSupported, buffer, bufferSize)
-        return buffer
-    },
-
-    PlaygamaBridgeIsPurchaseConsumingSupported: function() {
-        var isConsumePurchaseSupported = window.getIsPurchaseConsumingSupported()
-        var bufferSize = lengthBytesUTF8(isConsumePurchaseSupported) + 1
-        var buffer = _malloc(bufferSize)
-        stringToUTF8(isConsumePurchaseSupported, buffer, bufferSize)
-        return buffer
-    },
-
-    PlaygamaBridgePaymentsPurchase: function(options) {
-        window.paymentsPurchase(UTF8ToString(options))
-    },
-
-    PlaygamaBridgePaymentsConsumePurchase: function(options) {
-        window.paymentsConsumePurchase(UTF8ToString(options))
+    PlaygamaBridgePaymentsConsumePurchase: function(id) {
+        window.paymentsConsumePurchase(UTF8ToString(id))
     },
     
     PlaygamaBridgePaymentsGetPurchases: function() {

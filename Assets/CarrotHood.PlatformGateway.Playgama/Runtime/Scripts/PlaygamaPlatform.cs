@@ -63,9 +63,9 @@ namespace CarrotHood.PlatformGateway.Playgama
 
 		public IEnumerator Initialize(Product[] products)
 		{
-			if (!Bridge.payments.isGetCatalogSupported)
+			if (!Bridge.payments.isSupported)
 			{
-				Debug.Log("Getting catalog is not supported, using provided products.");
+				Debug.Log("Payments are not supported!");
 				Products = products;
 				yield break;
 			}
@@ -77,7 +77,7 @@ namespace CarrotHood.PlatformGateway.Playgama
 			
 			Bridge.payments.GetCatalog((success, productDict) =>
 			{
-				jsonProducts = productDict;
+				jsonProducts = success ? productDict : new List<Dictionary<string, string>>();
 				
 				gotProducts = true;
 			});
@@ -87,26 +87,13 @@ namespace CarrotHood.PlatformGateway.Playgama
 			if(jsonProducts == null || jsonProducts.Count == 0)
 				yield break;
 			
-			products = jsonProducts.Select(x =>
+			products = jsonProducts.Select(x => new Product()
 			{
-				// Creates shit SDK with the worst API I've ever seen
-				// Ads this id/productID bullshit
-				// Refuses to elaborate
-				// Right, Play fucking gama?
-					
-				string productId = x.TryGetValue("id", out string id) ? id : x["productID"]; 
-					
-				return new Product()
-				{
-					productId = productId,
-					name = x["title"],
-					description = x["description"],
-					// AND FUCKING AGAIN
-					price = int.TryParse(x.TryGetValue("priceValue", out string price) ? price : x["priceAmount"], out int parsedPrice) ? parsedPrice : 0,
-				};
+				productId = x["id"],
+				price = int.Parse(x["priceValue"])
 			}).ToArray();
 
-			imageUri = jsonProducts[0].GetValueOrDefault("imageUri", "");
+			imageUri = jsonProducts[0].GetValueOrDefault("priceCurrencyImage", "");
 			CurrencyName = jsonProducts[0].GetValueOrDefault("priceCurrencyCode", "");
 			
 			Products = products;
@@ -126,15 +113,15 @@ namespace CarrotHood.PlatformGateway.Playgama
 		public override string CurrencyName { get; protected set; }
 		public override Sprite CurrencySprite { get; protected set; }
 		public override bool PaymentsSupported => Bridge.payments.isSupported;
-		public override bool ConsummationSupported => Bridge.payments.isConsumePurchaseSupported;
+		public override bool ConsummationSupported => Bridge.payments.isSupported;
 		protected override void InternalConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null)
 		{
-			Bridge.payments.ConsumePurchase(new Dictionary<string, object>{{"purchaseToken", productToken}}, success =>
+			Bridge.payments.ConsumePurchase(productToken, (success, purchase) =>
 			{
 				if(success)
 					onSuccessCallback?.Invoke();
 				else
-					onErrorCallback?.Invoke("Consumation Error");
+					onErrorCallback?.Invoke("Consummation Error");
 			});
 		}
 
@@ -150,51 +137,27 @@ namespace CarrotHood.PlatformGateway.Playgama
 				
 				onSuccessCallback?.Invoke(purchases.Select(x => new PurchasedProduct()
 				{
-					productId = x.GetValueOrDefault("productID"),
-					consummationToken = x.GetValueOrDefault("purchaseToken")
+					productId = x["id"],
+					consummationToken = x["id"]
 				}).ToArray());
 			});
 		}
 
 		protected override void InternalPurchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null)
 		{
-			Dictionary<string, object> options = Bridge.platform.id switch
-			{
-				"yandex" => new Dictionary<string, object> {{"id", productId}},
-				"facebook" => new Dictionary<string, object> {{"productID", productId}},
-				"playdeck" => new Dictionary<string, object>()
-				{
-					{"amount", 1},
-					{"description", Products.First(x => x.productId == productId).description},
-					{"externalId", productId}
-				},
-				_ => null,
-			};
-
 			gameFocusManager.InPayments = true;
 			
-			Bridge.payments.Purchase(options, (success, dict) =>
+			Bridge.payments.Purchase(productId, (success, purchase) =>
 			{
 				if(success)
-				{
-					switch (Bridge.platform.id)
+					onSuccessCallback?.Invoke(new PurchasedProduct
 					{
-						case "yandex":
-						case "facebook":
-							onSuccessCallback?.Invoke(new PurchasedProduct
-							{
-								productId = dict["productID"],
-								consummationToken = dict["purchaseToken"],
-							});
-							break;
-						case "playdeck":
-							onSuccessCallback?.Invoke(null);
-							break;
-					} 
-				}
+						productId = purchase["id"],
+						consummationToken = purchase["id"]
+					});
 				else
 					onErrorCallback?.Invoke("Payment Error");
-
+				
 				gameFocusManager.InPayments = false;
 			});
 		}
@@ -214,7 +177,7 @@ namespace CarrotHood.PlatformGateway.Playgama
 
 		public override void CheckAdBlock(Action<bool> callback) => Bridge.advertisement.CheckAdBlock(callback);
 
-		public override void ShowBanner(Dictionary<string, object> options = null) => Bridge.advertisement.ShowBanner(options);
+		public override void ShowBanner(Dictionary<string, object> options = null) => Bridge.advertisement.ShowBanner(BannerPosition.Bottom); // TODO: REFACTOR
 
 		public override void HideBanner() => Bridge.advertisement.HideBanner();
 

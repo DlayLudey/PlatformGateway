@@ -1,10 +1,9 @@
 ﻿#if UNITY_WEBGL
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using Playgama.Common;
 using UnityEngine;
 #if !UNITY_EDITOR
-using Playgama.Common;
 using System.Runtime.InteropServices;
 #endif
 
@@ -24,60 +23,15 @@ namespace Playgama.Modules.Payments
             }
         }
 
-        public bool isGetCatalogSupported
-        {
-            get
-            {
-#if !UNITY_EDITOR
-                return PlaygamaBridgeIsCatalogSupported() == "true";
-#else
-                return false;
-#endif
-            }
-        }
-
-        public bool isGetPurchasesSupported
-        {
-            get
-            {
-#if !UNITY_EDITOR
-                return PlaygamaBridgeIsPurchaseListSupported() == "true";
-#else
-                return false;
-#endif
-            }
-        }
-        
-        public bool isConsumePurchaseSupported
-        {
-            get
-            {
-#if !UNITY_EDITOR
-                return PlaygamaBridgeIsPurchaseConsumingSupported() == "true";
-#else
-                return false;
-#endif
-            }
-        }
-
 #if !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string PlaygamaBridgeIsPaymentsSupported();
 
         [DllImport("__Internal")]
-        private static extern string PlaygamaBridgeIsCatalogSupported();
+        private static extern void PlaygamaBridgePaymentsPurchase(string id);
 
         [DllImport("__Internal")]
-        private static extern string PlaygamaBridgeIsPurchaseListSupported();
-
-        [DllImport("__Internal")]
-        private static extern string PlaygamaBridgeIsPurchaseConsumingSupported();
-        
-        [DllImport("__Internal")]
-        private static extern void PlaygamaBridgePaymentsPurchase(string options);
-
-        [DllImport("__Internal")]
-        private static extern void PlaygamaBridgePaymentsConsumePurchase(string options);
+        private static extern void PlaygamaBridgePaymentsConsumePurchase(string id);
         
         [DllImport("__Internal")]
         private static extern void PlaygamaBridgePaymentsGetPurchases();
@@ -87,30 +41,30 @@ namespace Playgama.Modules.Payments
 #endif
         
         private Action<bool, Dictionary<string, string>> _purchaseCallback;
-        private Action<bool> _consumePurchaseCallback;
+        private Action<bool, Dictionary<string, string>> _consumePurchaseCallback;
         private Action<bool, List<Dictionary<string, string>>> _getPurchasesCallback;
         private Action<bool, List<Dictionary<string, string>>> _getCatalogCallback;
 
 
-        public void Purchase(Dictionary<string, object> options, Action<bool, Dictionary<string, string>> onComplete = null)
+        public void Purchase(string id, Action<bool, Dictionary<string, string>> onComplete = null)
         {
             _purchaseCallback = onComplete;
 
 #if !UNITY_EDITOR
-            PlaygamaBridgePaymentsPurchase(options.ToJson());
+            PlaygamaBridgePaymentsPurchase(id);
 #else
             OnPaymentsPurchaseFailed();
 #endif
         }
         
-        public void ConsumePurchase(Dictionary<string, object> options, Action<bool> onComplete = null)
+        public void ConsumePurchase(string id, Action<bool, Dictionary<string, string>> onComplete = null)
         {
             _consumePurchaseCallback = onComplete;
 
 #if !UNITY_EDITOR
-            PlaygamaBridgePaymentsConsumePurchase(options.ToJson());
+            PlaygamaBridgePaymentsConsumePurchase(id);
 #else
-            OnPaymentsConsumePurchaseCompleted("false");
+            OnPaymentsConsumePurchaseFailed();
 #endif
         }
         
@@ -146,7 +100,7 @@ namespace Playgama.Modules.Payments
             {
                 try
                 {
-                    purchase = JsonConvert.DeserializeObject<Dictionary<string, string>>(result);
+                    purchase = JsonHelper.FromJsonToDictionary(result);
                 }
                 catch (Exception e)
                 {
@@ -166,8 +120,27 @@ namespace Playgama.Modules.Payments
         
         private void OnPaymentsConsumePurchaseCompleted(string result)
         {
-            var isSuccess = result == "true";
-            _consumePurchaseCallback?.Invoke(isSuccess);
+            var purchase = new Dictionary<string, string>();
+
+            if (!string.IsNullOrEmpty(result))
+            {
+                try
+                {
+                    purchase = JsonHelper.FromJsonToDictionary(result);
+                }
+                catch (Exception e)
+                {
+                    Debug.Log(e);
+                }
+            }
+
+            _consumePurchaseCallback?.Invoke(true, purchase);
+            _consumePurchaseCallback = null;
+        }
+        
+        private void OnPaymentsConsumePurchaseFailed()
+        {
+            _consumePurchaseCallback?.Invoke(false, null);
             _consumePurchaseCallback = null;
         }
         
@@ -179,7 +152,7 @@ namespace Playgama.Modules.Payments
             {
                 try
                 {
-                    purchases = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(result);
+                    purchases = JsonHelper.FromJsonToListOfDictionaries(result);
                 }
                 catch (Exception e)
                 {
@@ -205,7 +178,7 @@ namespace Playgama.Modules.Payments
             {
                 try
                 {
-                    items = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(result);
+                    items = JsonHelper.FromJsonToListOfDictionaries(result);
                 }
                 catch (Exception e)
                 {
