@@ -109,7 +109,7 @@ namespace CarrotHood.PlatformGateway.Ok
 			onErrorCallback?.Invoke("Consummation is not supported.");
 		}
 
-		protected override void InternalPurchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null)
+		protected override void InternalPurchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null, string payload = null)
 		{
 			if (Products.All(x => x.productId != productId))
 				throw new KeyNotFoundException($"There is no product with id: {productId}");

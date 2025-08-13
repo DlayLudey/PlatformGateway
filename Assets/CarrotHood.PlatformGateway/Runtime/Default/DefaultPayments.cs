@@ -29,12 +29,13 @@ namespace CarrotHood.PlatformGateway
 			onSuccessCallback?.Invoke(new PurchasedProduct[]{});
 		}
 
-		protected override void InternalPurchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null)
+		protected override void InternalPurchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null, string payload = null)
 		{
 			onSuccessCallback?.Invoke(new PurchasedProduct
 			{
 				productId = productId,
-				consummationToken = "12345678"
+				consummationToken = "12345678",
+				payload = payload
 			});
 		}
 	}

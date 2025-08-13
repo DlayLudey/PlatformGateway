@@ -146,7 +146,7 @@ namespace CarrotHood.PlatformGateway.Vk
 			onErrorCallback?.Invoke("Consummation is not supported.");
 		}
 
-		protected override void InternalPurchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null)
+		protected override void InternalPurchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null, string payload = null)
 		{
 			gameFocusManager.InPayments = true;
 			

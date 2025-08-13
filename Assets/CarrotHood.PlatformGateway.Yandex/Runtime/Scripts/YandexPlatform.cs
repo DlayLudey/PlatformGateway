@@ -98,12 +98,13 @@ namespace CarrotHood.PlatformGateway.Yandex
 				onSuccessCallback?.Invoke(response.purchasedProducts.Select(x => new PurchasedProduct
 				{
 					productId = x.productID,
-					consummationToken = x.purchaseToken
+					consummationToken = x.purchaseToken,
+					payload = x.developerPayload
 				}).ToArray());
 			}, onErrorCallback);
 		}
 
-		protected override void InternalPurchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null)
+		protected override void InternalPurchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null, string payload = null)
 		{
 			Billing.PurchaseProduct(productId, response =>
 			{
@@ -112,7 +113,7 @@ namespace CarrotHood.PlatformGateway.Yandex
 					productId = response.purchaseData.productID,
 					consummationToken = response.purchaseData.purchaseToken
 				});
-			}, onErrorCallback);
+			}, onErrorCallback, payload);
 		}
 	}
 

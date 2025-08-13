@@ -44,7 +44,7 @@ namespace CarrotHood.PlatformGateway
 			InternalGetPurchases(onSuccessCallback, onErrorCallback);
 		}
 
-		public void Purchase(string productId, bool consumable, Action onSuccessCallback = null, Action<string> onErrorCallback = null)
+		public void Purchase(string productId, bool consumable, Action onSuccessCallback = null, Action<string> onErrorCallback = null, string payload = null)
 		{
 			if (!PaymentsSupported)
 			{
@@ -61,12 +61,12 @@ namespace CarrotHood.PlatformGateway
 					onSuccessCallback?.Invoke();
 					OnApplyPurchase();
 				}
-			}, onErrorCallback);
+			}, onErrorCallback, payload);
 		}
 		
 		protected abstract void InternalConsumePurchase(string productToken, Action onSuccessCallback = null, Action<string> onErrorCallback = null);
 		protected abstract void InternalGetPurchases(Action<PurchasedProduct[]> onSuccessCallback, Action<string> onErrorCallback = null);
-		protected abstract void InternalPurchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null);
+		protected abstract void InternalPurchase(string productId, Action<PurchasedProduct?> onSuccessCallback = null, Action<string> onErrorCallback = null, string payload = null);
 
 		private void OnApplyPurchase()
 		{
@@ -88,5 +88,6 @@ namespace CarrotHood.PlatformGateway
 	{
 		public string productId;
 		public string consummationToken;
+		public string payload;
 	}
 }

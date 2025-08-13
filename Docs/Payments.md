@@ -33,6 +33,7 @@ public struct PurchasedProduct
 {
     public string productId; // ID продукта по которому происходит консумация, такой же ID что и в Product
     public string consummationToken; // Токен по которому происходит консумация, уникален у каждой отдельной покупки совершенной игроком
+    public string payload; // Дополнительная информация к покупке
 }
 ```
 
@@ -60,11 +61,13 @@ bool ConsummationSupported; // Поддерживается ли на текущ
 
 ---
 
-**Purchase(string productId, bool consumable, Action onSuccessCallback = null, Action<string> onErrorCallback = null)**
+**Purchase(string productId, bool consumable, Action onSuccessCallback = null, Action<string> onErrorCallback = null, string payload = null)**
 
 Производит покупку товара по `productId`\
 
 В `consumable` указывается то, нужно ли эту покупку законсумировать, консумация произойдет автоматически в процессе покупки внутри **PlatformGateway**
+
+В `payload` указывается дополнительная информация которая будет передаваться во время консумации вместе с ключом
 
 Пример использования:
 ```csharp
@@ -74,7 +77,7 @@ Payments.Purchase("coins", true, () =>
 }, error => 
 {
     Debug.LogError($"Purchase failed, error: {error}");
-})
+}, "coins:1000")
 ```
 
 ---
