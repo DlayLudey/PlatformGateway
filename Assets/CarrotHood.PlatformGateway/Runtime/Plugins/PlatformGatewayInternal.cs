@@ -1,21 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
+using AOT;
+using Newtonsoft.Json;
 
 namespace CarrotHood.PlatformGateway
 {
 	internal static class PlatformGatewayInternal
 	{
-//		   VK: 'vk',
-//         VK_PLAY: 'vk_play',
-//         OK: 'ok',
-//         YANDEX: 'yandex',
-//         CRAZY_GAMES: 'crazy_games',
-//         ABSOLUTE_GAMES: 'absolute_games',
-//         GAME_DISTRIBUTION: 'game_distribution',
-//         PLAYGAMA: 'playgama',
-//         WORTAL: 'wortal',
-//         PLAYDECK: 'playdeck',
-//         TELEGRAM: 'telegram',
-//         MOCK: 'mock',
 		public static PlatformType PlatformType
 		{
 			get
@@ -41,5 +34,39 @@ namespace CarrotHood.PlatformGateway
 
 		[DllImport("__Internal")]
 		private static extern string GetPlatform();
+
+		[DllImport("__Internal")]
+		private static extern void InitPlatformCommands(string commandsJson, Action<string> commandCallback);
+
+		private static Dictionary<string, Action> customCommands;
+		
+		public static void InitCustomPlatformCommands(PlatformCommand[] commands)
+		{
+			#if UNITY_EDITOR
+			return;
+			#endif
+			
+			customCommands = commands.ToDictionary(x => x.methodName, x => x.Callback);
+			InitPlatformCommands(JsonConvert.SerializeObject(commands.Select(x => x.methodName).ToArray()), OnCommandInvoke);
+		}
+
+		[MonoPInvokeCallback(typeof(Action<string>))]
+		private static void OnCommandInvoke(string methodName)
+		{
+			customCommands[methodName].Invoke();
+		}
+
+		[Serializable]
+		public struct PlatformCommand
+		{
+			public string methodName;
+			public Action Callback;
+
+			public PlatformCommand(Action method)
+			{
+				methodName = method.Method.Name;
+				Callback = method;
+			}
+		}
 	}
 }

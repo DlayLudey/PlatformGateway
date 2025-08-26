@@ -86,6 +86,11 @@ namespace CarrotHood.PlatformGateway
 			SaveData(nameof(Data), JsonConvert.SerializeObject(Data), onComplete, onError);
 		}
 
+		public void ClearData(Action onComplete, Action<string> onError)
+		{
+			SaveData(nameof(Data), "", onComplete, onError);
+		}
+
 		public abstract void LoadData(string key, Action<string> successCallback, Action<string> errorCallback = null);
 
 		public abstract void SaveData(string key, string value, Action successCallback = null, Action<string> errorCallback = null);

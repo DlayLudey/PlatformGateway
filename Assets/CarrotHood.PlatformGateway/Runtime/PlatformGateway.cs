@@ -57,7 +57,6 @@ namespace CarrotHood.PlatformGateway
 #endif
 			PlatformBase platform = platforms.FirstOrDefault(platform => platform.Type == PlatformType);
 
-
 			if (platform == default)
 			{
 				PlatformBuilder = new PlatformBuilder();
@@ -72,6 +71,8 @@ namespace CarrotHood.PlatformGateway
 			Debug.Log($"Initializing platform: {platform!.Type}");
 			
 			yield return PlatformBuilder.Build();
+			
+			CustomCommands.Init();
 
 			Debug.Log("Initialize complete!");
 		}

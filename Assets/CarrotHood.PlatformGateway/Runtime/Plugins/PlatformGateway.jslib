@@ -1,6 +1,22 @@
 const library = {
     $platformGateway: {
 
+        initPlatformCommands: function (commands, commandCallbackPtr) {
+            const data = JSON.parse(commands);
+            
+            window.PlatformGateway = {}
+            
+            data.forEach(entry => {
+                const methodName = entry;
+            
+                window.PlatformGateway[methodName] = function () {
+                    const buffer = platformGateway.allocateUnmanagedString(methodName);
+                    
+                    {{{ makeDynCall('vi', 'commandCallbackPtr') }}}(buffer);
+                }
+            })
+        },
+        
         get PLATFORM_ID() {
             return {
                 VK: 'vk',
@@ -48,7 +64,7 @@ const library = {
                     platformId = platformGateway.PLATFORM_ID["TELEGRAM"];
                 }
             }
-            return this.allocateUnmanagedString(platformId);
+            return platformGateway.allocateUnmanagedString(platformId);
         },
 
 
@@ -80,7 +96,7 @@ const library = {
 
                 const pngBase64 = canvas.toDataURL("image/png");
                 
-                const buffer = this.allocateUnmanagedString(pngBase64);
+                const buffer = platformGateway.allocateUnmanagedString(pngBase64);
                 
                 {{{ makeDynCall('vi', 'successCallbackPtr') }}}(buffer);
 
@@ -98,6 +114,10 @@ const library = {
             stringToUTF8(string, stringBufferPtr, stringBufferSize);
             return stringBufferPtr;
         }
+    },
+    
+    InitPlatformCommands: function(commandsPtr, commandCallbackPtr){
+        platformGateway.initPlatformCommands(UTF8ToString(commandsPtr), commandCallbackPtr);
     },
 
     GetPlatform: function(){
