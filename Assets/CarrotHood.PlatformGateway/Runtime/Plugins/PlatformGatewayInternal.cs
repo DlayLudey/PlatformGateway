@@ -7,6 +7,12 @@ using Newtonsoft.Json;
 
 namespace CarrotHood.PlatformGateway
 {
+	public enum Device
+	{
+		PC,
+		Mobile
+	}
+	
 	internal static class PlatformGatewayInternal
 	{
 		public static PlatformType PlatformType
@@ -31,9 +37,32 @@ namespace CarrotHood.PlatformGateway
 			}
 		}
 
+		public static Device Device
+		{
+			get
+			{
+				#if !UNITY_EDITOR && UNITY_WEBGL
+				var platform = GetDevice();
+				switch (platform)
+				{
+					case "mobile":
+						return Device.Mobile;
+					default:
+						return Device.PC;
+				}
+				#else
+				return Device.PC;
+				#endif
+			}
+		}
+
 
 		[DllImport("__Internal")]
 		private static extern string GetPlatform();
+
+
+		[DllImport("__Internal")]
+		private static extern string GetDevice();
 
 		[DllImport("__Internal")]
 		private static extern void InitPlatformCommands(string commandsJson, Action<string> commandCallback);

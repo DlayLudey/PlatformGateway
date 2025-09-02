@@ -79,6 +79,12 @@ const library = {
             return platformGateway.PLATFORM_ID["MOCK"];
         },
         
+        getDevice: function(){
+            const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent);
+            
+            return platformGateway.allocateUnmanagedString(isMobileDevice ? "mobile" : "pc");
+        },
+        
         svg2Png: function(svgUrl, width, height, successCallbackPtr){
             const img = new Image();
             
@@ -122,6 +128,10 @@ const library = {
 
     GetPlatform: function(){
         return  platformGateway.getPlatform();
+    },
+    
+    GetDevice: function(){
+        return platformGateway.getDevice();
     },
     
     Svg2Png: function(svgUrlPtr, width, height, successCallbackPtr){

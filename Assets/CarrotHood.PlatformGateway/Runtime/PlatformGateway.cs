@@ -31,10 +31,12 @@ namespace CarrotHood.PlatformGateway
 		public static IAccount Account => PlatformBuilder?.Account;
 		public static PlatformBase CurrentPlatform => PlatformBuilder?.Platform;
 		public static PlatformType PlatformType { get; private set; } = PlatformType.Default;
+		public static Device Device { get; private set; } = Device.PC;
 
-		[SerializeField] public PlatformType forcedPlatformType;
+		[SerializeField] private PlatformType forcedPlatformType;
+		[SerializeField] private Device editorDevice;
 		[SerializeField] private List<PlatformBase> platforms;
-
+		
 		protected virtual void Awake()
 		{
 			if(cachedInstance != null && cachedInstance != this)
@@ -52,8 +54,10 @@ namespace CarrotHood.PlatformGateway
 		{
 #if UNITY_EDITOR
 			PlatformType = forcedPlatformType;
+			Device = editorDevice;
 #else
 			PlatformType = forcedPlatformType == PlatformType.Default ? PlatformGatewayInternal.PlatformType : forcedPlatformType;
+			Device = PlatformGatewayInternal.Device;
 #endif
 			PlatformBase platform = platforms.FirstOrDefault(platform => platform.Type == PlatformType);
 

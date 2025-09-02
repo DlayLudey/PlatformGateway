@@ -7,6 +7,7 @@ namespace Examples
     public class PlatformPanel : MonoBehaviour
     {
         [SerializeField] private Text _id;
+        [SerializeField] private Text _device;
         [SerializeField] private Text _language;
         [SerializeField] private Text _payload;
         [SerializeField] private Text _tld;
@@ -23,6 +24,7 @@ namespace Examples
         private void Start()
         {
             _id.text = $"ID: {PlatformGateway.PlatformType}";
+            _device.text = $"Device: {PlatformGateway.Device}";
 
             PlatformGateway.CurrentPlatform.GameReady();
             PlatformGateway.CurrentPlatform.OnGameFocusChanged += b => Debug.Log($"Focus: {b}");
