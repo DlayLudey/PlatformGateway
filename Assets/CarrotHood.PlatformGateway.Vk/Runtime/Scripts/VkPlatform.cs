@@ -45,7 +45,7 @@ namespace CarrotHood.PlatformGateway.Vk
 
 			yield return builder.Storage.Initialize();
 			
-			builder.Payments = new PaymentsVk(gameFocusManager, Language, builder.Storage);
+			builder.Payments = new PaymentsVk(products, gameFocusManager, Language, builder.Storage);
 			
 			builder.Advertisement = new AdvertisementVk(gameFocusManager, interstitialCooldown);
 			builder.Social = new SocialVk();
@@ -122,13 +122,14 @@ namespace CarrotHood.PlatformGateway.Vk
 
 	public class PaymentsVk : PaymentsBase
 	{
-		public PaymentsVk(GameFocusManager gameFocusManager, string language, StorageBase storageBase) : base(storageBase)
+		public PaymentsVk(Product[] products, GameFocusManager gameFocusManager, string language, StorageBase storageBase) : base(storageBase)
 		{
 			CurrencyName = language == "en" ? "Votes" : "Голос";
+			Products = products;
 			this.gameFocusManager = gameFocusManager;
 		}
 
-		public override Product[] Products { get; protected set; } = new Product[]{};
+		public override Product[] Products { get; protected set; }
 		public override string CurrencyName { get; protected set; }
 		public override Sprite CurrencySprite { get; protected set; } = Resources.Load<Sprite>("PlatformGateway/CurrencyIcons/Vk");
 		public override bool PaymentsSupported => true;
