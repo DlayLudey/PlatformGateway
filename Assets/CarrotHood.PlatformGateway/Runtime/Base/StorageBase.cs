@@ -41,6 +41,9 @@ namespace CarrotHood.PlatformGateway
 
 		private IEnumerator SaveTimerCoroutine()
 		{
+			if(savePeriod <= 0)
+				yield break;
+			
 			while (Application.isPlaying)
 			{
 				yield return new WaitForSecondsRealtime(savePeriod);
